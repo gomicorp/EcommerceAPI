@@ -1,0 +1,148 @@
+th:
+  admin:
+    js:
+      true: ถูก
+      false: ผิด
+      is_present: มีอยู่?
+      is_blank: ว่าง?
+      date: วันที่ ...
+      between_and_: ระหว่าง ... และ ...
+      today: วันนี้
+      yesterday: เมื่อวาน
+      this_week: สัปดาห์นี้
+      last_week: สัปดาห์ที่แล้ว
+      number: เลขที่ ...
+      contains: ประกอบไปด้วย
+      is_exactly: เหมือนกับ
+      starts_with: เริ่มต้นด้วย
+      ends_with: ลงท้ายด้วย
+    loading: "กำลังโหลด ..."
+    home:
+      name: "หน้าหลัก"
+    pagination:
+      previous: "&laquo; ก่อนหน้า"
+      next: "ต่อไป &raquo;"
+      truncate: "…"
+    misc:
+      filter_date_format: "mm/dd/yy" # a combination of 'dd', 'mm' and 'yy' with any delimiter. No other interpolation will be done!
+      search: "ค้นหา"
+      filter: "ฟิลเตอร์"
+      refresh: "เริ่มใหม่"
+      show_all: "แสดงทั้งหมด"
+      add_filter: "เพิ่มฟิลเตอร์"
+      bulk_menu_title: "ข้อมูลที่เลือกไว้"
+      remove: "ลบออก"
+      add_new: "เพิ่มใหม่"
+      chosen: "เลือก %{name}"
+      chose_all: "เลือกทั้งหมด"
+      clear_all: "ยกเลิกที่เลือกทั้งหมด"
+      up: "ขึ้น"
+      down: "ลง"
+      navigation: "ตัวเลือก"
+      navigation_static_label: "ลิ้งก์"
+      log_out: "ลงชื่อออก"
+      ago: "ก่อนหน้านี้"
+    flash:
+      successful: "%{action} %{name} สำเร็จแล้ว"
+      error: "%{action} %{name} ผิดพลาด"
+      noaction: "ไม่พบการกระทำใดๆ"
+      model_not_found: "ไม่พบโมเดล '%{model}'"
+      object_not_found: "ไม่พบโมเดล %{model} ที่มี ID='%{id}'"
+    table_headers:
+      model_name: "ชื่อโมเดล"
+      last_used: "การใช้ล่าสุด"
+      records: "ข้อมูลที่บันทึกไว้"
+      username: "ผู้ใช้"
+      changes: "การเปลี่ยนแปลง"
+      created_at: "Date/Time"
+      item: "ไอเท็ม"
+      message: "ข้อความ"
+    actions:
+      dashboard:
+        title: "การจัดการข้อมูล"
+        menu: "แดชบอร์ด"
+        breadcrumb: "แดชบอร์ด"
+      index:
+        title: "ชุดข้อมูล %{model_label_plural}"
+        menu: "ข้อมูล"
+        breadcrumb: "%{model_label_plural}"
+      show:
+        title: "รายละเอียดของ %{model_label} '%{object_label}'"
+        menu: "แสดง"
+        breadcrumb: "%{object_label}"
+      show_in_app:
+        menu: "แสดงในแอพพลิเคชัน"
+      new:
+        title: "สร้าง %{model_label} ใหม่"
+        menu: "เพิ่ม"
+        breadcrumb: "สร้างใหม่"
+        link: "ไปที่การสร้าง %{model_label} ใหม่"
+        done: "สร้างใหม่สำเร็จแล้ว"
+      edit:
+        title: "แก้ไข %{model_label} '%{object_label}'"
+        menu: "แกไข"
+        breadcrumb: "แก้ไข"
+        link: "แก้ไข %{model_label} นี้"
+        done: "อัพเดตแล้ว"
+      delete:
+        title: "ลบ %{model_label} '%{object_label}'"
+        menu: "ลบ"
+        breadcrumb: "ลบ"
+        link: "ลบ '%{object_label}'"
+        done: "ลบออกแล้ว"
+      bulk_delete:
+        title: "ลบ %{model_label_plural}"
+        menu: "ลบออกหลายอัน"
+        breadcrumb: "ลบออกหลายอัน"
+        bulk_link: "ลบ %{model_label_plural} ที่เลือกไว้"
+      export:
+        title: "Export %{model_label_plural}"
+        menu: "Export"
+        breadcrumb: "Export"
+        link: "Export %{model_label_plural} ที่พบ"
+        bulk_link: "Export %{model_label_plural} ที่เลือกไว้"
+        done: "Export สำเร็จแล้ว"
+      history_index:
+        title: "ประวัติของ %{model_label_plural}"
+        menu: "ประวัติ"
+        breadcrumb: "ประวัติ"
+      history_show:
+        title: "ประวัติของ %{model_label} '%{object_label}'"
+        menu: "ประวัติ"
+        breadcrumb: "ประวัติ"
+    form:
+      cancel: "ยกเลิก"
+      basic_info: "ข้อมูลเบื้องต้น"
+      required: "ข้อมูลมี่ต้องใส่"
+      optional: "ข้อมูลทางเลือก"
+      one_char: "ตัวอักษร"
+      char_length_up_to: "จำกัดจำนวน"
+      char_length_of: "จำนวน"
+      save: "บันทึก"
+      save_and_add_another: "บันทึกและเพิ่มใหม่"
+      save_and_edit: "บันทึกและแก้ไข"
+      all_of_the_following_related_items_will_be_deleted: "? ขอ้มูลที่เกี่ยวข้องกับไอเท็มนี้อาจถูกลบออกหรือเอาแหล่งอ้างอิงออก:"
+      are_you_sure_you_want_to_delete_the_object: "แน่ใจนะว่าต้องการลบ %{model_name}"
+      confirmation: "ใช่, มั่นใจมากด้วย"
+      bulk_delete: "ข้อมูลที่เลือกไว้จะถูกลบออก โดยอาจทำการลบข้อมูลที่อ้างอิงถึงกันไปด้วย:"
+      new_model: "สร้าง %{name} ใหม่"
+    export:
+      confirmation: "Export ไปที่ %{name}"
+      select: "เลือกฟิลด์ที่ต้องการ export"
+      select_all_fields: "เลือกทุกฟิลด์"
+      fields_from: "ฟิลด์จาก %{name}"
+      fields_from_associated: "ฟิลด์จาก %{name} ที่เกี่ยวข้อง"
+      display: "แสดง %{name}: %{type}"
+      options_for: "ตัวเลือกสำหรับ %{name}"
+      empty_value_for_associated_objects: "<ว่างเปล่า>"
+      click_to_reverse_selection: 'คลิ๊กเพื่อกลับตัวเลือก'
+      csv:
+        header_for_root_methods: "%{name}" # 'model' is available
+        header_for_association_methods: "%{name} [%{association}]"
+        encoding_to: "Encode ด้วย"
+        encoding_to_help: "เลือกการเข้ารหัสข้อมูล, เว้นว่างเพื่อไม่ให้เปลี่ยนแปลงการเข้ารหัส: (%{name})"
+        skip_header: "ไม่มี Header"
+        skip_header_help: "ไม่ต้องรวม header (ไม่มีคำอธิบายฟิลด์)"
+        default_col_sep: ","
+        col_sep: "ตัวแบ่งคอลัมน์"
+        col_sep_help: "เว้นว่างสำหรับค่าเริ่มต้น ('%{value}')" # value is default_col_sep

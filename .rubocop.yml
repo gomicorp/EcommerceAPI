@@ -1,0 +1,122 @@
+# The behavior of RuboCop can be controlled via the .rubocop.yml
+# configuration file. It makes it possible to enable/disable
+# certain cops (checks) and to alter their behavior if they accept
+# any parameters. The file can be placed either in your home
+# directory or in some project directory.
+#
+# RuboCop will start looking for the configuration file in the directory
+# where the inspected file is and continue its way up to the root directory.
+#
+# See https://github.com/rubocop-hq/rubocop/blob/master/manual/configuration.md
+# See https://github.com/rubocop-hq/rubocop/blob/master/config/default.yml
+
+AllCops:
+  Exclude:
+    - 'bin/**/*'
+    - '**/*-dummy.rb'
+    - '**/*.ru'
+    - 'ignore/**/*'
+    - 'app/models/ui_model/**/*.rb'
+    - 'lib/haravan/**/*.rb'
+    - 'app/services/migrations/**/*.rb'
+
+Metrics/AbcSize:
+  Description: >-
+    A calculated magnitude based on number of assignments,
+    branches, and conditions.
+  # The ABC size is a calculated magnitude, so this number can be an Integer or
+  # a Float.
+  Max: 30
+
+Metrics/LineLength:
+  Description: 'Limit lines to 130 characters.'
+  Enabled: true
+  AutoCorrect: false
+  Max: 130
+  IgnoredPatterns: ['(\A|\s)#', 'scope\s.*}$']
+  Exclude:
+    - 'db/seeds/*.rb'
+    - 'db/schema.rb'
+
+Metrics/MethodLength:
+  Description: 'Avoid methods longer than 15 lines of code.'
+  Max: 15
+  ExcludedMethods: []
+  Exclude:
+    - 'db/migrate/**/*.rb'
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*.rb'
+    - 'db/schema.rb'
+    - 'config/routes.rb'
+    - 'config/environments/**/*.rb'
+
+Layout/IndentFirstArrayElement:
+  Enabled: false
+
+Layout/DotPosition:
+  Exclude:
+    - 'spec/**/*.rb'
+
+Layout/SpaceInsideArrayLiteralBrackets:
+  EnforcedStyle: no_space
+  Exclude:
+    - 'db/schema.rb'
+
+Layout/EmptyLinesAroundBlockBody:
+  Exclude:
+    - 'db/schema.rb'
+
+Style/FrozenStringLiteralComment:
+  Exclude:
+    - '**/*.jbuilder'
+    - 'app/**/*.rb'
+    - 'db/**/*.rb'
+    - 'config/**/*.rb'
+    - 'ignore/**/*.rb'
+    - 'Gemfile'
+    - 'Rakefile'
+
+Style/StringLiterals:
+  Exclude:
+    - 'db/schema.rb'
+
+Style/NumericLiterals:
+  Exclude:
+    - 'db/schema.rb'
+
+Style/WordArray:
+  Exclude:
+    - 'db/schema.rb'
+
+Style/SymbolArray:
+  Exclude:
+    - 'db/migrate/**/*.rb'
+
+Style/Documentation:
+  Exclude:
+    - 'app/**/*.rb'
+    - 'config/**/*.rb'
+    - 'db/**/*.rb'
+    - 'spec/**/*.rb'
+    - 'ignore/**/*.rb'
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/BlockComments:
+  Enabled: false
+
+Style/LambdaCall:
+  Exclude:
+    - '**/*.jbuilder'
+
+Naming/MemoizedInstanceVariableName:
+  Exclude:
+    - '**/base_controller.rb'
+    - '**/api_layout_handler.rb'
+
+Naming/PredicateName:
+  Exclude:
+    - '**/base_controller.rb'
