@@ -1,4 +1,5 @@
 class ApplicationRecord < ActiveRecord::Base
+  extend AutoIncrement
   self.abstract_class = true
 
   def cls

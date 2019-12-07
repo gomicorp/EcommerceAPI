@@ -25,6 +25,7 @@ gem 'authority' # 권한설정
 gem 'devise' # 회원가입 및 인증
 gem 'jwt'
 gem 'letter_opener', group: :development # 개발 모드에서 이메일을 보내지 않고 브라우저에서 미리보기하는 젬
+gem 'mailgun-ruby'
 gem 'omniauth-facebook' # 페이스북 로그인
 gem 'rolify' # role 관리
 

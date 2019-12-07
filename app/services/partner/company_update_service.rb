@@ -1,21 +1,11 @@
 module Partner
-
-  # @param
-  #
-  # {
-  #   company: {
-  #     name,
-  #     description
-  #   },
-  #   owner_id
-  # }
-  class CompanyCreateService
+  class CompanyUpdateService
     attr_reader :params, :company, :membership
 
-    def initialize(params)
+    def initialize(company, params)
       @params = params
-      @company = Company.new(company_param)
-      @membership = Membership.new(membership_param)
+      @company = company
+      @membership = Membership.find_or_initialize_by(manager_id: membership_param[:manager_id], company_id: company.id)
     end
 
     def save
@@ -25,13 +15,14 @@ module Partner
     private
 
     def save_company
-      company.save
+      company.update(company_param)
     end
 
     def set_ownership
+      return true if company.ownership.id == membership.id
+
+      company.ownership.update(role: 'admin')
       membership.role = 'owner'
-      membership.company_id = company.id
-      membership.accepted = true
       membership.save
     end
 

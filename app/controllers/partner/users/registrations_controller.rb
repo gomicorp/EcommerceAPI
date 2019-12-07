@@ -19,7 +19,6 @@ module Partner
       def create
         @manager = Manager.new(manager_params)
         @manager.password_confirmation = manager_params[:password]
-        ap manager_params[:password]
 
         if @manager.save
           render json: jwt_payload(@manager)
@@ -51,6 +50,8 @@ module Partner
       protected
 
       def manager_params
+        params[:users][:name] ||= "user#{Manager.auto_increment_value}"
+        params[:users][:password] ||= Devise.friendly_token
         params.require(:users).permit(:email, :password, :name)
       end
 

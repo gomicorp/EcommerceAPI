@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     end
 
     resources :companies
-    resources :managers, only: :index
+    resources :managers, only: %i[index show create]
+    resources :memberships, only: %i[index show create update destroy]
   end
 end

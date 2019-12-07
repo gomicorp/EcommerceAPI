@@ -21,8 +21,12 @@ module Partner
 
     private
 
+    def decode_jwt(token)
+      JsonWebToken.decode(token)
+    end
+
     def auth_token
-      @auth_token ||= JsonWebToken.decode(auth_header_value)
+      @auth_token ||= decode_jwt(auth_header_value)
     end
 
     def user_id_in_token?

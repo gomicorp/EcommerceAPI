@@ -1,8 +1,8 @@
 class Company < ApplicationRecord
   enum approve_status: %i[pending rejected accepted]
-  has_many :brands
+  has_many :brands, dependent: :destroy
 
-  has_many :memberships
+  has_many :memberships, dependent: :destroy
   has_many :managers, through: :memberships
 
   # def ownership

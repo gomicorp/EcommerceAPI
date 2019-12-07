@@ -6,10 +6,15 @@ module Partner
 
       # POST /users/sign_in
       def create
-        @manager = Manager.find_by_email(manager_param[:email])
+        if session_param[:token].present?
+          decoded_token = decode_jwt(session_param[:token])
+          return render json: jwt_payload(Manager.find(decoded_token[:user_id]))
+        end
+
+        @manager = Manager.find_by_email(session_param[:email])
         return render json: { message: 'Email not found' }, status: :unauthorized unless @manager
 
-        unless @manager.valid_password?(manager_param[:password])
+        unless @manager.valid_password?(session_param[:password])
           return render json: { message: 'Invalid password' }, status: :unauthorized
         end
 
@@ -23,8 +28,8 @@ module Partner
 
       protected
 
-      def manager_param
-        params.require(:users).permit(:email, :password)
+      def session_param
+        params.require(:users).permit(:email, :password, :token)
       end
     end
   end
