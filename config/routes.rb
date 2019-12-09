@@ -7,6 +7,8 @@ Rails.application.routes.draw do
     passwords: 'users/passwords'
   }
 
+  resources :files, only: %i[show create destroy]
+
   namespace :partner do
     namespace :users do
       post '/', to: 'registrations#create'
