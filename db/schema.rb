@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_04_161745) do
+ActiveRecord::Schema.define(version: 2019_12_08_203603) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -59,7 +59,9 @@ ActiveRecord::Schema.define(version: 2019_12_04_161745) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "pixel_id"
+    t.bigint "country_id"
     t.index ["company_id"], name: "index_brands_on_company_id"
+    t.index ["country_id"], name: "index_brands_on_country_id"
   end
 
   create_table "cart_items", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -88,6 +90,14 @@ ActiveRecord::Schema.define(version: 2019_12_04_161745) do
     t.datetime "updated_at", null: false
     t.integer "approve_status", default: 0, null: false
     t.text "description"
+  end
+
+  create_table "countries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.string "name_ko"
+    t.string "locale"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "file_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -176,7 +186,9 @@ ActiveRecord::Schema.define(version: 2019_12_04_161745) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "running_status", default: 0, null: false
+    t.bigint "country_id"
     t.index ["brand_id"], name: "index_products_on_brand_id"
+    t.index ["country_id"], name: "index_products_on_country_id"
   end
 
   create_table "ship_infos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -222,6 +234,7 @@ ActiveRecord::Schema.define(version: 2019_12_04_161745) do
   add_foreign_key "barcodes", "cart_items"
   add_foreign_key "barcodes", "products"
   add_foreign_key "brands", "companies"
+  add_foreign_key "brands", "countries"
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "products"
   add_foreign_key "carts", "users"
@@ -232,4 +245,5 @@ ActiveRecord::Schema.define(version: 2019_12_04_161745) do
   add_foreign_key "product_options", "product_option_groups"
   add_foreign_key "product_permits", "products"
   add_foreign_key "products", "brands"
+  add_foreign_key "products", "countries"
 end

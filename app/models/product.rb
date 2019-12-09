@@ -15,6 +15,7 @@ class Product < ApplicationRecord
   enum running_status: RUNNING_STATUSES.keys
 
   belongs_to :brand
+  belongs_to :country
   has_many :option_groups, class_name: ProductOptionGroup.name
   has_many :options, through: :option_groups
   has_many :barcodes

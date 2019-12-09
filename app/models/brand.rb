@@ -4,6 +4,7 @@ class Brand < ApplicationRecord
   translate_column :name
 
   belongs_to :company
+  belongs_to :country
   has_many :products
 
   def official_site_url
