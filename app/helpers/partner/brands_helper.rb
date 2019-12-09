@@ -1,0 +1,2 @@
+module Partner::BrandsHelper
+end
