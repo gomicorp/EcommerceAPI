@@ -20,5 +20,9 @@ Rails.application.routes.draw do
     resources :managers, only: %i[index show create]
     resources :memberships, only: %i[index show create update destroy]
     resources :brands
+
+    namespace :office do
+      get '/notice', to: 'left_bar#notice'
+    end
   end
 end
