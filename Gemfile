@@ -9,7 +9,7 @@ gem 'slack-notifier'
 
 ## => Store Office
 gem 'pagy'
-gem 'rails_admin'
+gem 'rails_admin', '~> 2.0', git: 'https://github.com/sferik/rails_admin.git'
 gem 'rails_admin_material'
 gem 'schema_to_scaffold'
 
