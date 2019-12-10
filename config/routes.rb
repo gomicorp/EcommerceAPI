@@ -1,28 +1,12 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-
   devise_for :users, controllers: {
     sessions: 'users/sessions',
     registrations: 'users/registrations',
     passwords: 'users/passwords'
   }
 
+  # global file crud (active_storage)
   resources :files, only: %i[show create destroy]
 
-  namespace :partner do
-    namespace :users do
-      post '/', to: 'registrations#create'
-      get '/:id', to: 'registrations#show'
-      post 'sign_in', to: 'sessions#create'
-    end
-
-    resources :companies
-    resources :managers, only: %i[index show create]
-    resources :memberships, only: %i[index show create update destroy]
-    resources :brands
-
-    namespace :office do
-      get '/notice', to: 'left_bar#notice'
-    end
-  end
+  draw :partner_center_routes
 end
