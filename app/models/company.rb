@@ -1,5 +1,5 @@
 class Company < ApplicationRecord
-  enum approve_status: %i[pending rejected accepted]
+  include Approvable
   has_many :brands, dependent: :destroy
 
   has_many :memberships, dependent: :destroy
@@ -14,4 +14,9 @@ class Company < ApplicationRecord
   #   ownership.manager
   # end
   has_one :owner, through: :ownership, source: :manager
+
+  # Company::ApproveRequest
+  class ApproveRequest < ::ApproveRequest
+    default_scope { where(approvable_type: :Company) }
+  end
 end

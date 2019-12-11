@@ -5,7 +5,6 @@ class FilesController < ApiController
   end
 
   def create
-    ap @record
     if @record.update(attribute_name => blob_file)
       render json: nil, status: :ok
     else
