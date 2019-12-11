@@ -1,0 +1,8 @@
+vi:
+  activerecord:
+    attributes:
+    models:
+      user: Người dùng
+      admin: admin
+      manager: người quản lý
+      seller: người bán

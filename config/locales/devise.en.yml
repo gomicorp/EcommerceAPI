@@ -28,9 +28,6 @@ en:
         unlock_token: Unlock token
         updated_at: Updated at
     models:
-      user:
-        one: User
-        other: Users
   devise:
     confirmations:
       confirmed: "Your email address has been successfully confirmed."

@@ -1,0 +1,9 @@
+
+en:
+  activerecord:
+    attributes:
+    models:
+      user: user
+      admin: admin
+      manager: manager
+      seller: seller
