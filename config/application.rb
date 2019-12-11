@@ -7,7 +7,6 @@ ALLOW_LOCALES = %i[ko en vn th].freeze
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
-ENV['RAILS_ADMIN_THEME'] = 'material'
 
 module Api
   class Application < Rails::Application
