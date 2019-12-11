@@ -1,0 +1,8 @@
+ko:
+  activerecord:
+    attributes:
+    models:
+      user: 사용자
+      admin: 관리자
+      manager: 담당자
+      seller: 판매자

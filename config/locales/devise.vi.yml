@@ -27,7 +27,6 @@ vi:
         unlock_token: Mã mở khoá
         updated_at: Được cập nhật lúc
     models:
-      user: Người dùng
   devise:
     confirmations:
       confirmed: Xác nhận tài khoản thành công! Bạn hiện đang đăng nhập.
