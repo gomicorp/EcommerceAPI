@@ -38,8 +38,8 @@ ActiveRecord::Schema.define(version: 2019_12_11_025115) do
     t.string "approvable_type"
     t.bigint "approvable_id"
     t.boolean "alive", default: true, null: false
-    t.datetime "created_at", precision: 6, default: "2019-12-11 01:10:44", null: false
-    t.datetime "updated_at", precision: 6, default: "2019-12-11 01:10:44", null: false
+    t.datetime "created_at", precision: 6, default: "2019-12-10 09:23:52", null: false
+    t.datetime "updated_at", precision: 6, default: "2019-12-10 09:23:52", null: false
     t.index ["approvable_type", "approvable_id"], name: "index_approve_requests_on_approvable_type_and_approvable_id"
   end
 
