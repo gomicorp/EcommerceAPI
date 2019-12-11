@@ -10,7 +10,7 @@ gem 'slack-notifier'
 ## => Store Office
 gem 'pagy'
 gem 'rails_admin', '~> 2.0', git: 'https://github.com/sferik/rails_admin.git'
-gem 'rails_admin_material'
+gem 'rails_admin_material', git: 'https://github.com/blocknotes/rails_admin_material.git'
 gem 'schema_to_scaffold'
 
 ## => Common
@@ -48,7 +48,7 @@ gem 'mysql2', '>= 0.4.4'
 # Use Puma as the app server
 gem 'puma', '~> 4.1'
 # Use SCSS for stylesheets
-gem 'sass-rails', '>= 6'
+gem 'sass-rails', '~> 6'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
 gem 'webpacker', '~> 4.0'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
