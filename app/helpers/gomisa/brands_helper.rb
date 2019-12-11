@@ -1,0 +1,2 @@
+module Gomisa::BrandsHelper
+end
