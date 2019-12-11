@@ -9,4 +9,6 @@ Rails.application.routes.draw do
   resources :files, only: %i[show create destroy]
 
   draw :partner_center_routes
+
+  mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 end
