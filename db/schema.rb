@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_10_072049) do
+ActiveRecord::Schema.define(version: 2019_12_10_182352) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -38,6 +38,8 @@ ActiveRecord::Schema.define(version: 2019_12_10_072049) do
     t.string "approvable_type"
     t.bigint "approvable_id"
     t.boolean "alive", default: true, null: false
+    t.datetime "created_at", precision: 6, default: "2019-12-10 18:31:33", null: false
+    t.datetime "updated_at", precision: 6, default: "2019-12-10 18:31:33", null: false
     t.index ["approvable_type", "approvable_id"], name: "index_approve_requests_on_approvable_type_and_approvable_id"
   end
 
