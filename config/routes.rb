@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   resources :files, only: %i[show create destroy]
   
   draw :partner_center_routes
+  draw :gomisa_routes
   
   devise_for :pandals
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
