@@ -1,4 +1,5 @@
 json.except! company
+json.approve_status company.approve_status
 json.owner do
   json.except! company.owner
   json.membership company.ownership

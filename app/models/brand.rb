@@ -1,5 +1,6 @@
 class Brand < ApplicationRecord
   include Translatable
+  include Approvable
   extend_has_one_attached :logo
   translate_column :name
 
@@ -13,5 +14,10 @@ class Brand < ApplicationRecord
 
   def use_pixel?
     pixel_id.present?
+  end
+
+  # Company::ApproveRequest
+  class ApproveRequest < ::ApproveRequest
+    default_scope { where(approvable_type: :Brand) }
   end
 end
