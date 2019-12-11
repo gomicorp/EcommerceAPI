@@ -4,11 +4,12 @@ Rails.application.routes.draw do
     registrations: 'users/registrations',
     passwords: 'users/passwords'
   }
-
+  
   # global file crud (active_storage)
   resources :files, only: %i[show create destroy]
-
+  
   draw :partner_center_routes
-
+  
+  devise_for :pandals
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 end
