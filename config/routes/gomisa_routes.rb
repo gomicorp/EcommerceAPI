@@ -7,4 +7,7 @@ namespace :gomisa do
   resources :brands, only: readonly do
     resource :company, module: :brands, only: readonly
   end
+
+  resources :product_items 
+  get '/update', to: 'update#index'
 end
