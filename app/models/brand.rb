@@ -7,6 +7,7 @@ class Brand < ApplicationRecord
   belongs_to :company
   belongs_to :country
   has_many :products
+  has_many :product_item_groups
 
   def official_site_url
     '#'

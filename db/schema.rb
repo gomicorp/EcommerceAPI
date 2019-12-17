@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_11_025115) do
+ActiveRecord::Schema.define(version: 2019_12_17_031307) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -181,6 +181,56 @@ ActiveRecord::Schema.define(version: 2019_12_11_025115) do
     t.index ["order_info_id"], name: "index_payments_on_order_info_id"
   end
 
+  create_table "product_attribute_options", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "product_attribute_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_attribute_id"], name: "index_product_attribute_options_on_product_attribute_id"
+  end
+
+  create_table "product_attribute_product_item_groups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "product_attribute_id", null: false
+    t.bigint "product_item_group_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_attribute_id"], name: "index_p_attribute__p_item_group_on_p_attribute_id"
+    t.index ["product_item_group_id"], name: "index_p_item_group__p_attribute_on_p_item_group_id"
+  end
+
+  create_table "product_attributes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "product_item_groups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "brand_id", null: false
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["brand_id"], name: "index_product_item_groups_on_brand_id"
+  end
+
+  create_table "product_item_product_options", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "product_item_id", null: false
+    t.bigint "product_option_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_item_id"], name: "index_product_item_product_options_on_product_item_id"
+    t.index ["product_option_id"], name: "index_product_item_product_options_on_product_option_id"
+  end
+
+  create_table "product_items", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "item_group_id", null: false
+    t.string "name"
+    t.string "serial_number"
+    t.integer "cost_price", default: 0, null: false
+    t.integer "selling_price", default: 0, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["item_group_id"], name: "index_product_items_on_item_group_id"
+  end
+
   create_table "product_option_groups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "product_id"
     t.string "name"
@@ -270,6 +320,13 @@ ActiveRecord::Schema.define(version: 2019_12_11_025115) do
   add_foreign_key "memberships", "companies"
   add_foreign_key "memberships", "users", column: "manager_id"
   add_foreign_key "payments", "order_infos"
+  add_foreign_key "product_attribute_options", "product_attributes"
+  add_foreign_key "product_attribute_product_item_groups", "product_attributes"
+  add_foreign_key "product_attribute_product_item_groups", "product_item_groups"
+  add_foreign_key "product_item_groups", "brands"
+  add_foreign_key "product_item_product_options", "product_items"
+  add_foreign_key "product_item_product_options", "product_options"
+  add_foreign_key "product_items", "product_item_groups", column: "item_group_id"
   add_foreign_key "product_option_groups", "products"
   add_foreign_key "product_options", "product_option_groups"
   add_foreign_key "product_permits", "products"
