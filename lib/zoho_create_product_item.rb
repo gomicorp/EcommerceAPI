@@ -134,10 +134,10 @@ module ZohoCreateProductItem
     # example: "name": "그라펜-스킨-100ml/동그라미"
     brand_name, product_item_group_name, options = item["name"].split('-') 
 
-    # brand 저장후 반환 (ㅇ)
+    # brand 반환 (ㅇ)
     brand = get_or_create_brand(name=brand_name)
 
-    # product 저장후 반환 (ㅇ)
+    # product_item_group 저장후 반환 (ㅇ)
     product_item_group = get_or_create_product_item_group(brand, name=product_item_group_name, item["group_id"])
 
     # options이 존재할때만 아래 과정 수행 (ㅇ)
