@@ -51,5 +51,6 @@ test:
 production:
   <<: *default
   database: store_production
-  username: <%= ENV['DATABASE_USERNAME'] %>
-  password: <%= ENV['DATABASE_PASSWORD'] %>
+  host: <%= Rails.application.credentails.dig(:database, ENV['APP_FORCE_ENV'].to_sym, :host) %>
+  username: <%= Rails.application.credentails.dig(:database, ENV['APP_FORCE_ENV'].to_sym, :username) %>
+  password: <%= Rails.application.credentails.dig(:database, ENV['APP_FORCE_ENV'].to_sym, :password) %>
