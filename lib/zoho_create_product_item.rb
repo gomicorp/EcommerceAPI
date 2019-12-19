@@ -1,27 +1,46 @@
 module ZohoCreateProductItem
-  #brand를 반환한다.
-  def get_or_create_brand(name)
-    brand = Brand.find_by(name: name)
-    if brand == nil
-      brand = Brand.new
-      brand[:name] = name
-      brand.save
-    end
-    return brand
+  def object_by_zoho_id(zoho_id)
+    return Zohomap.find_by(zoho_id: zoho_id)
   end
-    
-  # get_product_item_group
-  # product_item_group을 만들거나 반환한다.
-  def get_or_create_product_item_group(brand, name, id)
-    object = brand.product_item_groups.find_by_id(id=id)
-  
-    if object == nil
-      object = brand.product_item_groups.new(:id => id)
-      object[:name] = name
-      object.save
-    end
-  
+
+  def create_zohomap(object, zoho_id)
+    return Zohomap.create(:zohoable => object, :zoho_id => zoho_id.to_s)
+  end
+
+  #brand를 새로 생성한다
+  def create_brand(name)
+    object = Brand.new
+    object[:name] = name
+    object.save
     return object
+  end
+
+  #brand를 새로만들거나 반환한다.
+  def get_or_create_brand(name)
+    object = Brand.find_by(name: name)
+    if object == nil
+      object = create_brand(name)
+    end
+    return object
+  end
+  
+  #product_item_group를 새로 생성한다.
+  def create_product_item_group(brand, name)
+    object = brand.product_item_groups.new
+    object[:name] = name
+    object.save
+    return object
+  end
+  
+  # product_item_group을 만들거나 반환한다.
+  def get_or_create_product_item_group(brand, name, zoho_id)
+    zoho_map_object = object_by_zoho_id(zoho_id)
+    if zoho_map_object == nil      
+      object = create_product_item_group(brand, name)
+      create_zohomap(object, zoho_id)
+      return object
+    end
+    return zoho_map_object.zohoable
   end
   
   # product_attribute들을 만들거나 반환한다.
@@ -46,33 +65,47 @@ module ZohoCreateProductItem
     return objects
   end
   
+  # product_attribute를 만든다.
+  def create_product_attribute(name)
+    object = ProductAttribute.new
+    object[:name] = name
+    object.save
+    return object
+  end
+
   # product_attribute를 만들거나 반환한다.
-  def get_or_create_product_attribute(product_item_group, id, name)
+  def get_or_create_product_attribute(product_item_group, zoho_id, name)
     # find product_attribute
-    object = ProductAttribute.find_by_id(id=id)
+    zoho_map_object = object_by_zoho_id(zoho_id)
   
     # if not found, create new product_attribute
-    if object == nil
-      object = ProductAttribute.new(:id => id)
-      object[:name] = name
-      object.save
+    if zoho_map_object == nil
+      object = create_product_attribute(name)
+      zoho_map_object = create_zohomap(object, zoho_id)
     end
   
-    get_or_create_product_attribute_product_item_group(object, product_item_group)
+    get_or_create_product_attribute_product_item_group(zoho_map_object.zohoable, product_item_group)
   
-    return object
+    return zoho_map_object.zohoable
   end
   
   # product_attribute, product_item_group사이의 관계 테이블에 행을 추가한다.
+  def create_product_attribute_product_item_group(product_attribute, product_item_group)
+    object = ProductAttributeProductItemGroup.create(
+      :product_item_group_id => product_item_group[:id], 
+      :product_attribute_id => product_attribute[:id]
+    )
+    return object
+  end
+
+  # product_attribute, product_item_group사이의 관계 테이블에 행을 추가하거나 반환한다.
   def get_or_create_product_attribute_product_item_group(product_attribute, product_item_group)
     object = product_item_group.product_attributes.find_by_id(id=product_attribute[:id])
-  
+
     if object == nil
-      ProductAttributeProductItemGroup.create(
-        :product_item_group_id => product_item_group[:id], 
-        :product_attribute_id => product_attribute[:id]
-      )
+      object = create_product_attribute_product_item_group(product_attribute, product_item_group)
     end
+    
     return object
   end
   
@@ -98,22 +131,29 @@ module ZohoCreateProductItem
     return objects
   end
   
-  #product_attribute_option을 추가한다
-  def get_or_create_product_attribute_option(product_attribute, id, name)
-    object = product_attribute.options.find_by_id(id=id)
+  # product_attribute_option을 추가한다
+  def create_product_attribute_option(product_attribute, name)
+    object = product_attribute.options.new
+    object[:name] = name
+    object.save
+    return object
+  end
+
+  # product_attribute_option을 추가하거나 반환한다.
+  def get_or_create_product_attribute_option(product_attribute, zoho_id, name)
+    zoho_map_object = object_by_zoho_id(zoho_id)
   
-    if object == nil
-      object = product_attribute.options.new(:id => id)
-      object[:name] = name
-      object.save
+    if zoho_map_object == nil
+      object = create_product_attribute_option(product_attribute, name)
+      zoho_map_object = create_zohomap(object, zoho_id)
     end
   
-    return object
+    return zoho_map_object.zohoable
   end
 
   # 현재 product_item이 존재하는지 확인한다
   def check_existed_product_item(id)
-    product_item = ProductItem.find_by_id(id=id)
+    product_item = Zohomap.find_by(zoho_id: id)
     if product_item
       return product_item
     else
@@ -123,9 +163,10 @@ module ZohoCreateProductItem
 
   #product_item을 추가한다.
   def create_product_item(product_item_group, id, name)
-    object = product_item_group.items.new(:id => id)
+    object = product_item_group.items.new
     object[:name] = name
     object.save
+    create_zohomap(object, id)
     return object
   end
 
@@ -164,7 +205,7 @@ module ZohoCreateProductItem
       # item 유뮤 확인
       product_item = check_existed_product_item(item["item_id"])
 
-      # item 없으면 create, 있으면 update
+      # item 없으면 create, 있으면 undefined
       if product_item == nil
         object = create_product_item_procedure(item)
         objects.push(object)
