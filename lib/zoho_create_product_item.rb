@@ -111,26 +111,6 @@ module ZohoCreateProductItem
     return object
   end
 
-  # product_item 들을 생성한다.
-  def create_product_items(items)
-    objects = []
-
-    items.each do |item|  
-      # item 유뮤 확인
-      product_item = check_existed_product_item(item["item_id"])
-
-      # item 없으면 create, 있으면 update
-      if product_item == nil
-        object = create_product_item_procedure(item)
-        objects.push(object)
-      else
-        objects.push(product_item)
-      end
-    end
-
-    return objects
-  end  
-
   # 현재 product_item이 존재하는지 확인한다
   def check_existed_product_item(id)
     product_item = ProductItem.find_by_id(id=id)
@@ -139,6 +119,14 @@ module ZohoCreateProductItem
     else
       return nil
     end
+  end
+
+  #product_item을 추가한다.
+  def create_product_item(product_item_group, id, name)
+    object = product_item_group.items.new(:id => id)
+    object[:name] = name
+    object.save
+    return object
   end
 
   #product_item을 추가하는 절차
@@ -158,7 +146,7 @@ module ZohoCreateProductItem
       attribute_infos = item.select{|k, v| k =~ /^(?=.*attribute)(?!.*option).*/}
       product_attributes = get_or_create_product_attributes(product_item_group, attribute_infos)
 
-      # attribute_option 저장 (ㅇ)
+      # 반환된 attributes 정보를 이용해서 attribute_option 저장 (ㅇ)
       product_attribute_option_infos = item.select{|k, v| k =~ /^(?=.*attribute)(?=.*option).*/}
       product_attribute_options = get_or_create_product_attribute_options(product_attributes, product_attribute_option_infos)
     end
@@ -168,11 +156,23 @@ module ZohoCreateProductItem
     return product_item
   end
 
-  #product_item을 추가한다.
-  def create_product_item(product_item_group, id, name)
-    object = product_item_group.items.new(:id => id)
-    object[:name] = name
-    object.save
-    return object
-  end
+  # product_item 들을 생성한다.
+  def create_product_items(items)
+    objects = []
+
+    items.each do |item|  
+      # item 유뮤 확인
+      product_item = check_existed_product_item(item["item_id"])
+
+      # item 없으면 create, 있으면 update
+      if product_item == nil
+        object = create_product_item_procedure(item)
+        objects.push(object)
+      else
+        objects.push(product_item)
+      end
+    end
+
+    return objects
+  end  
 end
