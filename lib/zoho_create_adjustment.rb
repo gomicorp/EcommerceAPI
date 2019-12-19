@@ -48,7 +48,7 @@ module ZohoCreateAdjustment
         create_adjustment_product_items(adjustment, adjustment_detail_data["inventory_adjustment"]["line_items"])
         objects.push(adjustment)
       end
-      adjustment = nil
+      
     end
 
     return objects
