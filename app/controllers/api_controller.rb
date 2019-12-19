@@ -13,4 +13,8 @@ class ApiController < ActionController::API
       locale: I18n.locale
     )
   end
+
+  def production?
+    Rails.env == 'production'
+  end
 end
