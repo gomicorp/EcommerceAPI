@@ -1,11 +1,5 @@
-module ZohoCreateProductItem
-  def object_by_zoho_id(zoho_id)
-    return Zohomap.find_by(zoho_id: zoho_id)
-  end
-
-  def create_zohomap(object, zoho_id)
-    return Zohomap.create(:zohoable => object, :zoho_id => zoho_id.to_s)
-  end
+module ZohoManageProductItem
+  include ZohomapLib, ManageContainerRow
 
   #brand를 새로 생성한다
   def create_brand(name)
@@ -43,6 +37,20 @@ module ZohoCreateProductItem
     return zoho_map_object.zohoable
   end
   
+  # product_attribute들과 option들을 만든다.
+  def get_or_create_attributes_with_options(item, options, product_item_group)
+    # options이 존재할때만 아래 과정 수행 (ㅇ)
+    if options != ""
+      # attributes 저장후 반환 (ㅇ)
+      attribute_infos = item.select{|k, v| k =~ /^(?=.*attribute)(?!.*option).*/}
+      product_attributes = get_or_create_product_attributes(product_item_group, attribute_infos)
+
+      # 반환된 attributes 정보를 이용해서 attribute_option 저장 (ㅇ)
+      product_attribute_option_infos = item.select{|k, v| k =~ /^(?=.*attribute)(?=.*option).*/}
+      product_attribute_options = get_or_create_product_attribute_options(product_attributes, product_attribute_option_infos)
+    end
+  end
+
   # product_attribute들을 만들거나 반환한다.
   def get_or_create_product_attributes(product_item_group, infos)
     #id 배열 뽑아내고
@@ -162,15 +170,17 @@ module ZohoCreateProductItem
   end
 
   #product_item을 추가한다.
-  def create_product_item(product_item_group, id, name)
+  def create_product_item(product_item_group, id, name, cost_price, selling_price)
     object = product_item_group.items.new
     object[:name] = name
+    object[:cost_price] = cost_price
+    object[:selling_price] = selling_price
     object.save
     create_zohomap(object, id)
     return object
   end
 
-  #product_item을 추가하는 절차
+  #product_item을 추가하는 절차를 시행한다.
   def create_product_item_procedure(item)
     # example: "name": "그라펜-스킨-100ml/동그라미"
     brand_name, product_item_group_name, options = item["name"].split('-') 
@@ -181,35 +191,72 @@ module ZohoCreateProductItem
     # product_item_group 저장후 반환 (ㅇ)
     product_item_group = get_or_create_product_item_group(brand, name=product_item_group_name, item["group_id"])
 
+    # product_item_attribute들과 option들을 저장한후 반환한다 (ㅇ)
+    get_or_create_attributes_with_options(item, options, product_item_group)
+
+    #product_item 생성후 반환
+    product_item = create_product_item(product_item_group, item["item_id"], item["name"], item["purchase_rate"], item["rate"])
+
+    #product_item_container 생성후 반환
+    product_item_container = create_product_item_container(product_item)
+
+    #product_item_row 생성
+    create_product_item_row(product_item[:id], product_item_container[:id], 1)
+
+    return product_item
+  end
+
+  ### ### update logics ### ###
+  # 오브젝트의 내용을 업데이트 한다
+  def update_object(object, name)
+    if object[:name] != name
+      object[:name] = name
+      object.save
+    end
+  end
+
+  #product_item을 업데이트 하기 위한 절차
+  def update_product_item_procedure(item, object)
+    # example: "name": "그라펜-스킨-100ml/동그라미"
+    brand_name, product_item_group_name, options = item["name"].split('-') 
+
+    # brand 받아오기 (ㅇ)
+    brand = get_or_create_brand(name=brand_name)
+
+    # product 압데이트후 반환 (ㅇ)
+    product_item_group = get_or_create_product_item_group(brand, name=product_item_group_name, item["group_id"])
+    update_object(product_item_group, product_item_group_name)
+
     # options이 존재할때만 아래 과정 수행 (ㅇ)
     if options != ""
       # attributes 저장후 반환 (ㅇ)
       attribute_infos = item.select{|k, v| k =~ /^(?=.*attribute)(?!.*option).*/}
-      product_attributes = get_or_create_product_attributes(product_item_group, attribute_infos)
+      product_attributes = get_and_update_or_create_product_attributes(product_item_group, attribute_infos)
 
-      # 반환된 attributes 정보를 이용해서 attribute_option 저장 (ㅇ)
+      # attribute_option 저장 (ㅇ)
       product_attribute_option_infos = item.select{|k, v| k =~ /^(?=.*attribute)(?=.*option).*/}
-      product_attribute_options = get_or_create_product_attribute_options(product_attributes, product_attribute_option_infos)
+      product_attribute_options = get_and_update_or_create_product_attribute_options(product_attributes, product_attribute_option_infos)
     end
 
-    #product_item 생성후 반환
-    product_item = create_product_item(product_item_group, item["item_id"], item["name"])
-    return product_item
+    #item 업데이트후 반환
+    update_object(object, item["name"])
+    return object
   end
 
-  # product_item 들을 생성한다.
-  def create_product_items(items)
+  ### select create or update product_item ###
+  # product_item 들을 생성하거나 업데이트 한다.
+  def create_or_update_product_items(items)
     objects = []
 
     items.each do |item|  
       # item 유뮤 확인
       product_item = check_existed_product_item(item["item_id"])
 
-      # item 없으면 create, 있으면 undefined
-      if product_item == nil
+      # item 없으면 create, 있으면 최근수정 날짜 확인후 업데이트 진행
+      if product_item == nil && item["is_combo_product"] == false
         object = create_product_item_procedure(item)
         objects.push(object)
-      else
+      elsif product_item != nil
         objects.push(product_item)
       end
     end
