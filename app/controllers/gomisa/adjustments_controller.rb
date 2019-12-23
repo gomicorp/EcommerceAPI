@@ -1,12 +1,12 @@
 module Gomisa
     class AdjustmentsController < BaseController
-      # GET /gomisa/adjustments
       # GET /gomisa/adjustments.json
       def index
         @adjustments = filter_adjustments
       end
 
       private
+      
       def filter_adjustments
         query = reason(params[:reason])
         if query == "All" 

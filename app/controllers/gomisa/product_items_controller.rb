@@ -1,7 +1,6 @@
 module Gomisa
   class ProductItemsController < BaseController
-      # GET /gomisa/brands
-      # GET /gomisa/brands.json
+    # GET /gomisa/product_items.json
     def index
       @items = ProductItem.all
     end
