@@ -1,11 +1,10 @@
 module Gomisa
   class UpdateController < BaseController
     include ZohoRequest, ZohoManageProductItem, ZohoManageAdjustment, ZohoManageCompositeItem
-    # GET /gomisa/brands
-    # GET /gomisa/brands.json
-    # adjustment 추가 로직
+
     before_action :set_access_token, only: :index
     
+    # GET /gomisa/updates.json
     def index
       flag = true
       page = 1
@@ -39,14 +38,6 @@ module Gomisa
 
       @result = { "result" => "successful" }
     end
-    
-    # product_item 추가
-    # def index
-      # res = get_items(access_token)
-      # items = res['items']
-      # items = create_or_update_product_items(items)
-      # @result = { "result" => "successful" }
-    # end(a)
 
     private
 
