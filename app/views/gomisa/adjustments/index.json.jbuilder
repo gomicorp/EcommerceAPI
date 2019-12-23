@@ -1,1 +1,1 @@
-json.array! @objects
+json.array! @adjustments
