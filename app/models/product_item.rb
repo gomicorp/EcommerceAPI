@@ -3,17 +3,18 @@ class ProductItem < ApplicationRecord
   has_many :product_item_product_options
   has_many :options, class_name: 'ProductOption', through: :product_item_product_options
   has_many :adjustment_product_items
+  has_many :adjustments, through: :adjustment_product_items
   has_one :zohomap, as: :zohoable
 
-  def exports_quantity(from=nil, to=nil, channel=nil)
+  def exports_quantity(from = nil, to = nil, channel = nil)
     if from == nil && to == nil && channel
-      return calculate_export_quantity_channel(self, channel)
+      calculate_export_quantity_channel(self, channel)
     elsif from == nil && to == nil && channel == nil
-      return calculate_export_quantity(self)
+      calculate_export_quantity(self)
     elsif from && to && channel == nil
-      return calculate_export_quantity_date(self, from, to)
+      calculate_export_quantity_date(self, from, to)
     else
-      return calculate_export_quantity_date_channel(self, from, to, channel)
+      calculate_export_quantity_date_channel(self, from, to, channel)
     end
   end
 
@@ -26,7 +27,7 @@ class ProductItem < ApplicationRecord
         quantity += value["quantity"]
       end
     end
-    return quantity
+    quantity
   end
 
   def calculate_export_quantity_date(object, from, to)
@@ -37,7 +38,7 @@ class ProductItem < ApplicationRecord
         quantity += value["quantity"]
       end
     end
-    return quantity
+    quantity
   end
 
   def calculate_export_quantity_channel(object, channel)
@@ -48,7 +49,7 @@ class ProductItem < ApplicationRecord
         quantity += value["quantity"]
       end
     end
-    return quantity
+    quantity
   end
 
   def calculate_export_quantity(object)
@@ -58,21 +59,19 @@ class ProductItem < ApplicationRecord
         quantity += value["quantity"]
       end
     end
-    return quantity
+    quantity
   end
 
   def channel_filter(channel, query_channel)
     if query_channel == 'All'
-      return true
+      true
     else
-      return channel == query_channel
+      channel == query_channel
     end
   end
 
   def from_to_date_check(exported_at, from, to)
-    return (
-      exported_at >= Date.strptime(from, '%Y-%m-%d') && 
+    exported_at >= Date.strptime(from, '%Y-%m-%d') &&
       exported_at <= Date.strptime(to, '%Y-%m-%d')
-    )
   end
 end

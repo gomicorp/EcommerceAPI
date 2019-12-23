@@ -1,3 +1,5 @@
+require_relative './zoho_env'
+
 module ZohoRequest
   def send_get_request(hoho, access_token)
     con = Faraday.new
@@ -6,58 +8,96 @@ module ZohoRequest
       req.headers['Authorization'] = "Zoho-oauthtoken #{access_token}"
       req.headers['Content-Type'] = ' application/x-www-form-urlencoded;charset=UTF-8'
     end
-  
-    return JSON.parse(res.body)
+
+    JSON.parse(res.body)
+  end
+
+  def zoho_env # => return object
+    @zoho_env ||= ZohoEnv.new
   end
 
   def get_new_access_token
     con = Faraday.new
-    res = con.post do |req| 
-    req.url "https://accounts.zoho.com/oauth/v2/token?refresh_token=#{ENV['ZOHO_REFRESH_TOKEN']}&client_id=#{ENV['ZOHO_CLIENT_ID']}&client_secret=#{ENV['ZOHO_CLIENT_SECRET']}&grant_type=refresh_token"
-      req.headers['Content-Type'] = ' application/x-www-form-urlencoded;charset=UTF-8'
+    res = con.post do |req|
+      parameters = zoho_env.query_string(
+        refresh_token: zoho_env.refresh_token,
+        client_id: zoho_env.client_id,
+        client_secret: zoho_env.client_secret,
+        grant_type: :refresh_token
+      )
+
+      req.url zoho_env.url_scope(zoho_env.new_access_token_url, parameters)
+      req.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
     end
-  
-    return JSON.parse(res.body)["access_token"]
+
+    JSON.parse(res.body)['access_token']
   end
 
   def get_organizations(access_token)
-    url = "https://inventory.zoho.com/api/v1/organizations"
-    return send_get_request(url, access_token)
+    url = zoho_env.organizations_url
+    send_get_request(url, access_token)
   end
 
+
+  # item # index
   def get_items(access_token, page)
-    url = "https://inventory.zoho.com/api/v1/items?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}&page=#{page}"
-    return send_get_request(url, access_token)
+    url = zoho_env.items_url(
+      organization_id: zoho_env.organization_id,
+      page: page
+    )
+    send_get_request(url, access_token)
   end
 
+  # item # show
   def get_item(access_token, id)
-    url = "https://inventory.zoho.com/api/v1/items/#{id}?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}"
-    return send_get_request(url, access_token)
+    url = zoho_env.item_url(
+      id,
+      organization_id: zoho_env.organization_id
+    )
+    send_get_request(url, access_token)
   end
 
-  def get_composite_item(access_token, id)
-    url = "https://inventory.zoho.com/api/v1/compositeitems/#{id}?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}"
-    return send_get_request(url, access_token)
-  end
-
+  # composite item # index
   def get_composite_items(access_token, page)
-    url = "https://inventory.zoho.com/api/v1/compositeitems?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}&page=#{page}"
-    return send_get_request(url, access_token)
+    url = zoho_env.composite_items_url(
+      organization_id: zoho_env.organization_id,
+      page: page
+    )
+    send_get_request(url, access_token)
   end
 
+  # composite item # show
+  def get_composite_item(access_token, id)
+    url = zoho_env.composite_item_url(
+      id,
+      organiztion_id: zoho_env.organization_id
+    )
+    send_get_request(url, access_token)
+  end
+
+  # item groups # index
   def get_item_groups(access_token, page)
-    url = "https://inventory.zoho.com/api/v1/itemgroups?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}&page=#{page}"
-    return send_get_request(url, access_token)
+    url = zoho_env.item_groups_url(
+      organization_id: zoho_env.organization_id,
+      page: page
+    )
+    send_get_request(url, access_token)
   end
 
   # date 기준으로 필터링 가능
   def get_actions(access_token, page)
-    url = "https://inventory.zoho.com/api/v1/inventoryadjustments?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}&page=#{page}"
-    return send_get_request(url, access_token)
+    url = zoho_env.adjustments_url(
+      organization_id: zoho_env.organization_id,
+      page: page
+    )
+    send_get_request(url, access_token)
   end
 
   def get_action(access_token, id)
-    url = "https://inventory.zoho.com/api/v1/inventoryadjustments/#{id}?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}"
-    return send_get_request(url, access_token)
+    url = zoho_env.adjustment_url(
+      id,
+      organization_id: zoho_env.organization_id
+    )
+    send_get_request(url, access_token)
   end
 end
