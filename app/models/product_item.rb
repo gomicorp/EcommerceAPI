@@ -17,19 +17,10 @@ class ProductItem < ApplicationRecord
     end
   end
 
-  def channel_filter(channel, query_channel)
-    if query_channel == 'All'
-      return true
-    else
-      return channel == query_channel
-    end
-  end
-
   def calculate_export_quantity_date_channel(object, from, to, channel)
     quantity = 0
     object.adjustment_product_items.each do |value|
-      if value.adjustment["exported_time"] >= Date.strptime(from, '%Y-%m-%d') && 
-        value.adjustment["exported_time"] <= Date.strptime(to, '%Y-%m-%d') && 
+      if from_to_date_check(value.adjustment["exported_time"], from, to) &&
         channel_filter(value.adjustment["channel"], channel) &&
         value.adjustment["reason"] == "Xuất hàng (Orders)"
         quantity += value["quantity"]
@@ -41,8 +32,7 @@ class ProductItem < ApplicationRecord
   def calculate_export_quantity_date(object, from, to)
     quantity = 0
     object.adjustment_product_items.each do |value|
-      if value.adjustment["exported_time"] >= Date.strptime(from, '%Y-%m-%d') && 
-        value.adjustment["exported_time"] <= Date.strptime(to, '%Y-%m-%d') && 
+      if from_to_date_check(value.adjustment["exported_time"], from, to) &&
         value.adjustment["reason"] == "Xuất hàng (Orders)"
         quantity += value["quantity"]
       end
@@ -69,5 +59,20 @@ class ProductItem < ApplicationRecord
       end
     end
     return quantity
+  end
+
+  def channel_filter(channel, query_channel)
+    if query_channel == 'All'
+      return true
+    else
+      return channel == query_channel
+    end
+  end
+
+  def from_to_date_check(exported_at, from, to)
+    return (
+      exported_at >= Date.strptime(from, '%Y-%m-%d') && 
+      exported_at <= Date.strptime(to, '%Y-%m-%d')
+    )
   end
 end
