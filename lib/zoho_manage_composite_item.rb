@@ -4,8 +4,10 @@ module ZohoManageCompositeItem
   # composite item들을 만든다
   def create_composite_items(datas, access_token)
     datas.each do |data|  
-      data = get_composite_item(access_token, data["composite_item_id"])
-      create_composite_item(data)
+      if object_by_zoho_id(data["composite_item_id"]) == nil
+        data = get_composite_item(access_token, data["composite_item_id"])
+        create_composite_item(data)
+      end
     end
   end
 
