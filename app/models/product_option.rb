@@ -3,6 +3,9 @@ class ProductOption < ApplicationRecord
   has_many :barcode_options
   has_many :barcodes, through: :barcode_options
 
+  has_many :product_item_product_options
+  has_many :items, class_name: 'ProductItem', through: :product_item_product_options
+
   delegate :product, to: :option_group
 
   def title

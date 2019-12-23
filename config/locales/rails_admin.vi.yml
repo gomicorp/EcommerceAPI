@@ -1,148 +1,148 @@
 ko:
   admin:
     js:
-      true: 참
-      false: 거짓
-      is_present: 있는
-      is_blank: 없는
-      date: 날짜 ...
-      between_and_: ... 에서 ... 사이
-      today: 오늘
-      yesterday: 어제
-      this_week: 이번주
-      last_week: 지난주
-      number: 숫자 ...
-      contains: 포함하는
-      is_exactly: 정확히
-      starts_with: 시작하는 문자
-      ends_with: 끝나는 문자
-    loading: "로딩..."
+      true: đúng
+      false: sai 
+      is_present: có
+      is_blank: không có
+      date: ... thời gian
+      between_and_: từ ... đến ...
+      today: hôm nay
+      yesterday: hôm qua
+      this_week: tuần này
+      last_week: tuần trước
+      number: số ...
+      contains: bao gồm
+      is_exactly: một cách chính xác 
+      starts_with: kí tự bắt đầu
+      ends_with: kí tự kết thúc
+    loading: "đang tải..."
     home:
-      name: "홈"
+      name: "trang chủ"
     pagination:
-      previous: "&laquo; 이전"
-      next: "다음 &raquo;"
+      previous: "&laquo; trước" 
+      next: "sau &raquo;"
       truncate: "…"
     misc:
       filter_date_format: "yy/mm/dd" # a combination of 'dd', 'mm' and 'yy' with any delimiter. No other interpolation will be done!
-      search: "검색"
-      filter: "필터"
-      refresh: "새로고침"
-      show_all: "모두 보기"
-      add_filter: "필터 추가"
-      bulk_menu_title: "선택된 항목"
-      remove: "제거"
-      add_new: "새로 추가"
-      chosen: "선택된 %{name}"
-      chose_all: "모두 선택"
-      clear_all: "모두 지우기"
-      up: "위"
-      down: "아래"
-      navigation: "네비게이션"
-      navigation_static_label: "링크"
-      log_out: "로그아웃"
-      ago: "전"
+      search: "tìm kiếm"
+      filter: "bộ lọc"
+      refresh: "tải lại"
+      show_all: "xem tất cả"
+      add_filter: "thêm bộ lọc"
+      bulk_menu_title: "mục được chọn"
+      remove: "loại bỏ"
+      add_new: "thêm mới"
+      chosen: "được chọn %{name}"
+      chose_all: "chọn tất cả"
+      clear_all: "xóa tất cả"
+      up: "trên"
+      down: "dưới"
+      navigation: "định vị"
+      navigation_static_label: "đường link"
+      log_out: "thoát ra"
+      ago: "trước" 
     flash:
-      successful: "%{name}, %{action} 성공"
-      error: "%{name}, %{action} 실패"
-      noaction: "아무 액션도 선택되지 않았습니다"
-      model_not_found: "'%{model}'모델을 찾을 수 없습니다"
-      object_not_found: "ID가 '%{id}'인 %{model}을 찾을 수 없습니다"
+      successful: "%{name}, %{action} thành công"
+      error: "%{name}, %{action} thất bại"
+      noaction: "Không có hiệu lệnh nào được chọn"
+      model_not_found: "'%{model}'không thể tìm thấy model"
+      object_not_found: "không thể tìm thấy %{model} theo ID :%{id}"
     table_headers:
-      model_name: "모델 이름"
-      last_used: "최근 사용"
-      records: "레코드"
-      username: "사용자"
-      changes: "수정"
+      model_name: "Tên model"
+      last_used: "sử dụng gần đây" 
+      records: "ghi chú"
+      username: "người sử dụng"
+      changes: "sửa" 
       created_at: "Date/Time"
-      item: "항목"
-      message: "메시지"
+      item: "hạng mục"
+      message: "tin nhắn" 
     actions:
       dashboard:
-        title: "사이트 관리자"
-        menu: "대시보드"
-        breadcrumb: "대시보드"
+        title: "người quản lý trang web"
+        menu: "bảng điều khiển"
+        breadcrumb: "bảng điều khiển"
       index:
-        title: "%{model_label_plural} 목록"
-        menu: "목록"
+        title: "%{model_label_plural} danh mục"
+        menu: "danh mục"
         breadcrumb: "%{model_label_plural}"
       show:
-        title: "%{model_label} '%{object_label}' 세부정보"
-        menu: "세부정보"
+        title: "%{model_label} '%{object_label}' thông tin chi tiết"
+        menu: "thông tin chi tiết"
         breadcrumb: "%{object_label}"
       show_in_app:
-        menu: "앱에서 보기"
+        menu: "xem tại ứng dụng"
       new:
-        title: "새로운 %{model_label}"
-        menu: "새로 추가"
-        breadcrumb: "새 항목"
-        link: "%{model_label} 추가하기"
-        done: "생성되었습니다"
+        title: "mới %{model_label}" 
+        menu: "thêm mới"
+        breadcrumb: "hạng mục mới"
+        link: "%{model_label} thêm"
+        done: "đã được tạo ra"
       edit:
-        title: "%{model_label} '%{object_label}' 수정"
-        menu: "수정"
-        breadcrumb: "수정"
-        link: "%{model_label} 수정하기"
-        done: "변경되었습니다"
+        title: "%{model_label} '%{object_label}' sửa"
+        menu: "sửa"
+        breadcrumb: "sửa"
+        link: "%{model_label} sửa"
+        done: "đã được thay đổi"
       delete:
-        title: "%{model_label} '%{object_label}' 삭제"
-        menu: "삭제"
-        breadcrumb: "삭제"
-        link: "'%{object_label}' 삭제하기"
-        done: "삭제되었습니다"
+        title: "%{model_label} '%{object_label}' xóa"
+        menu: "xóa"
+        breadcrumb: "xóa"
+        link: "'%{object_label}' xóa"
+        done: "đã được xóa"
       bulk_delete:
-        title: "%{model_label_plural} 삭제"
-        menu: "여러 항목 삭제"
-        breadcrumb: "여러 항목 삭제"
-        bulk_link: "선택된 %{model_label_plural} 삭제하기"
+        title: "%{model_label_plural} xóa"
+        menu: "xóa nhiều hạng mục"
+        breadcrumb: "xóa nhiều hạng mục" 
+        bulk_link: "xóa %{model_label_plural} đã chọn"
       export:
-        title: "%{model_label_plural} 내보내기"
-        menu: "내보내기"
-        breadcrumb: "내보내기"
-        link: "%{model_label_plural} 내보내기"
-        bulk_link: "선택된 %{model_label_plural} 내보내기"
-        done: "내보내졌습니다"
+        title: "gửi %{model_label_plural} đi"
+        menu: "gửi đi"
+        breadcrumb: "gửi đi"
+        link: "gửi %{model_label_plural} đi"
+        bulk_link: "gửi đi %{model_label_plural} đã chọn"
+        done: "đã được gửi đi"
       history_index:
-        title: "%{model_label_plural} 히스토리"
-        menu: "히스토리"
-        breadcrumb: "히스토리"
+        title: "%{model_label_plural} lịch sử"
+        menu: "lịch sử"
+        breadcrumb: "lịch sử"
       history_show:
-        title: "%{model_label} '%{object_label}' 히스토리"
-        menu: "히스토리"
-        breadcrumb: "히스토리"
+        title: "%{model_label} '%{object_label}' lịch sử"
+        menu: "lịch sử"
+        breadcrumb: "lịch sử"
     form:
-      cancel: "취소"
-      basic_info: "기본 정보"
-      required: "필수"
-      optional: "선택"
-      one_char: "문자"
-      char_length_up_to: "최대 문자"
-      char_length_of: "길이"
-      save: "저장"
-      save_and_add_another: "저장하고 새로 추가"
-      save_and_edit: "저장하고 수정"
-      all_of_the_following_related_items_will_be_deleted: "? 다음 연관된 항목들은 삭제되거나 고아가 될 수 있습니다:"
-      are_you_sure_you_want_to_delete_the_object: "이 %{model_name}를 삭제하겠습니까?"
-      confirmation: "네, 확실합니다"
-      bulk_delete: "다음 항목들을 삭제하시겠습니까? (연관된 의존성이 삭제되거나 고아가 될 수도 있습니다):"
-      new_model: "%{name} (새로 추가됨)"
+      cancel: "hủy"
+      basic_info: "thông tin cơ bản"
+      required: "cần thiết"
+      optional: "lựa chọn"
+      one_char: "kí tự"
+      char_length_up_to: "kí tự tối đa"
+      char_length_of: "chiều dài"
+      save: "lưu"
+      save_and_add_another: "lưu và thêm mới"
+      save_and_edit: "lưu và sửa"
+      all_of_the_following_related_items_will_be_deleted: "những hạng mục liên quan sẽ được xóa hoặc không có nơi lưu trữ :" 
+      are_you_sure_you_want_to_delete_the_object: "Sẽ xóa %{model_name} này?"
+      confirmation: "vâng, chắc chắn"
+      bulk_delete: "Sẽ xóa hạng mục này? (hạng mục co liên quan sẽ được xóa hoặc không có nơi lưu trữ) :" 
+      new_model: "%{name} (đã được thêm vào)"
     export:
-      confirmation: "%{name}로 내보내기"
-      select: "내보낼 항목을 선택하세요"
-      select_all_fields: "모든 필드 선택"
-      fields_from: "%{name}의 필드"
-      fields_from_associated: "%{name}와 관련된 필드"
-      display: "%{name} 표시: %{type}"
-      options_for: "%{name} 옵션"
-      empty_value_for_associated_objects: "<비어있음>"
-      click_to_reverse_selection: '선택을 반대로 하려면 클릭하세요'
+      confirmation: "gửi đến %{name}"
+      select: "Hãy lựa chọn hạng mục cần gửi đi"
+      select_all_fields: "Chọn tất cả các miền"
+      fields_from: "miền của %{name}"
+      fields_from_associated: "miền liên quan với %{name}"
+      display: "%{name} biểu thị : %{type}"
+      options_for: "%{name} lựa chọn"
+      empty_value_for_associated_objects: "<trống>"
+      click_to_reverse_selection: 'Nếu muốn chọn ngược lại thì hãy nhấn vào đây'
       csv:
         header_for_root_methods: "%{name}" # 'model' is available
         header_for_association_methods: "%{name} [%{association}]"
-        encoding_to: "인코딩 "
-        encoding_to_help: "출력 인코딩을 선택하세요. 선택하지 않으면 현재 인코딩(%{name})으로 출력됩니다"
-        skip_header: "헤더 없음"
-        skip_header_help: "헤더를 출력하지 않습니다 (필드 설명이 없음)"
+        encoding_to: "mã hóa "
+        encoding_to_help: "Hãy lựa chọn mã hóa cần xuất ra. Nếu không có lựa chọn thì mã hóa hiện tại sẽ được xuất ra với(%{name})"
+        skip_header: "không có đầu trang"
+        skip_header_help: "không xuất kèm đầu trang (không có giới thiệu miền)"
         default_col_sep: ","
-        col_sep: "행 구분자"
-        col_sep_help: "빈칸으로 두면 기본값('%{value}')으로 설정됩니다" # value is default_col_sep
+        col_sep: "phân loại hàng"
+        col_sep_help: "nếu để ô trống thì sẽ được cài đặt theo giá trị cơ bản ('%{value}')" # value is default_col_sep
