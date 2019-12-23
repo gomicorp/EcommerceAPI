@@ -8,7 +8,7 @@ module ZohoManageAdjustment
       :reason => data["reason"],
       :channel => channel,
       :order_id => order_id.to_i,
-      :exported_time => data["date"]
+      :exported_at => data["date"]
     )
     return object
   end

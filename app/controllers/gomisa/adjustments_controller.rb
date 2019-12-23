@@ -3,7 +3,7 @@ module Gomisa
       # GET /gomisa/adjustments
       # GET /gomisa/adjustments.json
       def index
-        @objects = filter_adjustments
+        @adjustments = filter_adjustments
       end
 
       private
@@ -26,7 +26,7 @@ module Gomisa
       end
 
       def from_to_date_filter(queryset, from, to)
-        return queryset.where(exported_time: (from.to_date..to.to_date))
+        return queryset.where(exported_at: (from.to_date..to.to_date))
       end
 
       def action_type(reason)
