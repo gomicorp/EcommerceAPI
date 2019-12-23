@@ -1,6 +1,54 @@
 module ZohoManageProductItem
   include ZohomapLib, ManageContainerRow
 
+  ### select create or update product_item ###
+  # product_item 들을 생성하거나 업데이트 한다. (업데이트는 작성중)
+  def create_or_update_product_items(items)
+    objects = []
+
+    items.each do |item|  
+      # item 유뮤 확인
+      product_item = check_existed_product_item(item["item_id"])
+
+      # item 없으면 create, 있으면 최근수정 날짜 확인후 업데이트 진행
+      if product_item == nil && item["is_combo_product"] == false
+        object = create_product_item_procedure(item)
+        objects.push(object)
+      elsif product_item != nil
+        objects.push(product_item)
+      end
+    end
+
+    return objects
+  end  
+
+  ### ### create logics ### ###
+  #product_item을 추가하는 절차를 시행한다.
+  def create_product_item_procedure(item)
+    # example: "name": "그라펜-스킨-100ml/동그라미"
+    brand_name, product_item_group_name, options = item["name"].split('-') 
+
+    # brand 반환 (ㅇ)
+    brand = get_or_create_brand(name=brand_name)
+
+    # product_item_group 저장후 반환 (ㅇ)
+    product_item_group = get_or_create_product_item_group(brand, name=product_item_group_name, item["group_id"])
+
+    # product_item_attribute들과 option들을 저장한후 반환한다 (ㅇ)
+    get_or_create_attributes_with_options(item, options, product_item_group)
+
+    #product_item 생성후 반환
+    product_item = create_product_item(product_item_group, item["item_id"], item["name"], item["purchase_rate"], item["rate"])
+
+    #product_item_container 생성후 반환
+    product_item_container = create_product_item_container(product_item)
+
+    #product_item_row 생성
+    create_product_item_row(product_item[:id], product_item_container[:id], 1)
+
+    return product_item
+  end
+
   #brand를 새로 생성한다
   def create_brand(name)
     object = Brand.new
@@ -180,32 +228,6 @@ module ZohoManageProductItem
     return object
   end
 
-  #product_item을 추가하는 절차를 시행한다.
-  def create_product_item_procedure(item)
-    # example: "name": "그라펜-스킨-100ml/동그라미"
-    brand_name, product_item_group_name, options = item["name"].split('-') 
-
-    # brand 반환 (ㅇ)
-    brand = get_or_create_brand(name=brand_name)
-
-    # product_item_group 저장후 반환 (ㅇ)
-    product_item_group = get_or_create_product_item_group(brand, name=product_item_group_name, item["group_id"])
-
-    # product_item_attribute들과 option들을 저장한후 반환한다 (ㅇ)
-    get_or_create_attributes_with_options(item, options, product_item_group)
-
-    #product_item 생성후 반환
-    product_item = create_product_item(product_item_group, item["item_id"], item["name"], item["purchase_rate"], item["rate"])
-
-    #product_item_container 생성후 반환
-    product_item_container = create_product_item_container(product_item)
-
-    #product_item_row 생성
-    create_product_item_row(product_item[:id], product_item_container[:id], 1)
-
-    return product_item
-  end
-
   ### ### update logics ### ###
   # 오브젝트의 내용을 업데이트 한다
   def update_object(object, name)
@@ -215,7 +237,7 @@ module ZohoManageProductItem
     end
   end
 
-  #product_item을 업데이트 하기 위한 절차
+  #product_item을 업데이트 하기 위한 절차 (작성중)
   def update_product_item_procedure(item, object)
     # example: "name": "그라펜-스킨-100ml/동그라미"
     brand_name, product_item_group_name, options = item["name"].split('-') 
@@ -242,25 +264,4 @@ module ZohoManageProductItem
     update_object(object, item["name"])
     return object
   end
-
-  ### select create or update product_item ###
-  # product_item 들을 생성하거나 업데이트 한다.
-  def create_or_update_product_items(items)
-    objects = []
-
-    items.each do |item|  
-      # item 유뮤 확인
-      product_item = check_existed_product_item(item["item_id"])
-
-      # item 없으면 create, 있으면 최근수정 날짜 확인후 업데이트 진행
-      if product_item == nil && item["is_combo_product"] == false
-        object = create_product_item_procedure(item)
-        objects.push(object)
-      elsif product_item != nil
-        objects.push(product_item)
-      end
-    end
-
-    return objects
-  end  
 end
