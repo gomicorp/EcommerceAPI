@@ -7,7 +7,6 @@ module Gomisa
       end
 
       private
-      # Use callbacks to share common setup or constraints between actions.
       def filter_adjustments
         query = reason(params[:reason])
         if query == "All" 
@@ -29,21 +28,11 @@ module Gomisa
       end
 
       def reason(reason)
-        # 수정하기
-        # 로직을 이렇게 짜서 if else 가 안길어지게 하자
-        # {
-        #   'inbound' => '',
-        #   'rebound' => ''
-        # }[reason] || 'All'
-        if reason == "inbound"
-          return "Nhập hàng (From Korea)"
-        elsif reason == "rebound"
-          return "Hủy đơn hàng (Order Cancel)"
-        elsif reason == "outbound"
-          return "Xuất hàng (Orders)"
-        else
-          return "All"
-        end
+        return {
+          'inbound' => 'Nhập hàng (From Korea)',
+          'rebound' => 'Hủy đơn hàng (Order Cancel)',
+          'outbound' => 'Xuất hàng (Orders)'
+        }[reason] || 'All'
       end
     end
   end
