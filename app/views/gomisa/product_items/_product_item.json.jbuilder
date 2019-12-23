@@ -1,2 +1,3 @@
 json.except! product_item
-json.url gomisa_product_item_url(product_item, format: :json)
+json.quantity product_item.exports_quantity(params[:from], params[:to], params[:channel])
+json.brand product_item.item_group.brand 
