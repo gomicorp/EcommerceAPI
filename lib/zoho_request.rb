@@ -45,47 +45,19 @@ module ZohoRequest
     return send_get_request(url, access_token)
   end
 
-  def get_item_groups(access_token)
-    url = "https://inventory.zoho.com/api/v1/itemgroups?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}"
+  def get_item_groups(access_token, page)
+    url = "https://inventory.zoho.com/api/v1/itemgroups?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}&page=#{page}"
     return send_get_request(url, access_token)
-
-    # con = Faraday.new
-    # res = con.get do |req| 
-    #   req.url "https://inventory.zoho.com/api/v1/itemgroups?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}"
-    #   req.headers['Authorization'] = "Zoho-oauthtoken #{access_token}"
-    #   req.headers['Content-Type'] = ' application/x-www-form-urlencoded;charset=UTF-8'
-    # end
-    
-    # return JSON.parse(res.body)
   end
 
   # date 기준으로 필터링 가능
   def get_actions(access_token, page)
     url = "https://inventory.zoho.com/api/v1/inventoryadjustments?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}&page=#{page}"
     return send_get_request(url, access_token)
-
-    # con = Faraday.new
-
-    # res = con.get do |req| 
-    #   req.url "https://inventory.zoho.com/api/v1/inventoryadjustments?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}"
-    #   req.headers['Authorization'] = "Zoho-oauthtoken #{access_token}"
-    #   req.headers['Content-Type'] = ' application/x-www-form-urlencoded;charset=UTF-8'
-    # end
-    
-    # return JSON.parse(res.body)
   end
 
   def get_action(access_token, id)
     url = "https://inventory.zoho.com/api/v1/inventoryadjustments/#{id}?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}"
     return send_get_request(url, access_token)
-
-    # con = Faraday.new
-    # res = con.get do |req| 
-    #   req.url "https://inventory.zoho.com/api/v1/inventoryadjustments/#{id}?organization_id=#{ENV['ZOHO_ORGAINZATION_ID']}"
-    #   req.headers['Authorization'] = "Zoho-oauthtoken #{access_token}"
-    #   req.headers['Content-Type'] = ' application/x-www-form-urlencoded;charset=UTF-8'
-    # end
-    
-    # return JSON.parse(res.body)
   end
 end
