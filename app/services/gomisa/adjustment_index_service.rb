@@ -1,7 +1,7 @@
 module Gomisa
   class AdjustmentIndexService
     attr_reader :reason_params, :range_params
-    # attr_reader :adjustments
+    attr_reader :adjustments
 
     def initialize(reason_params, range_params)
       @reason_params = reason_params
