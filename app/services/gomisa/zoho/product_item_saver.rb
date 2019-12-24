@@ -34,15 +34,15 @@ module Gomisa
         @item_name = item_data['name']
         @item_group_id = item_data['group_id']
         @is_combo_product = item_data['is_combo_product']
-        @cost_price = item['purchase_rate']
-        @selling_price = item['rate']
+        @cost_price = item_data['purchase_rate']
+        @selling_price = item_data['rate']
 
         attribute_infos = item_data.select {|k, _v| k =~ /^(?=.*attribute)(?!.*option).*/}
 
         attributes = []
         attribute_infos.each do |k, v|
           index = k.to_s[/\d+$/].to_i - 1
-          column = k.to_s.gsub(index, '').gsub('attribute_', '')
+          column = k.to_s.gsub(index.to_s, '').gsub('attribute_', '')
           attributes[index] ||= {}
           attributes[index][column.to_sym] = v
         end
@@ -50,8 +50,8 @@ module Gomisa
         attribute_option_infos = item_data.select {|k, _v| k =~ /^(?=.*attribute)(?=.*option).*/}
         attribute_options = []
         attribute_option_infos.each do |k, v|
-          index = k.to_s[/\d+$/] - 1
-          column = k.to_s.gsub(index, '').gsub('attribute_option_', '')
+          index = k.to_s[/\d+$/].to_i - 1
+          column = k.to_s.gsub(index.to_s, '').gsub('attribute_option_', '')
           attribute_options[index] ||= {}
           attribute_options[index][column.to_sym] = v
         end
