@@ -5,5 +5,7 @@ class ProductItemGroup < ApplicationRecord
   has_many :product_attribute_product_item_groups
   has_many :product_attributes, through: :product_attribute_product_item_groups
 
+  has_one :zohomap, as: :zohoable
+
   validates_presence_of :name
 end
