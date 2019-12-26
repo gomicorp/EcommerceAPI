@@ -34,15 +34,15 @@ module Gomisa
         @item_name = item_data['name']
         @item_group_id = item_data['group_id']
         @is_combo_product = item_data['is_combo_product']
-        @cost_price = item['purchase_rate']
-        @selling_price = item['rate']
+        @cost_price = item_data['purchase_rate']
+        @selling_price = item_data['rate']
 
         attribute_infos = item_data.select {|k, _v| k =~ /^(?=.*attribute)(?!.*option).*/}
 
         attributes = []
         attribute_infos.each do |k, v|
           index = k.to_s[/\d+$/].to_i - 1
-          column = k.to_s.gsub(index, '').gsub('attribute_', '')
+          column = k.to_s.gsub(index.to_s, '').gsub('attribute_', '')
           attributes[index] ||= {}
           attributes[index][column.to_sym] = v
         end
@@ -50,14 +50,15 @@ module Gomisa
         attribute_option_infos = item_data.select {|k, _v| k =~ /^(?=.*attribute)(?=.*option).*/}
         attribute_options = []
         attribute_option_infos.each do |k, v|
-          index = k.to_s[/\d+$/] - 1
-          column = k.to_s.gsub(index, '').gsub('attribute_option_', '')
+          index = k.to_s[/\d+$/].to_i - 1
+          column = k.to_s.gsub(index.to_s, '').gsub('attribute_option_', '')
           attribute_options[index] ||= {}
           attribute_options[index][column.to_sym] = v
         end
 
         @attribute_info_dataset = attribute_options.map.with_index do |attribute_option_info, i|
           attribute_option_info[:attribute_info] = attributes[i]
+          attribute_option_info
         end
       end
 
@@ -70,7 +71,7 @@ module Gomisa
       end
 
       def zohomap
-        @zohomap ||= Zohomap.find_by(zoho_id: item_id, zohoable_type: 'ProductItem')
+        @zohomap ||= Zohomap.find_by(zoho_id: @item_id, zohoable_type: 'ProductItem')
       end
 
       def create_product_item
@@ -87,9 +88,11 @@ module Gomisa
         # 이따구로 들어옴;;;;
         # 순전히 Zoho 탓.
         if options.present?
-          attribute_info_dataset.each do |option_info|
+          puts attribute_info_dataset
+          @attribute_info_dataset.each do |option_info|
+            puts option_info
             attribute_info = option_info.delete(:attribute_info)
-
+            
             product_attribute = ProductAttribute.find_or_create_by(
               name: attribute_info[:name],
               zohomap: Zohomap.find_or_initialize_by(zoho_id: attribute_info[:id])
@@ -101,18 +104,24 @@ module Gomisa
               zohomap: Zohomap.find_or_initialize_by(zoho_id: option_info[:id])
             )
 
-            unless item_group.product_attributes.exists? product_attribute
+            unless item_group.product_attributes.exists? product_attribute[:id]
               item_group.product_attributes << product_attribute
               product_attribute
             end
           end
         end
-
-        product_item
+        set_product_item
+        set_product_item_container
+        set_product_item_row
       end
 
       def product_item
-        @product_item ||= zohomap.zohoable
+        @product_item ||= zohoable
+      end
+
+      def zohoable
+        temp = zohomap
+        return temp.zohoable if temp
       end
 
       private
@@ -126,7 +135,13 @@ module Gomisa
       end
 
       def set_brand_by(**args)
-        @brand = Brand.find_or_create_by(**args)
+        # @brand = Brand.find_or_create_by(**args)
+        @brand = Brand.find_by_name(args[:name])
+        if @brand == nil
+          @brand = Brand.new
+          @brand[:name] = args[:name]
+        end
+        @brand
       end
 
       def set_item_group(name: nil)
@@ -150,7 +165,7 @@ module Gomisa
       end
 
       def set_product_item_container
-        @product_item_container = ProductItemContainer.create(name: @product_item)
+        @product_item_container = ProductItemContainer.create(name: @product_item[:name])
       end
 
       def set_product_item_row

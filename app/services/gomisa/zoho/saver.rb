@@ -24,7 +24,8 @@ module Gomisa
       def save(subjects); end
 
       def has_more_page?
-        (@res || {}).dig('page_context', 'has_more_page')
+        @res.empty? || @res.dig('page_context', 'has_more_page')
+        # (@res || {}).dig('page_context', 'has_more_page')
       end
 
       def reset_context

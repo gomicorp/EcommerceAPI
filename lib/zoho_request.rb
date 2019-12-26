@@ -19,12 +19,12 @@ module ZohoRequest
   def get_new_access_token
     con = Faraday.new
     res = con.post do |req|
-      parameters = zoho_env.query_string(
+      parameters = {
         refresh_token: zoho_env.refresh_token,
         client_id: zoho_env.client_id,
         client_secret: zoho_env.client_secret,
         grant_type: :refresh_token
-      )
+      }
 
       req.url zoho_env.url_scope(zoho_env.new_access_token_url, parameters)
       req.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'

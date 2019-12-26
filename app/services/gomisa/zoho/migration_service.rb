@@ -1,6 +1,8 @@
 module Gomisa
   module Zoho
     class MigrationService
+      include ZohoRequest
+      
       def initialize
         set_access_token
         @item_saver = ProductItemSaver.new(access_token)
