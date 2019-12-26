@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_10_182352) do
+ActiveRecord::Schema.define(version: 2019_12_23_025449) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -33,13 +33,31 @@ ActiveRecord::Schema.define(version: 2019_12_10_182352) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
+  create_table "adjustment_product_items", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "adjustment_id"
+    t.bigint "product_item_id"
+    t.boolean "is_positive"
+    t.integer "quantity"
+    t.index ["adjustment_id"], name: "index_adjustment_product_items_on_adjustment_id"
+    t.index ["product_item_id"], name: "index_adjustment_product_items_on_product_item_id"
+  end
+
+  create_table "adjustments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "reason"
+    t.string "channel"
+    t.integer "order_id"
+    t.date "exported_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "approve_requests", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "status", default: 0, null: false
     t.string "approvable_type"
     t.bigint "approvable_id"
     t.boolean "alive", default: true, null: false
-    t.datetime "created_at", precision: 6, default: "2019-12-10 18:31:33", null: false
-    t.datetime "updated_at", precision: 6, default: "2019-12-10 18:31:33", null: false
+    t.datetime "created_at", precision: 6, default: "2019-12-10 09:23:52", null: false
+    t.datetime "updated_at", precision: 6, default: "2019-12-10 09:23:52", null: false
     t.index ["approvable_type", "approvable_id"], name: "index_approve_requests_on_approvable_type_and_approvable_id"
   end
 
@@ -143,6 +161,26 @@ ActiveRecord::Schema.define(version: 2019_12_10_182352) do
     t.index ["enc_id"], name: "index_order_infos_on_enc_id", unique: true
   end
 
+  create_table "pandals", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
+    t.integer "failed_attempts", default: 0, null: false
+    t.string "unlock_token"
+    t.datetime "locked_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["email"], name: "index_pandals_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_pandals_on_reset_password_token", unique: true
+  end
+
   create_table "payments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "order_info_id"
     t.string "pay_method"
@@ -159,6 +197,73 @@ ActiveRecord::Schema.define(version: 2019_12_10_182352) do
     t.text "cancel_message"
     t.string "charge_id"
     t.index ["order_info_id"], name: "index_payments_on_order_info_id"
+  end
+
+  create_table "product_attribute_options", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "product_attribute_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "name"
+    t.index ["product_attribute_id"], name: "index_product_attribute_options_on_product_attribute_id"
+  end
+
+  create_table "product_attribute_product_item_groups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "product_attribute_id", null: false
+    t.bigint "product_item_group_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_attribute_id"], name: "index_p_attribute__p_item_group_on_p_attribute_id"
+    t.index ["product_item_group_id"], name: "index_p_item_group__p_attribute_on_p_item_group_id"
+  end
+
+  create_table "product_attributes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "product_item_containers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "product_item_groups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "brand_id", null: false
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["brand_id"], name: "index_product_item_groups_on_brand_id"
+  end
+
+  create_table "product_item_product_options", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "product_item_id", null: false
+    t.bigint "product_option_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_item_id"], name: "index_product_item_product_options_on_product_item_id"
+    t.index ["product_option_id"], name: "index_product_item_product_options_on_product_option_id"
+  end
+
+  create_table "product_item_rows", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "product_item_id", null: false
+    t.bigint "product_item_container_id", null: false
+    t.integer "amount"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_item_container_id"], name: "index_product_item_rows_on_product_item_container_id"
+    t.index ["product_item_id"], name: "index_product_item_rows_on_product_item_id"
+  end
+
+  create_table "product_items", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "item_group_id", null: false
+    t.string "name"
+    t.string "serial_number"
+    t.integer "cost_price", default: 0, null: false
+    t.integer "selling_price", default: 0, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["item_group_id"], name: "index_product_items_on_item_group_id"
   end
 
   create_table "product_option_groups", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -237,7 +342,17 @@ ActiveRecord::Schema.define(version: 2019_12_10_182352) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "zohomaps", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "zoho_id"
+    t.bigint "zohoable_id"
+    t.string "zohoable_type"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "adjustment_product_items", "adjustments"
+  add_foreign_key "adjustment_product_items", "product_items"
   add_foreign_key "barcode_options", "barcodes"
   add_foreign_key "barcode_options", "product_options"
   add_foreign_key "barcodes", "cart_items"
@@ -250,6 +365,15 @@ ActiveRecord::Schema.define(version: 2019_12_10_182352) do
   add_foreign_key "memberships", "companies"
   add_foreign_key "memberships", "users", column: "manager_id"
   add_foreign_key "payments", "order_infos"
+  add_foreign_key "product_attribute_options", "product_attributes"
+  add_foreign_key "product_attribute_product_item_groups", "product_attributes"
+  add_foreign_key "product_attribute_product_item_groups", "product_item_groups"
+  add_foreign_key "product_item_groups", "brands"
+  add_foreign_key "product_item_product_options", "product_items"
+  add_foreign_key "product_item_product_options", "product_options"
+  add_foreign_key "product_item_rows", "product_item_containers"
+  add_foreign_key "product_item_rows", "product_items"
+  add_foreign_key "product_items", "product_item_groups", column: "item_group_id"
   add_foreign_key "product_option_groups", "products"
   add_foreign_key "product_options", "product_option_groups"
   add_foreign_key "product_permits", "products"
