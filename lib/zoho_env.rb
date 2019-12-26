@@ -85,7 +85,7 @@ class ZohoEnv
   def self.generate_resource_url(resource_name)
     class_eval %Q(
       def #{resource_name}_url(id, **params)
-        path = [#{resource_name.pluralize}_url, id].join('/')
+        path = [#{resource_name.to_s.pluralize}_url, id].join('/')
         url_scope path, **params
       end
     )
