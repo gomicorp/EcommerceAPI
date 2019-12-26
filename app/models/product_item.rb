@@ -6,6 +6,18 @@ class ProductItem < ApplicationRecord
   has_many :adjustments, through: :adjustment_product_items
   has_one :zohomap, as: :zohoable
 
+  def stock
+    quantity = 0
+    self.adjustment_product_items.each do |value|
+      if value.adjustment["reason"] == "Xuất hàng (Orders)" 
+        quantity -= value["quantity"]
+      else
+        quantity += value["quantity"]
+      end
+    end
+    quantity
+  end
+
   def exports_quantity(from = nil, to = nil, channel = nil)
     if from == nil && to == nil && channel
       calculate_export_quantity_channel(self, channel)
