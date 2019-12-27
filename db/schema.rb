@@ -114,7 +114,7 @@ ActiveRecord::Schema.define(version: 2019_12_27_073513) do
 
   create_table "categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
-    t.bigint "category_id", null: false
+    t.bigint "category_id"
     t.string "icon"
     t.boolean "is_active", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
