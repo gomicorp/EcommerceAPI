@@ -3,6 +3,17 @@ module Gomisa
     class AdjustmentSaver < Saver
       include ::ZohomapLib
 
+      def call
+        zoho_ids = []
+
+        while has_more_page?
+          fetch 
+          zoho_ids = zoho_ids +save(subjects)
+        end
+
+        archive_adjustments(zoho_ids)
+      end
+
       private
 
       def fetch
@@ -10,7 +21,7 @@ module Gomisa
       end
 
       def save(resources)
-        create_adjustments(resources)
+        return create_adjustments(resources)
       end
 
       def subjects
@@ -22,25 +33,34 @@ module Gomisa
       # adjustments 들을 생성한다.
       def create_adjustments(adjustment_datas)
         objects = []
+        zoho_ids = []
 
         adjustment_datas.each do |adjustment_data|
+          zoho_ids.push(adjustment_data["inventory_adjustment_id"].to_s)
           # adjustment 유뮤 확인
           zoho_object = object_by_zoho_id(adjustment_data["inventory_adjustment_id"])
 
           # adjustment 없으면 create, 있으면 update (update는 작성예정)
-          if zoho_object
-            objects.push(zoho_object.zohoable)
+          if zoho_object 
+            if zoho_object[:zoho_updated_at] != adjustment_data['last_modified_time']
+              object = zoho_object.zohoable
+              adjustment_detail_data = get_action($access_token, adjustment_data['inventory_adjustment_id'])
+              object.adjustment_product_items.destroy_all
+              create_adjustment_product_items(object, adjustment_detail_data['inventory_adjustment']['line_items'])
+              zoho_object[:zoho_updated_at] = adjustment_data['last_modified_time']
+              zoho_object.save
+              objects.push(object)
+            end
           else
             object = create_adjustment(adjustment_data)
-            create_zohomap(object, adjustment_data["inventory_adjustment_id"])
-            adjustment_detail_data = get_action($access_token, adjustment_data["inventory_adjustment_id"])
-            create_adjustment_product_items(object, adjustment_detail_data["inventory_adjustment"]["line_items"])
+            create_zohomap(object, adjustment_data['inventory_adjustment_id'], adjustment_data['last_modified_time'])
+            adjustment_detail_data = get_action($access_token, adjustment_data['inventory_adjustment_id'])
+            create_adjustment_product_items(object, adjustment_detail_data['inventory_adjustment']['line_items'])
             objects.push(object)
           end
-
         end
 
-        return objects
+        return zoho_ids
       end
 
       # adjustment를 생성한다
@@ -96,6 +116,21 @@ module Gomisa
           :quantity => quantity,
           :is_positive => is_positive
         )
+      end
+
+      # adjustment들을 archived 한다
+      def archive_adjustments(zoho_ids)
+        adjustments = Zohomap.where(
+          zohoable_type: 'Adjustment'
+        ).where.not(
+          zoho_id: zoho_ids
+        )
+        adjustments.each do |adjustment|
+          if adjustment['archived_at'] == nil
+            adjustment.archived_at = Time.zone.now
+            adjustment.save
+          end
+        end
       end
     end
   end
