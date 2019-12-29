@@ -9,10 +9,12 @@ class ProductItem < ApplicationRecord
   def stock
     quantity = 0
     self.adjustment_product_items.each do |value|
-      if value.adjustment["reason"] == "Xuất hàng (Orders)" 
-        quantity -= value["quantity"]
-      else
-        quantity += value["quantity"]
+      if value.adjustment.zohomap["archived_at"] == nil
+        if value.adjustment["reason"] == "Xuất hàng (Orders)" 
+          quantity -= value["quantity"]
+        else
+          quantity += value["quantity"]
+        end
       end
     end
     quantity
@@ -35,7 +37,8 @@ class ProductItem < ApplicationRecord
     object.adjustment_product_items.each do |value|
       if from_to_date_check(value.adjustment["exported_at"], from, to) &&
         channel_filter(value.adjustment["channel"], channel) &&
-        value.adjustment["reason"] == "Xuất hàng (Orders)"
+        value.adjustment["reason"] == "Xuất hàng (Orders)" &&
+        value.adjustment.zohomap["archived_at"] == nil
         quantity += value["quantity"]
       end
     end
@@ -46,7 +49,8 @@ class ProductItem < ApplicationRecord
     quantity = 0
     object.adjustment_product_items.each do |value|
       if from_to_date_check(value.adjustment["exported_at"], from, to) &&
-        value.adjustment["reason"] == "Xuất hàng (Orders)"
+        value.adjustment["reason"] == "Xuất hàng (Orders)" &&
+        value.adjustment.zohomap["archived_at"] == nil
         quantity += value["quantity"]
       end
     end
@@ -57,7 +61,8 @@ class ProductItem < ApplicationRecord
     quantity = 0
     object.adjustment_product_items.each do |value|
       if channel_filter(value.adjustment["channel"], channel) &&
-        value.adjustment["reason"] == "Xuất hàng (Orders)"
+        value.adjustment["reason"] == "Xuất hàng (Orders)" &&
+        value.adjustment.zohomap["archived_at"] == nil
         quantity += value["quantity"]
       end
     end
@@ -67,7 +72,8 @@ class ProductItem < ApplicationRecord
   def calculate_export_quantity(object)
     quantity = 0
     object.adjustment_product_items.each do |value|
-      if value.adjustment["reason"] == "Xuất hàng (Orders)"
+      if value.adjustment["reason"] == "Xuất hàng (Orders)" &&
+        value.adjustment.zohomap["archived_at"] == nil
         quantity += value["quantity"]
       end
     end
