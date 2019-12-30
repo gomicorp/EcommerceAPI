@@ -43,17 +43,19 @@ module Gomisa
           # adjustment 없으면 create, 있으면 update (update는 작성예정)
           if zoho_object 
             if zoho_object[:zoho_updated_at] != adjustment_data['last_modified_time']
-              object = zoho_object.zohoable
+              object = create_or_update_adjustment(adjustment_data)
+              #object = zoho_object.zohoable
               adjustment_detail_data = get_action($access_token, adjustment_data['inventory_adjustment_id'])
               object.adjustment_product_items.destroy_all
               create_adjustment_product_items(object, adjustment_detail_data['inventory_adjustment']['line_items'])
-              zoho_object[:zoho_updated_at] = adjustment_data['last_modified_time']
-              zoho_object.save
+              #zoho_object[:zoho_updated_at] = adjustment_data['last_modified_time']
+              #zoho_object.save
               objects.push(object)
             end
           else
-            object = create_adjustment(adjustment_data)
-            create_zohomap(object, adjustment_data['inventory_adjustment_id'], adjustment_data['last_modified_time'])
+            # object = create_adjustment(adjustment_data)
+            object = create_or_update_adjustment(adjustment_data)
+            # create_zohomap(object, adjustment_data['inventory_adjustment_id'], adjustment_data['last_modified_time'])
             adjustment_detail_data = get_action($access_token, adjustment_data['inventory_adjustment_id'])
             create_adjustment_product_items(object, adjustment_detail_data['inventory_adjustment']['line_items'])
             objects.push(object)
@@ -73,6 +75,34 @@ module Gomisa
           :exported_at => data["date"]
         )
         return object
+      end
+
+      # adjustment를 생성하거나 업데이트 한다
+      def create_or_update_adjustment(data)
+        channel, order_id = data['reference_number'].split('-')
+        obj = Adjustment.find_or_create_by(
+          zohomap: Zohomap.find_or_initialize_by(
+            zoho_id: data['inventory_adjustment_id']
+          )
+        )
+        obj.update(
+          reason: data['reason'],
+          channel: channel,
+          order_id: order_id.to_i,
+          exported_at: data['date']
+        )
+        obj.zohomap.update(
+          zoho_updated_at: data['last_modified_time']
+        )
+        return obj
+      end
+
+      def create_zohomap(object, zoho_id, zoho_updated_at)
+        Zohomap.create(
+          :zohoable => object, 
+          :zoho_id => zoho_id.to_s,
+          :zoho_updated_at => zoho_updated_at
+        )
       end
 
       # adjustment_product_item 중계 모델들을 생성한다
