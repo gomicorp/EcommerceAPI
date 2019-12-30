@@ -10,14 +10,18 @@ module Gomisa
       def save(product_items)
         product_items.map do |product_item|
           item_response = ProductItemResponse.new(product_item)
+
+          #zohomap이 존재하는가? 
+            #archive 해야하는지 판단
+            #update 해야하는지 판단
+          #zohomap이 존재하지 않으면
+            #저장해야하는지 판단 (아카이브 되었는지 여부?)
           
-          if item_response.able_to_skip?
-            if item_response.need_to_archive?
+          if item_response.data_in_db?
+            if item_response.archived?
               item_response.archive_product_item
             elsif item_response.need_to_update?
               item_response.update_product_item
-            else
-              item_response.product_item 
             end
           elsif item_response.need_to_create?
             item_response.create_product_item
@@ -77,7 +81,7 @@ module Gomisa
         end
       end
 
-      def able_to_skip?
+      def data_in_db?
         zohomap.present?
       end
 
@@ -85,12 +89,16 @@ module Gomisa
         @zohomap[:zoho_updated_at] < zoho_updated_at.to_datetime.in_time_zone
       end
 
-      def need_to_archive?
-        status == 'inactive'
-      end
+      # def need_to_archive?
+      #   status == 'inactive'
+      # end
 
       def need_to_create?
-        @product_item.nil? && !is_combo_product && status != 'inactive'
+        @product_item.nil? && !is_combo_product && !archived?
+      end
+
+      def archived?
+        status == 'inactive'
       end
 
       def zohomap
@@ -221,6 +229,9 @@ module Gomisa
         brand_name = spread.shift
         options_name = spread.pop
         item_group_name = spread.join('-')
+        if item_group_name == ''
+          item_group_name = options_name
+        end
         [brand_name, item_group_name, options_name]
       end
       
