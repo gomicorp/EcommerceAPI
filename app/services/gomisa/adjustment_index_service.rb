@@ -47,7 +47,7 @@ module Gomisa
     def parse_reason(reason)
       {
         inbound: 'Nhập hàng (From Korea)',
-        rebound: 'Hủy đơn hàng (Order Cancel)',
+        rebound: 'Hủy giao hàng (Return Back)',
         outbound: 'Xuất hàng (Orders)'
       }[reason.to_s.to_sym] || 'All'
     end
