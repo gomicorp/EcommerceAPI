@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_29_060554) do
-
+ActiveRecord::Schema.define(version: 2020_01_08_135528) do
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -110,6 +109,17 @@ ActiveRecord::Schema.define(version: 2019_12_29_060554) do
     t.boolean "active", default: true, null: false
     t.boolean "current", default: false, null: false
     t.index ["user_id"], name: "index_carts_on_user_id"
+  end
+
+  create_table "categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.bigint "category_id"
+    t.string "icon"
+    t.boolean "is_active", default: false, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "depth", default: 1, null: false
+    t.index ["category_id"], name: "index_categories_on_category_id"
   end
 
   create_table "companies", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -220,6 +230,15 @@ ActiveRecord::Schema.define(version: 2019_12_29_060554) do
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "product_categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "product_id"
+    t.bigint "category_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["category_id"], name: "index_product_categories_on_category_id"
+    t.index ["product_id"], name: "index_product_categories_on_product_id"
   end
 
   create_table "product_item_containers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -364,6 +383,7 @@ ActiveRecord::Schema.define(version: 2019_12_29_060554) do
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "products"
   add_foreign_key "carts", "users"
+  add_foreign_key "categories", "categories"
   add_foreign_key "memberships", "companies"
   add_foreign_key "memberships", "users", column: "manager_id"
   add_foreign_key "payments", "order_infos"

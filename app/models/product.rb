@@ -19,6 +19,8 @@ class Product < ApplicationRecord
   has_many :option_groups, class_name: ProductOptionGroup.name
   has_many :options, through: :option_groups
   has_many :barcodes
+  has_many :product_categories, class_name: ProductCategory.name
+  has_many :categories, through: :product_categories
 
   has_many :product_permits
 
