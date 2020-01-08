@@ -22,11 +22,22 @@ module Gomisa
                       Adjustment.where(reason: reason)
                     end
 
-      from_to_date_filter(adjustments, range)
+      adjustments = from_to_date_filter(adjustments, range)
+      adjustments = filter_archived(adjustments)
     end
 
     def from_to_date_filter(adjustments, date_range)
       adjustments.where(exported_at: date_range)
+    end
+
+    def filter_archived(adjustments)
+      filtered_adjustments = []
+      adjustments = adjustments.map{ |k, v|
+        if k.zohomap[:archived_at] == nil
+          filtered_adjustments.push(k)
+        end
+      }
+      filtered_adjustments
     end
 
     def anyway?
@@ -36,7 +47,7 @@ module Gomisa
     def parse_reason(reason)
       {
         inbound: 'Nhập hàng (From Korea)',
-        rebound: 'Hủy đơn hàng (Order Cancel)',
+        rebound: 'Hủy giao hàng (Return Back)',
         outbound: 'Xuất hàng (Orders)'
       }[reason.to_s.to_sym] || 'All'
     end

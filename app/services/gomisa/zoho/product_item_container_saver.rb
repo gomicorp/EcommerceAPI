@@ -22,9 +22,23 @@ module Gomisa
       # composite item들을 만든다
       def create_composite_items(datas, access_token)
         datas.each do |data|
-          if object_by_zoho_id(data["composite_item_id"]) == nil
-            data = get_composite_item(access_token, data["composite_item_id"])
-            create_composite_item(data)
+          status = data['status']
+
+          zoho_object = object_by_zoho_id(data['composite_item_id'])
+          if zoho_object == nil
+            if status == 'active'
+              data = get_composite_item(access_token, data['composite_item_id'])
+              create_composite_item(data)
+            end
+          elsif status == 'active'
+            zoho_object.archived_at = nil
+            zoho_object.save
+            zoho_object.zohoable.product_item_rows.destroy_all
+            data = get_composite_item(access_token, data['composite_item_id'])
+            create_rows_of_composite_item(zoho_object.zohoable, data['composite_item']['mapped_items'])
+          else
+            zoho_object.archived_at = Time.zone.now
+            zoho_object.save
           end
         end
       end
@@ -34,7 +48,7 @@ module Gomisa
         object = object["composite_item"]
         container = create_product_item_container(object["name"])
         create_rows_of_composite_item(container, object["mapped_items"])
-        create_zohomap(container, object["composite_item_id"])
+        create_zohomap(container, object["composite_item_id"],  object["last_modified_time"])
       end
 
       #composite item의 row들을 만든다.
