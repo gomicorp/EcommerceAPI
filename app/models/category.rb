@@ -5,4 +5,6 @@ class Category < ApplicationRecord
   has_many :product, through: :product_categories
 
   extend_has_one_attached :image
+
+  validates_presence_of :name, :depth
 end
