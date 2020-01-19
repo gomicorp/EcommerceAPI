@@ -15,13 +15,13 @@ module Haravan
         page = 1
         collected = query_with_root_key(page: page, **option)
         collection = collection + collected
-        puts "페이지: #{page}, 찾음: #{collected.length}, 누적: #{collection.length} / Query: #{option}"
+        Rails.logger.debug "페이지: #{page}, 찾음: #{collected.length}, 누적: #{collection.length} / Query: #{option}"
 
         while collected.any?
           page += 1
           collected = query_with_root_key(page: page, **option)
           collection = collection + collected
-          puts "페이지: #{page}, 찾음: #{collected.length}, 누적: #{collection.length} / Query: #{option}"
+          Rails.logger.debug "페이지: #{page}, 찾음: #{collected.length}, 누적: #{collection.length} / Query: #{option}"
         end
 
 
