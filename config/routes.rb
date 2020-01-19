@@ -10,6 +10,12 @@ Rails.application.routes.draw do
   
   draw :partner_center_routes
   draw :gomisa_routes
+
+  namespace :haravan do
+    namespace :settlement do
+      resources :brands, only: %i[index show]
+    end
+  end
   
   devise_for :pandals
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
