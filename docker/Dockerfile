@@ -11,7 +11,7 @@ COPY . .
 
 # 로그 관리 설정 복사
 WORKDIR /etc/logrotate.d
-COPY docker/logrotate/api docker/logrotate/serverlog ./
+COPY ./docker/logrotate/api ./docker/logrotate/serverlog ./
 
 # tmp, log permission
 WORKDIR /app
