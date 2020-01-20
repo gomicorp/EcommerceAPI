@@ -48,3 +48,9 @@ db/backups/*
 **/*/.DS_Store
 
 *.lock
+
+# D O C K E R
+.direnv/
+.docker-sync/
+docker/.docker_password.txt
+docker/.envs
