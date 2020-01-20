@@ -1,0 +1,6 @@
+version: "2"
+syncs:
+  platform-api_codes:
+    notify_terminal: true
+    src: './'
+    sync_excludes: ['.git', '.idea']

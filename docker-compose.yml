@@ -1,0 +1,20 @@
+version: '3.1'
+
+services:
+  web:
+    image: platform-api
+    env_file:
+      - .env
+    ports:
+      - "3030:3030"
+    volumes:
+      - platform-api_codes:/app
+    command:
+      - /bin/bash
+      - -c
+      - |
+        rails s -b 0.0.0.0 -p 3030
+
+volumes:
+  platform-api_codes:
+    external: true
