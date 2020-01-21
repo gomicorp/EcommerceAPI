@@ -57,12 +57,12 @@ dev_start
 ```bash
 docker_shell
 ```
+
 ## 3. 새로운 이미지 배포하기 
-docker_shell을 활용하여 asset compile을 진행해주신다
 다음 명령어를 입력하여 새로운 이미지를 빌드하고 docker hub에 푸시해줍니다.
 ```bash
 prod_image_build
-음
+
 docker push gomicorp/platform-api
 ```
 <br/>
@@ -83,7 +83,7 @@ docker-compose -f start.yml down
 docker-compose -f start.yml up -d
 ```
 
-그리고 필요하지 않은 이미지를 정리해주면 배포가 끝나게 됩니다.
+그리고 ec2 내에 필요하지 않은 옜날 이미지들을 정리해주면 배포가 끝나게 됩니다.
 ```bash
 docker system prune --volumes
 ```
