@@ -16,3 +16,6 @@ COPY ./docker/logrotate/api ./docker/logrotate/serverlog ./
 # tmp, log permission
 WORKDIR /app
 RUN rm -rf /app/tmp && mkdir /app/tmp && chmod o+wx /app/tmp
+
+# for git
+ENV LESSCHARSET=utf-8
