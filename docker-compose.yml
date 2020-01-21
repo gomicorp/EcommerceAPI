@@ -3,6 +3,7 @@ version: '3.1'
 services:
   web:
     image: platform-api
+    container_name: platform-api
     env_file:
       - .env
     ports:
