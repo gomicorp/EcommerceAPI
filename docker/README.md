@@ -3,7 +3,7 @@
 ***docker로 세상을 이롭게 하겠다***
 
 ## 1. 개발환경 구축하기
-#### 1. 먼저 docker-sync gem을 설치해주세요
+#### 1. 빠른 개발을 위한 docker-sync gem을 설치해주세요
 ```bash
 gem install docker-sync
 ```
@@ -11,7 +11,7 @@ gem install docker-sync
 ```bash
 brew install direnv
 
-# direnv가 설치되면 다음 코를 ~/.zshrc에 추가해줍니다.
+# direnv가 설치되면 다음 코드를 ~/.zshrc에 추가해줍니다.
 eval "$(direnv hook zsh)"
 ```
 
