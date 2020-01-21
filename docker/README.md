@@ -83,3 +83,17 @@ docker-compose -f start.yml up -d
 ```bash
 docker system prune --volumes
 ```
+
+## 4. 배포 스크립트 소개
+미리 작성해둔 스크립트를 활용하면 배포를 조금더 편하게 진행할수 있습니다.
+ 배포 스크립트들을 활용하려면 다음 명령어로 스크립트가 담겨져 있는 폴더로 이동합니다.
+```bash
+cd docker/scripts
+```
+
+#### 1. deploy.sh
+이 스크립트 파일을 활용하면 새로 만들어진 이미지를 ec2에 배포하는 과정을 편리하게 진행할수 있습니다.
+```bash
+# 예제: '스크립트이름 ssh접속시이름 앱의이름 환경이름' 순으로 입력하면 ec2 배포를 진행합니다.
+bash deploy.sh store-api platform-api staging
+```
