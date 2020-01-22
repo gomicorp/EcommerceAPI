@@ -6,6 +6,11 @@
 해야 수비니겨 날로 쑤매 뻔한킈 하고져 할 따라미니라***
 
 ## 1. 개발환경 구축하기
+#### 0. 최신 rails 이미지를 받아주세요
+```bash
+docker pull gomicorp/rails:6.0.2.1
+```
+
 #### 1. 빠른 개발을 위한 docker-sync gem을 설치해주세요
 ```bash
 gem install docker-sync
