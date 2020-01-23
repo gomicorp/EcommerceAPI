@@ -43,8 +43,10 @@ ignore/*
 
 db/backups
 db/backups/*
+db/schema.rb
 
 .DS_Store
 **/*/.DS_Store
 
 *.lock
+
