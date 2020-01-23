@@ -1,39 +1,28 @@
 <div id="brandData" data-brands="<%= @service.brands.to_json %>"></div>
 
 <%= render 'sublayout' do %>
-  <% brand_index = 1 %>
-  <% @brands.each do |brand_name, brand_detail| %>
-    <%# brand_rowspan = brand_detail.keys.length %>
-    <% variants = brand_detail.except(:total) %>
-    <% brand_rowspan = variants.values.map(&:length).sum + 1 %>
-    <% brand_total = brand_detail[:total] %>
-
+  <% @brands.each.with_index do |brand, brand_index| %>
     <!-- brand / variants -->
-    <% variant_index = 0 %>
-    <% variants.each do |variant_id, variant_pricing| %>
-
-      <% pricing_index = 0 %>
-      <% variant_pricing.each do |variant_price, variant_detail| %>
-        <% variant_items = variant_detail[:items] %>
-        <% variant_total = variant_detail[:total] %>
+    <% brand.variants.each.with_index do |variant, variant_index| %>
+      <% variant.prices.each.with_index do |variant_price, pricing_index| %>
+        <% variant_item = variant_price.items.first %>
 
         <tr>
           <% if pricing_index.zero? %>
             <% if variant_index.zero? %>
               <!-- # -->
-              <th rowspan="<%= brand_rowspan %>"><%= brand_index %></th>
+              <th rowspan="<%= brand.rowspan %>"><%= brand_index + 1 %></th>
 
               <!-- 브랜드 -->
-              <th rowspan="<%= brand_rowspan %>"><%= brand_name %></th>
+              <th rowspan="<%= brand.rowspan %>"><%= brand.name %></th>
             <% end %>
 
             <!-- 상품명 -->
-            <td rowspan="<%= variant_pricing.length %>">
-              <% variant_item = variant_items.first %>
-              <span><%= variant_item[:title] %></span>
-              <small class="d-block text-muted">[SKU: <b><%= variant_item[:sku] || '-' %></b> / Variant ID: <b><%= variant_id %></b>]</small>
+            <td rowspan="<%= variant.prices.count %>">
+              <span><%= variant_item.title %></span>
+              <small class="d-block text-muted">[SKU: <b><%= variant_item.sku || '-' %></b> / Variant ID: <b><%= variant.id %></b>]</small>
               <p class="d-block" style="margin: 0">
-                <% if variant_pricing.length > 1 %>
+                <% if variant.prices.count > 1 %>
                   <small class="badge badge-info"># 다중가격</small>
                 <% end %>
               </p>
@@ -41,28 +30,24 @@
           <% end %>
 
           <!-- 판매가 -->
-          <td class="text-right text-nowrap"><%= currency_format(variant_price, unit: 'VND') %></td>
+          <td class="text-right text-nowrap"><%= currency_format(variant_price.price, unit: 'VND') %></td>
 
           <!-- 주문건수 -->
           <td class="text-right text-nowrap"
               data-toggle="modal" data-target="#order-list-modal"
-              data-variant_title="<%= variant_items.first[:title] %>"
-              data-sku="<%= variant_items.first[:sku] %>"
-              data-variant_id="<%= variant_id %>"
-              data-variant_price="<%= variant_price %>"
-              data-orders="<%= variant_items.to_json %>"><%= variant_total[:orders].length %> 건</td>
+              data-variant_title="<%= variant_item.title %>"
+              data-sku="<%= variant_item.sku %>"
+              data-variant_id="<%= variant.id %>"
+              data-variant_price="<%= variant_price.price %>"
+              data-orders="<%= variant_price.items.to_json %>"><%= variant_price.total.orders.count %> 건</td>
 
           <!-- 합계수량 -->
-          <td class="text-right text-nowrap"><%= unit_format(variant_total[:quantity]) %></td>
+          <td class="text-right text-nowrap"><%= unit_format(variant_price.total.quantity) %></td>
 
           <!-- 합계금액 -->
-          <td class="text-right text-nowrap"><%= currency_format(variant_total[:ordered_price], unit: 'VND') %></td>
+          <td class="text-right text-nowrap"><%= currency_format(variant_price.total.price, unit: 'VND') %></td>
         </tr>
-
-        <% pricing_index += 1 %>
       <% end %>
-
-      <% variant_index += 1 %>
     <% end %>
 
 
@@ -71,14 +56,15 @@
       <td class="table-warning" colspan="2">총 계</td>
 
       <!-- 주문건수 -->
-      <td class="table-warning text-nowrap text-right" data-toggle="modal" data-target="#order-list-modal"><%= brand_total[:orders].length %> 건</td>
+      <td class="table-warning text-nowrap text-right" data-toggle="modal" data-target="#order-list-modal"><%= brand.total.orders.count %> 건</td>
 
       <!-- 합계수량 -->
-      <td class="table-warning text-nowrap text-right"><%= unit_format(brand_total[:quantity]) %></td>
+      <td class="table-warning text-nowrap text-right"><%= unit_format(brand.total.quantity) %></td>
 
       <!-- 합계금액 -->
-      <td class="table-warning text-nowrap text-right"><%= currency_format(brand_total[:ordered_price], unit: 'VND') %></td>
+      <td class="table-warning text-nowrap text-right"><%= currency_format(brand.total.price, unit: 'VND') %></td>
     </tr>
-    <% brand_index += 1 %>
   <% end %>
 <% end %>
+
+<%= console if Rails.env == 'development' %>

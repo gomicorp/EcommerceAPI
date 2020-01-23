@@ -60,7 +60,7 @@
       </div>
 
       <div class="col text-right">
-        <p>기간내 전체 주문 생성: <%= unit_format(@service.orders.count, unit: '건') %></p>
+        <p>기간내 전체 주문 생성: <%= unit_format(@service.orders_all_count, unit: '건') %></p>
         <p>기간내 배송 완료 주문: <%= unit_format(@service.shipped_orders.count, unit: '건') %></p>
       </div>
     </div>

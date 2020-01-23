@@ -3,6 +3,11 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.3'
 
+# gem 'haravan_api', git: 'https://github.com/Haravan/haravan_api.git'
+
+
+gem 'yajl-ruby', require: 'yajl'
+
 ## => Store Service
 gem 'sentry-raven'
 gem 'slack-notifier'

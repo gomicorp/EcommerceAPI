@@ -11,6 +11,8 @@ module Haravan
       def index
         @service = Haravan::SettlementService.new((@from_day..@to_day))
         @brands = @service.call
+        # @settlement = @service.call
+        # @brands = @settlement.brands
 
         respond_to do |format|
           format.html {}
