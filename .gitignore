@@ -50,3 +50,8 @@ db/schema.rb
 
 *.lock
 
+# D O C K E R
+.direnv/
+.docker-sync/
+docker/.docker_password.txt
+docker/.envs

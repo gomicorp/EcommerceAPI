@@ -1,0 +1,10 @@
+/app/log/production.log {
+   daily
+   rotate 28
+   missingok
+   dateext
+   create 0666 root root
+   postrotate
+     touch /app/tmp/restart.txt
+   endscript
+ }
