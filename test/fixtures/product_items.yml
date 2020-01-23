@@ -4,12 +4,12 @@ one:
   item_group: one
   name: MyString
   serial_number: MyString
-  cose_price: 1
+  cost_price: 1
   selling_price: 1
 
 two:
   item_group: two
   name: MyString
   serial_number: MyString
-  cose_price: 1
+  cost_price: 1
   selling_price: 1

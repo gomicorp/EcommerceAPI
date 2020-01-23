@@ -5,13 +5,9 @@ one:
   category: one
   icon: MyString
   is_active: false
-  image: 
-  slug: MyString
 
 two:
   name: MyString
   category: two
   icon: MyString
   is_active: false
-  image: 
-  slug: MyString
