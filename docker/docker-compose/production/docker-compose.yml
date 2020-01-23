@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+  web:
+    image: gomicorp/platform-api:latest
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+    volumes:
+      - ./log/nginx:/opt/nginx/logs
+      - ./log:/app/log
+      - ./master.key:/app/config/master.key
+      - ./nginx.conf:/opt/nginx/conf/nginx.conf
+    stdin_open: true
+    tty: true
+    command:
+      - /bin/bash
+      - -c
+      - |
+        crond
+        /opt/nginx/sbin/nginx -g 'daemon off;'
