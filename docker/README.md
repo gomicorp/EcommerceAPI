@@ -75,13 +75,13 @@ docker pull gomicorp/platform-api
 
 ### staging 배포시 이렇게 합니다. ###
 cd ~/platform-api/staging 
-docker-compose -f start.yml down 
-docker-compose -f start.yml up -d
+docker-compose down 
+docker-compose up -d
 
 ### production 배포시 이렇게 합니다. ###
 cd ~/platform-api/production
-docker-compose -f start.yml down 
-docker-compose -f start.yml up -d
+docker-compose down 
+docker-compose up -d
 ```
 
 그리고 ec2 내에 필요하지 않은 옛날 이미지들을 정리해주면 배포가 끝나게 됩니다.
