@@ -24,6 +24,7 @@ module Haravan
           Rails.logger.debug "페이지: #{page}, 찾음: #{collected.length}, 누적: #{collection.length} / Query: #{option}"
         end
 
+        Rails.logger.debug "Total: #{collection.length}\n"
 
         collection
       end

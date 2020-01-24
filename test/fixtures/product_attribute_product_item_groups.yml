@@ -2,8 +2,8 @@
 
 one:
   product_attribute: one
-  product_item_group: one
+  item_group: one
 
 two:
   product_attribute: two
-  product_item_group: two
+  item_group: two

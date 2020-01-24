@@ -1,19 +1,29 @@
 module Haravan
   module Api
     class Record
-      attr_reader :data
+      attr_reader :data if Rails.env == 'development'
+
+      private
+
+      def set_if_respond(k, v)
+        send("#{k}=", v) if respond_to?("#{k}=")
+      end
+
+      public
 
       def initialize(**data)
-        @data = data
+        @data = data if Rails.env == 'development'
         data.each do |k, v|
           case v
           when Hash, Array
-            send("_#{k}=", v)
+            set_if_respond("_#{k}", v)
           when String
-            v = v.in_time_zone rescue v
-            send("#{k}=", v)
+            if k.to_s[/_at$/]
+              v = v.in_time_zone rescue v
+            end
+            set_if_respond(k, v)
           else
-            send("#{k}=", v)
+            set_if_respond(k, v)
           end
         end
       end
@@ -32,6 +42,14 @@ module Haravan
             attr_accessor attr.to_sym
           end
           @attributes = attrs
+        end
+
+        def has_many(key, class_name:, data_from:)
+          class_eval <<-CODE
+            def #{key}
+              @#{key} ||= ::#{class_name}.map_collection(#{data_from})
+            end
+          CODE
         end
 
         def storage

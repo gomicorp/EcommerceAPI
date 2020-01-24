@@ -3,6 +3,11 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.3'
 
+# gem 'haravan_api', git: 'https://github.com/Haravan/haravan_api.git'
+
+
+gem 'yajl-ruby', require: 'yajl'
+
 ## => Store Service
 gem 'sentry-raven'
 gem 'slack-notifier'
@@ -90,3 +95,6 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+# sprocket version downgrade
+gem 'sprockets', '3.7.2'
