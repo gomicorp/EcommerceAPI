@@ -1,9 +1,14 @@
 module Haravan
   module Api
     class Fetcher
+      include Core::Timer
+
       def fetch(path, **params)
-        parser.parse(faraday.get(path, params).body)
-        # JSON.parse(faraday.get(path, params).body, symbolize_names: true)
+        message = "  #{path.gsub('.json',' Load').gsub('/', '_').singularize.camelize} (:millisecond ms) ".cyan + " GET #{host_url}/#{path}?#{params.to_query}".blue
+        measure_duration_feed(message, true) do
+          parser.parse(faraday.get(path, params).body)
+          # JSON.parse(faraday.get(path, params).body, symbolize_names: true)
+        end
       end
 
       private

@@ -9,21 +9,7 @@ module Haravan
       layout 'haravan/settlement'
 
       def index
-        set_terms(@from_day..@to_day)
-
-        @service = Haravan::SettlementService.new(@terms)
-        @brands = @service.call
-
-        @orders_count = Haravan::Order.count_by(
-            created_at_min: @terms.start_at,
-            created_at_max: @terms.end_at
-        )
-
-        @delivered_orders_count = Haravan::Order.count_by(
-            fulfillment_status: 'shipped',
-            created_at_min: @terms.start_at,
-            created_at_max: @terms.end_at
-        )
+        search
 
         respond_to do |format|
           format.html {}
@@ -32,15 +18,48 @@ module Haravan
       end
 
       def show
+        search
+
+        respond_to do |format|
+          format.html {}
+          format.json { render json: @brands }
+        end
       end
 
       private
 
+      def search
+        set_terms(@from_day..@to_day)
+
+        @orders_count = Haravan::Order.count_by(
+            created_at_min: @terms.start_at,
+            created_at_max: @terms.end_at
+        )
+
+        @service = Haravan::SettlementService.new(@terms, params)
+        @brands = @service.call
+        @delivered_orders_count = @service.orders.count
+
+        unless params.dig(:id).present?
+          message_args = {
+              '기간내 전체 주문' => "<b>#{helpers.unit_format(@orders_count, unit: '건')}</b>",
+              '기간내 해당 주문' => "<b>#{helpers.unit_format(@service.orders.count, unit: '건')}</b>"
+          }
+
+          @subject = message_args.map { |label, value| "<span class='px-2 d-block d-sm-inline-block'>#{label}: #{value}</span>" }.join('<span class="d-none d-sm-inline-block"> | </span>')
+        end
+
+        @search_method = params.dig(:search, :method).to_s
+        @method_labels = {
+            'fulfillment_status' => '배송 완료',
+            'financial_status' => '결제 완료',
+            '' => '배송 완료'
+        }
+      end
+
       def set_from_time_to_time
         @from_day = to_datetime(params[:from], Time.now.in_time_zone('UTC').beginning_of_day)
         @to_day = to_datetime(params[:to], @from_day + 1.day)
-        Rails.logger.debug @from_day
-        Rails.logger.debug @to_day
       end
 
       def to_datetime(string, default)

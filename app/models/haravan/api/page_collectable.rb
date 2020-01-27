@@ -11,20 +11,25 @@ module Haravan
 
       def collect_page_in_row(**option)
         collection = []
+        # brand_name = option.delete(:brand_name)
 
         page = 1
         collected = query_with_root_key(page: page, **option)
+        # if brand_name
+        #   collected = collected.filter { |order| order[:line_items].filter { |item| item[:vendor] == brand_name }.any? }
+        # end
         collection = collection + collected
-        Rails.logger.debug "페이지: #{page}, 찾음: #{collected.length}, 누적: #{collection.length} / Query: #{option}"
+        Rails.logger.debug "  페이지: #{page}, 찾음: #{collected.length}, 누적: #{collection.length} / Query: #{option}".yellow
 
         while collected.any?
           page += 1
           collected = query_with_root_key(page: page, **option)
+          # if brand_name
+          #   collected = collected.filter { |order| order[:line_items].filter { |item| item[:vendor] == brand_name }.any? }
+          # end
           collection = collection + collected
-          Rails.logger.debug "페이지: #{page}, 찾음: #{collected.length}, 누적: #{collection.length} / Query: #{option}"
+          Rails.logger.debug "  페이지: #{page}, 찾음: #{collected.length}, 누적: #{collection.length} / Query: #{option}".yellow
         end
-
-        Rails.logger.debug "Total: #{collection.length}\n"
 
         collection
       end

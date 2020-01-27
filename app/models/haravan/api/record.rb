@@ -34,7 +34,7 @@ module Haravan
       end
 
       class << self
-        include PageCollectable
+        include PageCollectable, Core::Timer
         attr_accessor :table_name, :root_key, :attributes
 
         def schema=(attrs)
@@ -88,6 +88,18 @@ module Haravan
           map_collection(records)
         end
 
+        def ugly_search_by(step: 100, recursive_limit: 200, &block)
+          collection = collect_page(
+              page: 1,
+              step: step,
+              direction: 1,
+              before_page: 0,
+              recursive_limit: recursive_limit,
+              &block
+          )
+          map_collection collection.uniq(&:id)
+        end
+
         def search_by(**clause)
           map_collection collect_page_in_row(**clause)
         end
@@ -118,7 +130,7 @@ module Haravan
         end
 
         def query(**clause)
-          fetcher.fetch("#{table_name}.json", clause)
+          fetcher.fetch("#{table_name}.json", clause.merge(fields: @attributes.map {|attr| attr.to_s.gsub(/^_/, '')}.join(',')))
         end
 
         def fetcher

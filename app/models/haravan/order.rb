@@ -20,6 +20,7 @@ module Haravan
       id
 
       source
+      _line_items
 
       name
       note
@@ -51,6 +52,8 @@ module Haravan
     ]
 
     has_many :fulfillments, class_name: 'Haravan::Fulfillment', data_from: '_fulfillments'
+    has_many :line_items, class_name: 'Haravan::LineItem', data_from: '_line_items'
+    has_many :transactions, class_name: 'Haravan::Transaction', data_from: '_transactions'
 
     def inspect
       "#<#{self.class.name} id: #{id}, name: \"#{name}\", created_at: \"#{created_at.strftime('%F %X')}\", updated_at: \"#{updated_at.strftime('%F %X')}\">"
@@ -65,7 +68,7 @@ module Haravan
     end
 
     def items
-      recent_fulfillment&.line_items
+      line_items
     end
 
     def identity_object
@@ -94,8 +97,6 @@ gateway_code
 
 landing_site
 landing_site_ref
-
-_line_items
 
 device_id
 location_id

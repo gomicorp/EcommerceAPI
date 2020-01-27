@@ -1,30 +1,57 @@
 module Haravan
   module Vo
     class Terms
-      def initialize(start_at, end_at)
-        if start_at
-          @start_at = start_at.in_time_zone('UTC').strftime('%F %H:%M') rescue self.start_at
-        end
+      def initialize(start_time, end_time)
+        self.start_at = start_time if start_time
+        self.end_at = end_time if end_time
+      end
 
-        if end_at
-          @end_at = end_at.in_time_zone('UTC').strftime('%F %H:%M') rescue self.end_at
-        end
+      def range
+        start_time..end_time
+      end
+
+      #
+      # Start at
+      #
+
+      def start_time
+        @start_time ||= Time.now.in_time_zone('UTC').beginning_of_day
+      end
+
+      def start_time=(datetime)
+        @start_time = datetime.in_time_zone('UTC').beginning_of_day
       end
 
       def start_at
-        @start_at ||= Time.now.in_time_zone('UTC').beginning_of_day.strftime('%F %H:%M')
+        @start_at ||= start_time.strftime('%F %H:%M')
       end
 
       def start_at=(datetime)
-        @start_at = datetime.in_time_zone('UTC').strftime('%F %H:%M') || start_at
+        self.start_time = datetime
+        @start_at = start_time.strftime('%F %H:%M') || start_at
+      end
+
+
+      #
+      # End at
+      #
+
+      def end_time
+        @end_time ||= Time.now.in_time_zone('UTC').end_of_day
+      end
+
+      def end_time=(datetime)
+        time = datetime.in_time_zone('UTC') rescue Time.now.in_time_zone('UTC')
+        @end_time = time.end_of_day
       end
 
       def end_at
-        @end_at ||= Time.now.in_time_zone('UTC').end_of_day.strftime('%F %H:%M')
+        @end_at ||= end_time.strftime('%F %H:%M')
       end
 
       def end_at=(datetime)
-        @end_at = datetime.in_time_zone('UTC').strftime('%F %H:%M') || end_at
+        self.end_time = datetime
+        @end_at = end_time.strftime('%F %H:%M')
       end
     end
   end

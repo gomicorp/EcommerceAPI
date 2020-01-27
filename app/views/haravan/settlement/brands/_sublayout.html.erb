@@ -1,91 +1,51 @@
-<% content_for(:page_title, '해당 Brand 전체') %>
+<!--<div class="card">-->
+<!--  <div class="card-header">-->
+<!--    <p class="h6"><%#= Time.zone.now.strftime('%F %H:%M') %> 기준-->
+<!--      <small class="d-block text-black-50">현재시각까지 집계된 데이터입니다.</small>-->
+<!--    </p>-->
+<!--  </div>-->
+<!--</div>-->
 
-<div class="card">
-  <div class="card-header">
-    <p class="h6"><%= Time.zone.now.strftime('%F %H:%M') %> 기준
-      <small class="d-block text-black-50">현재시각까지 집계된 데이터입니다.</small>
-    </p>
+<% content_for :table do %>
+  <div class="alert alert-primary rounded-0 border-0 text-center">
+    <h6>
+      <span class="d-inline-block d-sm-inline-block">
+        <b><%= @terms.start_time.strftime('%m월 %d일 %H:%M') %></b>
+        ~
+        <b><%= @terms.end_time.strftime('%m월 %d일 %H:%M') %></b>
+      </span>
+      <span class="d-block d-sm-inline-block">주문 중</span>
+      <span class="d-none d-sm-inline-block"> / </span>
+      <span class="d-block d-sm-inline-block"><b><%= @method_labels[@search_method] %></b> 건에 대한 검색결과</span>
+    </h6>
+
+    <% if @subject %>
+      <p class="m-0"><%= @subject.html_safe %></p>
+    <% end %>
   </div>
 
-  <div class="card-body">
-    <div class="row">
-      <div class="col-sm-4">
-        <p class="font-weight-bold">조회 기간</p>
-
-        <form action="<%= haravan_settlement_brands_path(format: :html) %>" onsubmit="return confirm('구간이 넓은 조회는 5 ~ 10 분 가량 소요됩니다.\n새로 고침 하지 말고 기다려주세요.\n계속 진행할까요?')">
-          <div class="form-row mb-2">
-            <div class="col-sm-9">
-              <input name="from" id="range-from" class="form-control form-control-sm datePicker" value="<%= @from_day.strftime('%F') %>">
-            </div>
-            <label for="range-from" class="col-form-label col">00시 부터</label>
-          </div>
-
-          <div class="form-row mb-2">
-            <div class="col-sm-9">
-              <input name="to" id="range-to" class="form-control form-control-sm datePicker" value="<%= @to_day.strftime('%F') %>">
-            </div>
-            <label for="range-to" class="col-form-label col">00시 까지</label>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-9">
-              <div class="row">
-                <div class="col-12 mb-1">
-                  <div class="btn-group btn-group-sm w-100" role="group" aria-label="Basic example">
-                    <a href="<%= haravan_settlement_brands_path(format: :html) %>"
-                       class="btn btn-success rounded-0">초기화(Today)</a>
-                    <button class="btn btn-primary rounded-0">조회</button>
-                  </div>
-                </div>
-
-                <div class="col-12 mb-1">
-                  <div class="btn-group btn-group-sm w-100" role="group" aria-label="Basic example">
-                    <a href="<%= haravan_settlement_brands_path(format: :html, from: (@from_day - 1.month).strftime('%F'), to: (@from_day).strftime('%F')) %>"
-                       onclick="return confirm('월 단위 조회는 3 ~ 10 분 가량 소요됩니다.\n새로 고침 하지 말고 기다려주세요.\n계속 진행할까요?')"
-                       class="btn btn-outline-secondary rounded-0">-한 달</a>
-                    <a href="<%= haravan_settlement_brands_path(format: :html, from: (@from_day + 1.month).strftime('%F'), to: (@from_day + 2.month).strftime('%F')) %>"
-                       onclick="return confirm('월 단위 조회는 3 ~ 10 분 가량 소요됩니다.\n새로 고침 하지 말고 기다려주세요.\n계속 진행할까요?')"
-                       class="btn btn-outline-secondary rounded-0">+한 달</a>
-                    <a href="<%= haravan_settlement_brands_path(format: :html, from: (Time.now.in_time_zone('UTC').beginning_of_month).strftime('%F'), to: (Time.now.in_time_zone('UTC').beginning_of_month + 1.month).strftime('%F')) %>"
-                       onclick="return confirm('월 단위 조회는 3 ~ 10 분 가량 소요됩니다.\n새로 고침 하지 말고 기다려주세요.\n계속 진행할까요?')"
-                       class="btn btn-outline-secondary rounded-0">이번 달</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col"></div>
-          </div>
-        </form>
-      </div>
-
-      <div class="col text-right">
-        <p>기간내 전체 주문 생성: <%= unit_format(@orders_count, unit: '건') %></p>
-        <p>기간내 배송 완료 주문: <%= unit_format(@delivered_orders_count, unit: '건') %></p>
-      </div>
-    </div>
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+      <tr>
+        <th class="align-middle text-nowrap d-none d-sm-table-cell" scope="col" rowspan="1">#</th>
+        <th id="toggle_brand-all" class="align-middle text-nowrap" scope="col" rowspan="1">브랜드</th>
+        <th class="align-middle text-nowrap" scope="col" rowspan="1">상품명</th>
+        <th class="align-middel text-nowrap" scope="col" rowspan="1">적용단가</th>
+        <th class="align-middle text-nowrap" scope="col" rowspan="1">
+          <span>주문건수</span>
+          <i data-feather="help-circle" width="12" height="12" data-toggle="tooltip" data-placement="top" title="각 란을 클릭하여 해당 주문들을 확인할 수 있습니다."></i>
+        </th>
+        <th class="align-middle text-nowrap" scope="col" rowspan="1">합계수량</th>
+        <th class="align-middle text-nowrap" scope="col" rowspan="1">합계금액</th>
+      </tr>
+      </thead>
+      <tbody>
+      <%= yield %>
+      </tbody>
+    </table>
   </div>
-
-  <table class="card-body table table-bordered">
-    <thead class="thead-light">
-    <tr>
-      <th class="align-middle text-nowrap" scope="col" rowspan="1">#</th>
-      <th class="align-middle text-nowrap" scope="col" rowspan="1">브랜드</th>
-      <th class="align-middle" scope="col" rowspan="1">상품명</th>
-      <th class="align-middel text-nowrap" scope="col" rowspan="1">적용단가</th>
-      <th class="align-middle text-nowrap" scope="col" rowspan="1">
-        <span>주문건수</span>
-        <i data-feather="help-circle" width="12" height="12" data-toggle="tooltip" data-placement="top" title="각 란을 클릭하여 해당 주문들을 확인할 수 있습니다."></i>
-      </th>
-      <th class="align-middle text-nowrap" scope="col" rowspan="1">합계수량</th>
-      <th class="align-middle text-nowrap" scope="col" rowspan="1">합계금액</th>
-    </tr>
-    </thead>
-    <tbody>
-    <%= yield %>
-    </tbody>
-  </table>
-</div>
+<% end %>
 
 
 
