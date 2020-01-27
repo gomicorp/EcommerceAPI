@@ -92,6 +92,10 @@ module Haravan
           map_collection collect_page_in_row(**clause)
         end
 
+        def count_by(**clause)
+          fetcher.fetch("#{table_name}/count.json", clause)[:count]
+        end
+
         def map_collection(records_or_dataset)
           records = if records_or_dataset.first.is_a? Hash
                       records_or_dataset.map { |data| new(**data) }

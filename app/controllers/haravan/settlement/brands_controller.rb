@@ -9,10 +9,21 @@ module Haravan
       layout 'haravan/settlement'
 
       def index
-        @service = Haravan::SettlementService.new((@from_day..@to_day))
+        set_terms(@from_day..@to_day)
+
+        @service = Haravan::SettlementService.new(@terms)
         @brands = @service.call
-        # @settlement = @service.call
-        # @brands = @settlement.brands
+
+        @orders_count = Haravan::Order.count_by(
+            created_at_min: @terms.start_at,
+            created_at_max: @terms.end_at
+        )
+
+        @delivered_orders_count = Haravan::Order.count_by(
+            fulfillment_status: 'shipped',
+            created_at_min: @terms.start_at,
+            created_at_max: @terms.end_at
+        )
 
         respond_to do |format|
           format.html {}
@@ -34,6 +45,11 @@ module Haravan
 
       def to_datetime(string, default)
         string.in_time_zone('UTC').to_date rescue default.in_time_zone('UTC').to_date
+      end
+
+      def set_terms(time_range = nil)
+        time_range = time_range || (Time.now.in_time_zone('UTC').yesterday.beginning_of_day..Time.now.in_time_zone('UTC').yesterday.end_of_day)
+        @terms = Haravan::Vo::Terms.new(time_range.first, time_range.last)
       end
     end
   end
