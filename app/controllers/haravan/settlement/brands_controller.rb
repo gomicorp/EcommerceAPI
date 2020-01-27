@@ -3,8 +3,10 @@ module Haravan
     class BrandsController < ApplicationController
       http_basic_authenticate_with(
           name: Rails.application.credentials.dig(:haravan, :http_basic, :name),
-          password: Rails.application.credentials.dig(:haravan, :http_basic, :passwd)
+          password: Rails.application.credentials.dig(:haravan, :http_basic, :passwd),
+          only: :index
       )
+      before_action :brand_http_authenticate, only: :show
       before_action :set_from_time_to_time
       layout 'haravan/settlement'
 
@@ -27,6 +29,16 @@ module Haravan
       end
 
       private
+
+      def brand_http_authenticate
+        brand_auth = Haravan::Brand.http_auth || {}
+        authenticate_or_request_with_http_basic do |username, password|
+          if Rails.application.credentials.dig(:haravan, :http_basic, :name)
+            return true if Rails.application.credentials.dig(:haravan, :http_basic, :passwd)
+          end
+          username == params[:id] && (brand_auth[username].presence || username) == password.to_s
+        end
+      end
 
       def search
         set_terms(@from_day..@to_day)
