@@ -29,6 +29,20 @@ eval "$(direnv hook zsh)"
 git clone https://github.com/gomicorporation/platform-api.git
 ```
 
+#### 3.3. 프로젝트의 docker 폴더에 위치한 .envrc 파일을 프로젝트 루트폴더로 복사해주세
+```bash
+cp ./docker/.envrc ./
+```
+요
+#### 3.5. 프로젝트 루트 폴더로 복한 .envrc 첫째줄의 ssh_host_name을 본인의 ssh_host_name으로 변경해주세요 (ex: store_api, store, store_th ...)
+```bash
+#변경전사
+ssh_host_name=test-dockerize-store-api
+
+#변경후 
+ssh_host_name=store_th
+```
+
 #### 4. 프로젝트 폴더로 이동하여 다음 명령어를 입력해주십시다
 ```bash
 direnv allow
@@ -61,44 +75,16 @@ docker_shell
 ```
 
 ## 3. 새로운 이미지 배포하기 
-다음 명령어를 입력하여 새로운 이미지를 빌드하고 docker hub에 푸시해줍니다.
+다음 명령어를 입력하여 새로운 이미지를 빌드합니다.
 ```bash
 prod_image_build
-
-docker push gomicorp/platform-api
 ```
 
-docker hub에 push가 완료되면 ec2환경으로 이동하여 새로운 이미지를 pull을 받아주고 
-staging 혹은 production에 배포를 진행하시면 됩니다.
+다음 명령어를 입력하여 docker hub에 push 한후 배포를 진행할수 있습니다.
 ```bash
-docker pull gomicorp/platform-api
-
 ### staging 배포시 이렇게 합니다. ###
-cd ~/platform-api/staging 
-docker-compose down 
-docker-compose up -d
+staging_deploy
 
 ### production 배포시 이렇게 합니다. ###
-cd ~/platform-api/production
-docker-compose down 
-docker-compose up -d
-```
-
-그리고 ec2 내에 필요하지 않은 옛날 이미지들을 정리해주면 배포가 끝나게 됩니다.
-```bash
-docker system prune --volumes
-```
-
-## 4. 배포 스크립트 소개
-미리 작성해둔 스크립트를 활용하면 배포를 조금더 편하게 진행할수 있습니다.
- 배포 스크립트들을 활용하려면 다음 명령어로 스크립트가 담겨져 있는 폴더로 이동합니다.
-```bash
-cd docker/scripts
-```
-
-#### 1. deploy.sh
-이 스크립트 파일을 활용하면 새로 만들어진 이미지를 ec2에 배포하는 과정을 편리하게 진행할수 있습니다.
-```bash
-# 예제: '스크립트이름 ssh접속시이름 앱의이름 환경이름' 순으로 입력하면 ec2 배포를 진행합니다.
-bash deploy.sh store-api platform-api staging
+production_production_deploy
 ```
