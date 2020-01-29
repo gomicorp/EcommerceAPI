@@ -1,5 +1,5 @@
 class ProductCollection < ApplicationRecord
-  has_many :product_collection_elements
-  has_many :product_items, through: :product_collection_elements
+  has_many :elements, class_name: 'ProductCollectionElement'
+  has_many :items, class_name: 'ProductItem', through: :elements
   has_one :zohomap, as: :zohoable
 end
