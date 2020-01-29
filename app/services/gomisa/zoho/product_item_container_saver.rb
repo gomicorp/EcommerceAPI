@@ -33,7 +33,7 @@ module Gomisa
           elsif status == 'active'
             zoho_object.archived_at = nil
             zoho_object.save
-            zoho_object.zohoable.product_item_rows.destroy_all
+            zoho_object.zohoable.product_collection_elements.destroy_all
             data = get_composite_item(access_token, data['composite_item_id'])
             create_rows_of_composite_item(zoho_object.zohoable, data['composite_item']['mapped_items'])
           else
@@ -63,14 +63,14 @@ module Gomisa
 
       #product_item_container를 추가한다.
       def create_product_item_container(name)
-        ProductItemContainer.create(name: name)
+        ProductCollection.create(name: name)
       end
 
       #product_item_row를 추가한다.
       def create_product_item_row(product_item_id, product_item_container_id, amount)
-        ProductItemRow.create(
+        ProductCollectionElement.create(
           product_item_id: product_item_id,
-          product_item_container_id: product_item_container_id,
+          product_collection_id: product_item_container_id,
           amount: amount
         )
       end
