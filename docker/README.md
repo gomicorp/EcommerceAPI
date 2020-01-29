@@ -29,7 +29,7 @@ eval "$(direnv hook zsh)"
 git clone https://github.com/gomicorporation/platform-api.git
 ```
 
-#### 3.3. 프로젝트의 docker 폴더에 위치한 .envrc 파일을 프로젝트 루트폴더로 복사해주세
+#### 3.3. 프로젝트의 docker 폴더에 위치한 .envrc 파일을 프로젝트 루트폴더로 복사해주세요
 ```bash
 cp ./docker/.envrc ./
 ```
