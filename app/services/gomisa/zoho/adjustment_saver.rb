@@ -7,7 +7,7 @@ module Gomisa
         zoho_ids = []
 
         while has_more_page?
-          fetch 
+          fetch
           zoho_ids = zoho_ids +save(subjects)
         end
 
@@ -41,7 +41,7 @@ module Gomisa
           zoho_object = object_by_zoho_id(adjustment_data["inventory_adjustment_id"])
 
           # adjustment 없으면 create, 있으면 update (update는 작성예정)
-          if zoho_object 
+          if zoho_object
             if zoho_object[:zoho_updated_at] != adjustment_data['last_modified_time']
               object = create_or_update_adjustment(adjustment_data)
               #object = zoho_object.zohoable
@@ -99,7 +99,7 @@ module Gomisa
 
       def create_zohomap(object, zoho_id, zoho_updated_at)
         Zohomap.create(
-          :zohoable => object, 
+          :zohoable => object,
           :zoho_id => zoho_id.to_s,
           :zoho_updated_at => zoho_updated_at
         )
@@ -132,7 +132,7 @@ module Gomisa
       # item이 combo일때의 adjustment_product_item 중계 모델을 생성하는 과정이다.
       def create_adjustment_product_item_combo_procedure(adjustment, item_id, quantity, is_positive)
         container = object_by_zoho_id(item_id).zohoable
-        rows = container.product_item_rows
+        rows = container.elements
         rows.each do |row|
           create_adjustment_product_item(adjustment[:id], row.product_item[:id], quantity * row["amount"], is_positive)
         end

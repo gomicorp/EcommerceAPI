@@ -11,12 +11,12 @@ module Gomisa
         product_items.map do |product_item|
           item_response = ProductItemResponse.new(product_item)
 
-          #zohomap이 존재하는가? 
+          #zohomap이 존재하는가?
             #archive 해야하는지 판단
             #update 해야하는지 판단
           #zohomap이 존재하지 않으면
             #저장해야하는지 판단 (아카이브 되었는지 여부?)
-          
+
           if item_response.data_in_db?
             if item_response.archived?
               item_response.archive_product_item
@@ -121,7 +121,7 @@ module Gomisa
         if options.present?
           @attribute_info_dataset.each do |option_info|
             attribute_info = option_info.delete(:attribute_info)
-            
+
             product_attribute = ProductAttribute.find_or_create_by(
               name: attribute_info[:name],
               zohomap: Zohomap.find_or_initialize_by(
@@ -144,8 +144,8 @@ module Gomisa
           end
         end
         set_product_item
-        set_product_item_container
-        set_product_item_row
+        #set_product_item_container
+        #set_product_item_row
       end
 
       def update_product_item
@@ -164,7 +164,7 @@ module Gomisa
         if options.present?
           @attribute_info_dataset.each do |option_info|
             attribute_info = option_info.delete(:attribute_info)
-            
+
             zoho_object = Zohomap.find_by(zoho_id: attribute_info[:id])
             if zoho_object == nil
               product_attribute = ProductAttribute.find_or_create_by(
@@ -181,7 +181,7 @@ module Gomisa
             else
               product_attribute = zoho_object.zohoable
             end
-            
+
             zoho_object = Zohomap.find_by(zoho_id: option_info[:id])
             if zoho_object == nil
               ProductAttributeOption.find_or_create_by(
@@ -203,13 +203,13 @@ module Gomisa
             end
           end
         end
-        update_product_item_container
+        #update_product_item_container
         reset_product_item
       end
 
       def archive_product_item
         zoho_object = Zohomap.find_by(zoho_id: item_id)
-        zoho_object.archived_at = Time.zone.now 
+        zoho_object.archived_at = Time.zone.now
         zoho_object.save
       end
 
@@ -234,7 +234,7 @@ module Gomisa
         end
         [brand_name, item_group_name, options_name]
       end
-      
+
       def set_brand_by(**args)
         @brand = Brand.find_by(name: args[:name])
         if @brand == nil
@@ -258,7 +258,7 @@ module Gomisa
 
       def update_item_group(name: nil)
         zoho_object = Zohomap.find_by(zoho_id: item_group_id)
-        if zoho_object 
+        if zoho_object
           if zoho_object.zohoable[:name] != name
             update_object(zoho_object.zohoable, name)
             update_zoho_object(zoho_object)
@@ -294,25 +294,25 @@ module Gomisa
         update_zoho_object(zoho_object)
       end
 
-      def set_product_item_container
-        @product_item_container = ProductItemContainer.create(name: @product_item[:name])
-      end
+      #def set_product_item_container
+      #  @product_collection = ProductCollection.create(name: @product_item[:name])
+      #end
+      #
+      #def update_product_item_container
+      #  zoho_object = Zohomap.find_by(zoho_id: item_id)
+      #  @product_item = zoho_object.zohoable
+      #  @product_collection = ProductCollection.find_by(name: @product_item[:name])
+      #  update_object(@product_collection, item_name)
+      #end
+      #
+      #def set_product_item_row
+      #  @product_collection_element = ProductCollectionElement.create(
+      #    product_item: @product_item,
+      #    product_collection: @product_collection,
+      #    amount: 1
+      #  )
+      #end
 
-      def update_product_item_container
-        zoho_object = Zohomap.find_by(zoho_id: item_id)
-        @product_item = zoho_object.zohoable
-        @product_item_container = ProductItemContainer.find_by(name: @product_item[:name])
-        update_object(@product_item_container, item_name)
-      end
-
-      def set_product_item_row
-        @product_item_row = ProductItemRow.create(
-          product_item: @product_item,
-          product_item_container: @product_item_container,
-          amount: 1
-        )
-      end
-      
       def update_object(object, name)
         object[:name] = name
         object.save
