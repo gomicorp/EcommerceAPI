@@ -50,7 +50,7 @@ DATABASE_PASSWORD=<여러분의 DATABASE_PASSWORD>
 DATABASE_HOST=docker.for.mac.localhost
 ```
 
-#### 6. 개발용 이미지를 빌드해주고 node_modules 을 깔아줍시다.
+#### 6. 프로젝트 루트 디렉토리로 이동한후 다음명령어들을 실행하여 개발용 이미지를 빌드해주고 node_modules 을 깔아줍시다.
 ```bash
 image_init
 yarn_install
@@ -58,7 +58,7 @@ yarn_install
 <br/>
 
 ## 2. 개발환경 시작하기
-다음 명령어로 개발환경을 시작할수 있습니다. 실행후 control + c를 누르면 개발환경이 종료됩니다.
+프로젝트 루트 디렉토리에서 다음 명령어로 개발환경을 시작할수 있습니다. 실행후 control + c를 누르면 개발환경이 종료됩니다.
 ```bash
 dev_start
 ```
@@ -70,12 +70,12 @@ docker_shell
 ```
 
 ## 3. 새로운 이미지 배포하기 
-다음 명령어를 입력하여 새로운 이미지를 빌드합니다.
+프로젝트 루트 디렉토리에서 다음 명령어를 입력하여 새로운 이미지를 빌드합니다.
 ```bash
 prod_image_build
 ```
 
-다음 명령어를 입력하여 docker hub에 push 한후 배포를 진행할수 있습니다.
+프로젝트 루트 디렉토리에서 다음 명령어를 입력하여 docker hub에 push 한후 배포를 진행할수 있습니다.
 ```bash
 ### staging 배포시 이렇게 합니다. ###
 staging_deploy
