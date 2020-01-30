@@ -28,10 +28,10 @@ git clone https://github.com/gomicorporation/platform-api.git
 ```bash
 cp ./docker/.envrc ./
 ```
-요
+
 #### 3.5. 프로젝트 루트 폴더로 복한 .envrc 첫째줄의 ssh_host_name을 본인의 ssh_host_name으로 변경해주세요 (ex: store_api, store, store_th ...)
 ```bash
-#변경전사
+#변경전
 ssh_host_name=test-dockerize-store-api
 
 #변경후 
@@ -67,6 +67,15 @@ dev_start
 관련 명령어가 쓰고 싶다면 다음 명령어로 docker container로 진입한후 사용하시면 됩니다.
 ```bash
 docker_shell
+```
+
+rails c, rails console --sandbox를 사용할때는 다음과 같이 사용할수 있습니다.
+```bash
+# rails c
+rails_c
+
+# rails console --sandbox
+rails_c_sandbox
 ```
 
 ## 3. 새로운 이미지 배포하기 
