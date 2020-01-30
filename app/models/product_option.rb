@@ -12,7 +12,22 @@ class ProductOption < ApplicationRecord
     "#{option_group.name}: #{name}"
   end
 
-  def price
-    @price ||= product.price + additional_price
+  def base_price
+    @base_price ||= items.sum(:selling_price) #product.price + additional_price
+  end
+
+  def retail_price
+    @retail_price ||= base_price + price_change
+  end
+
+  def price_change
+    @price_change = 0
+    case discount_type
+    when 'const'
+      @price_change -= discount_amount
+    when 'ratio'
+      @price_change -= (base_price * discount_amount)
+    end
+    @price_change
   end
 end
