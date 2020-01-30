@@ -1,18 +1,18 @@
 class ProductItem < ApplicationRecord
   belongs_to :item_group, class_name: 'ProductItemGroup', foreign_key: :item_group_id
-  has_many :product_item_product_options
   has_many :options, class_name: 'ProductOption', through: :product_item_product_options
   has_many :adjustment_product_items
   has_many :adjustments, through: :adjustment_product_items
   has_many :product_item_barcodes
 
   has_one :zohomap, as: :zohoable
+  has_one :product_option_bridge, as: :connectable
 
   def stock
     quantity = 0
     self.adjustment_product_items.each do |value|
       if value.adjustment.zohomap["archived_at"] == nil
-        if value.adjustment["reason"] == "Xuất hàng (Orders)" 
+        if value.adjustment["reason"] == "Xuất hàng (Orders)"
           quantity -= value["quantity"]
         else
           quantity += value["quantity"]
