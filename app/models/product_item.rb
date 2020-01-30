@@ -4,6 +4,8 @@ class ProductItem < ApplicationRecord
   has_many :options, class_name: 'ProductOption', through: :product_item_product_options
   has_many :adjustment_product_items
   has_many :adjustments, through: :adjustment_product_items
+  has_many :product_item_barcodes
+
   has_one :zohomap, as: :zohoable
 
   def stock
