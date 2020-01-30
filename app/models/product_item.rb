@@ -4,9 +4,8 @@ class ProductItem < ApplicationRecord
   has_many :adjustment_product_items
   has_many :adjustments, through: :adjustment_product_items
   has_many :product_item_barcodes
-
+  has_many :product_option_bridges, as: :connectable
   has_one :zohomap, as: :zohoable
-  has_one :product_option_bridge, as: :connectable
 
   def stock
     quantity = 0
