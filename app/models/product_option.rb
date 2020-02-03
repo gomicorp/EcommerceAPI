@@ -4,12 +4,11 @@ class ProductOption < ApplicationRecord
   has_many :barcodes, through: :barcode_options
 
   has_many :bridges, class_name: 'ProductOptionBridge'
-  #has_many :items, through: :product_option_bridges, source: :connectable, source_type: 'ProductItem'
-  #has_many :collections, through: :product_option_bridges, source: :connectable, source_type: 'ProductCollection'
-
-  #has_many :product_item_barcodes, through: :items
 
   delegate :product, to: :option_group
+
+  enum discount_type: %i[no const ratio]
+
   def title
     "#{option_group.name}: #{name}"
   end
@@ -22,21 +21,6 @@ class ProductOption < ApplicationRecord
     @retail_price ||= base_price + price_change
   end
 
-  ## connectables getter
-  #def connectables
-  #  items + collections
-  #end
-  #
-  ## connectables setter
-  #def connectables=(connectable_list)
-  #  connectable_list.each do |connectable|
-  #    case connectable
-  #    when ProductItem        then items << connectable
-  #    when ProductCollection  then collections << connectable
-  #    end
-  #  end
-  #end
-
   # TODO: 할인/추가 금액 관련. 리펙토링 필요.
   def price_change
     @price_change = 0
@@ -48,4 +32,15 @@ class ProductOption < ApplicationRecord
     end
     @price_change
   end
+
+  #=============================
+  # 현재 존재하는 옵션들의 unit count를 + 기준으로 구하여 옵션명에 반영하는 함수
+  #=============================
+  def self.set_all_unit_count
+    multi_unit_options = ProductOption.where('name LIKE ?', '%+%')
+    multi_unit_options.each do |opt|
+      opt.barcodes.first.unit_count!(opt.name.count('+') + 1)
+    end
+  end
+
 end

@@ -6,6 +6,7 @@ class ProductItem < ApplicationRecord
   has_many :product_item_barcodes
   has_many :product_option_bridges, as: :connectable
   has_one :zohomap, as: :zohoable
+  has_one :brand, class_name: 'Brand', through: :item_group
 
   def stock
     quantity = 0
