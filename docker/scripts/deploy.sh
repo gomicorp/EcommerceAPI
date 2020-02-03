@@ -15,6 +15,7 @@ ssh ${endpoint} "
     cd ~/${app_name}/${type};
     cat ~/.docker_password.txt | docker login --username lunacircle4 --password-stdin;
     docker pull ${image_namespace}/${app_name};
-    docker-compose -f start.yml down;
-    docker-compose -f start.yml up -d;
+    docker-compose down;
+    docker-compose up -d;
+    docker system prune --volumes;
 "

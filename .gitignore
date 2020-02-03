@@ -56,3 +56,6 @@ db/schema.rb
 .docker-sync/
 docker/.docker_password.txt
 docker/.envs
+
+# A U T O M I Z A T I O N
+.envrc
