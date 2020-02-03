@@ -26,6 +26,23 @@ class ProductOption < ApplicationRecord
     items + collections
   end
 
+  # connectables setter
+  def connectables=(connectable_list)
+    new_items = []
+    new_collections = []
+
+    connectable_list.each do |connectable|
+      if connectable.class == ProductItem
+        new_items.append(connectable)
+      else
+        new_collections.append(connectable)
+      end
+    end
+
+    items << new_items
+    collections << new_collections
+  end
+
   # TODO: 할인/추가 금액 관련. 리펙토링 필요.
   def price_change
     @price_change = 0
