@@ -10,6 +10,8 @@ class CartItem < ApplicationRecord
   has_many :barcodes, dependent: :nullify
   has_many :product_options, -> { distinct }, through: :barcodes
 
+  belongs_to :product_option
+
   delegate :order_info, to: :cart, allow_nil: true
 
   def _barcode_count

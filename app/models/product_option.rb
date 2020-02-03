@@ -14,7 +14,7 @@ class ProductOption < ApplicationRecord
   end
 
   def base_price
-    @base_price ||= items.sum(:selling_price) #product.price + additional_price
+    @base_price ||= bridges.map(&:price).sum #product.price + additional_price
   end
 
   def retail_price
