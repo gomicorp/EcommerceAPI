@@ -4,11 +4,11 @@ class ProductOption < ApplicationRecord
   has_many :barcodes, through: :barcode_options
 
   has_many :product_option_bridges
-  has_many :items, class_name: 'ProductItem', through: :product_item_product_options
+  has_many :items, :through => :product_option_bridges, :source => :connectable, :source_type => 'ProductItem'
+  has_many :collections, :through => :product_option_bridges, :source => :connectable, :source_type => 'ProductCollection'
   has_many :product_item_barcodes, through: :items
 
   delegate :product, to: :option_group
-
   def title
     "#{option_group.name}: #{name}"
   end
@@ -19,6 +19,11 @@ class ProductOption < ApplicationRecord
 
   def retail_price
     @retail_price ||= base_price + price_change
+  end
+
+  # connectables getter
+  def connectables
+    items + collections
   end
 
   # TODO: 할인/추가 금액 관련. 리펙토링 필요.
