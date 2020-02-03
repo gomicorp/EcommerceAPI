@@ -1,12 +1,19 @@
 class ProductItem < ApplicationRecord
+  extend_has_many_attached :images
+
   belongs_to :item_group, class_name: 'ProductItemGroup', foreign_key: :item_group_id
+  has_one :brand, class_name: 'Brand', through: :item_group
+
   has_many :options, class_name: 'ProductOption', through: :product_item_product_options
+
   has_many :adjustment_product_items
   has_many :adjustments, through: :adjustment_product_items
-  has_many :product_item_barcodes
-  has_many :product_option_bridges, as: :connectable
+  has_many :barcodes, class_name: 'ProductItemBarcode'
+
+  has_many :bridges, class_name: 'ProductOptionBridge', as: :connectable
+  has_many :product_options, through: :bridges
+
   has_one :zohomap, as: :zohoable
-  has_one :brand, class_name: 'Brand', through: :item_group
 
   def stock
     quantity = 0
@@ -93,5 +100,12 @@ class ProductItem < ApplicationRecord
   def from_to_date_check(exported_at, from, to)
     exported_at >= Date.strptime(from, '%Y-%m-%d') &&
       exported_at <= Date.strptime(to, '%Y-%m-%d')
+  end
+
+
+  private
+
+  def update_counter_cache
+    update_column(:alive_barcodes_count, barcodes.alive.count)
   end
 end

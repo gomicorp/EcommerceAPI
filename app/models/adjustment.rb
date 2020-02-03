@@ -7,4 +7,6 @@ class Adjustment < ApplicationRecord
   has_many :adjustment_product_items
   has_many :product_items, through: :adjustment_product_items
   has_one :zohomap, as: :zohoable
+
+  validates_presence_of :reason
 end
