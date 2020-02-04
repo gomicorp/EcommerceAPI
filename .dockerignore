@@ -5,22 +5,16 @@
 /config/master.key
 
 # Ignore related Docker
-docker-sync.yml
-docker-compose.yml
-Dockerfile
 docker/.docker_password.txt
 docker/.envs
-docker/scripts
-docker/nginx
-docker/docker-compose
-docker/Dockerfile
 .docker-sync/
 .direnv/
-.envrc
 
 # Ignore all logfiles and tempfiles.
 /log
-/tmp
+/tmp/*
+!/tmp/.keep
+.rakeTasks
 
 # Ignore uploaded files in development.
 /storage/*

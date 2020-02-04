@@ -18,5 +18,7 @@ services:
       - /bin/bash
       - -c
       - |
+        touch /app/log/production.log && touch /app/log/.keep
+        chmod o+w /app/log/production.log
         crond
         /opt/nginx/sbin/nginx -g 'daemon off;'
