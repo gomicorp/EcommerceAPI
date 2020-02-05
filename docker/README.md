@@ -58,19 +58,22 @@ yarn_install
 <br/>
 
 ## 2. 개발환경 시작하기
-프로젝트 루트 디렉토리에서 다음 명령어로 개발환경을 시작할수 있습니다. 실행후 control + c를 누르면 개발환경이 종료됩니다.
+먼저 우리가 작업할 개발 환경을 켜줍니다.
 ```bash
 dev_start
 ```
 
-만약 rails db:migrate, rails console --sandbox, gem install xxx 와같은 rails나 ruby
-관련 명령어가 쓰고 싶다면 다음 명령어로 docker container로 진입한후 사용하시면 됩니다.
+개발 환경이 켜지면 다음 명령어로 docker container의 shell로 진입한후 개발을 진행하시면 됩니다.
 ```bash
 docker_shell
 ```
 
-rails c, rails console --sandbox를 사용할때는 다음과 같이 사용할수 있습니다.
+docker_shell을 이용하여 개발을 진행할수 있지만 편의를 위해 shortcut들을 만들었습니다.
+rails s, rails c, rails console --sandbox를 사용할때는 다음과 같이 사용할수 있습니다.
 ```bash
+# rails s
+rails_s
+
 # rails c
 rails_c
 
