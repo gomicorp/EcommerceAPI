@@ -6,7 +6,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx/nginx.conf.template.template:/etc/nginx/nginx.conf.template.template:ro
     container_name: platform-api-nginx
     stdin_open: true
     tty: true
@@ -43,7 +43,7 @@ services:
         - ./log/nginx:/opt/nginx/logs
         - ./log:/app/log
         - ./master.key:/app/config/master.key
-        - ./nginx.conf:/opt/nginx/conf/nginx.conf
+        - ./nginx.conf.template.template:/opt/nginx/conf/nginx.conf.template.template
       container_name: platform-api-green
       stdin_open: true
       tty: true
