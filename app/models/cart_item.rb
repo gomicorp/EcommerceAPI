@@ -7,10 +7,16 @@ class CartItem < ApplicationRecord
 
   belongs_to :cart
   belongs_to :product
+  belongs_to :product_option
+  has_many :cart_item_barcodes
+  has_many :item_barcodes, class_name: 'ProductItemBarcode', through: :cart_item_barcodes
+
+
+  ##========================================
+  # LEGACY
   has_many :barcodes, dependent: :nullify
   has_many :product_options, -> { distinct }, through: :barcodes
-
-  belongs_to :product_option
+  ##========================================
 
   delegate :order_info, to: :cart, allow_nil: true
 
@@ -41,4 +47,12 @@ class CartItem < ApplicationRecord
   def stat
     @stat = StatReportService.new(self)
   end
+
+  def self.migrate_cart_items
+    CartItem.where('created_at > ?', 4.months.ago).each do |cart_item|
+      cart_item.product_option = cart_item.product_options.first
+      cart_item.save!
+    end
+  end
+
 end
