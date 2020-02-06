@@ -15,11 +15,14 @@ class Product < ApplicationRecord
   enum running_status: RUNNING_STATUSES.keys
 
   belongs_to :brand
+
   belongs_to :country
-  has_many :option_groups, class_name: ProductOptionGroup.name
+  has_many :option_groups, class_name: 'ProductOptionGroup'
   has_many :options, through: :option_groups
+  belongs_to :default_option, class_name: 'ProductOption'
+
   has_many :barcodes
-  has_many :product_categories, class_name: ProductCategory.name
+  has_many :product_categories, class_name: 'ProductCategory'
   has_many :categories, through: :product_categories
 
   has_many :product_permits
