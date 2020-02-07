@@ -19,7 +19,7 @@ brew install direnv
 eval "$(direnv hook zsh)"
 ```
 
-#### 3. 프로젝트를 clone 받아 주세요
+#### 3. 프로젝트를 clone 받아 주시고 master.key, .env를 설정해주세요
 ```bash
 git clone https://github.com/gomicorporation/platform-api.git
 ```
