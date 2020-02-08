@@ -6,83 +6,49 @@
 해야 수비니겨 날로 쑤매 뻔한킈 하고져 할 따라미니라***
 
 ## 1. 개발환경 구축하기
-#### 1. 빠른 개발을 위한 docker-sync gem을 설치해주세요
-```bash
-gem install docker-sync
-```
-
-#### 2. 편리한 개발을 위한 direnv을 설치해주세요
-```bash
-brew install direnv
-
-# direnv가 설치되면 다음 코드를 ~/.zshrc에 추가해줍니다.
-eval "$(direnv hook zsh)"
-```
-
-#### 3. 프로젝트를 clone 받아 주시고 master.key, .env를 설정해주세요
+#### 1. 프로젝트를 clone 받아 주시고 master.key, .env를 설정해주세요. 
 ```bash
 git clone https://github.com/gomicorporation/platform-api.git
 ```
-
-#### 3.3. 프로젝트의 docker 폴더에 위치한 .envrc 파일을 프로젝트 루트폴더로 복사해주세요
-```bash
-cp ./docker/.envrc ./
-```
-
-#### 3.5. 프로젝트 루트 폴더로 복한 .envrc 첫째줄의 ssh_host_name을 본인의 ssh_host_name으로 변경해주세요 (ex: store_api, store, store_th ...)
-```bash
-#변경전
-ssh_host_name=test-dockerize-store-api
-
-#변경후 
-ssh_host_name=store_th
-```
-
-#### 4. 프로젝트 폴더로 이동하여 다음 명령어를 입력해주십시다
-```bash
-direnv allow
-```
-
-#### 5. master.key, .env 파일을 세팅해 주십시다. 특히 .env 파일의 db 설정은 다음과 같이 해줍시다!
+.env 파일의 db 설정은 다음과 같이 해줍시다!
 ```bash
 DATABASE_USERNAME=<여러분의 DATABASE_USERNAME>
 DATABASE_PASSWORD=<여러분의 DATABASE_PASSWORD>
 DATABASE_HOST=docker.for.mac.localhost
 ```
 
-#### 6. 프로젝트 루트 디렉토리로 이동한후 다음명령어들을 실행하여 개발용 이미지를 빌드해주고 node_modules 을 깔아줍시다.
+#### 2. 프로젝트의 docker폴더에 있는 스크립트를 실행하여 개발환경 구축을 진행하시면 됩니다. 
 ```bash
-image_init
-yarn_install
+bash ./docker/mac_init.sh
 ```
 <br/>
 
 ## 2. 개발환경 시작하기
-먼저 우리가 작업할 개발 환경을 켜줍니다.
+먼저 우리가 개발을 진행할 도커 컨테이너를 켜줍니다.
 ```bash
 dev_start
 ```
 
-개발 환경이 켜지면 다음 명령어로 docker container의 shell로 진입한후 개발을 진행하시면 됩니다.
+컨테이너가 켜지면 다음 명령어로 docker container의 shell로 진입한후 필요한 명령어를 입력하여 개발을 진행하시면 됩니다.
 ```bash
-docker_shell
+shell
 ```
 
-docker_shell을 이용하여 개발을 진행할수 있지만 편의를 위해 shortcut들을 만들었습니다.
+shell 명령어를 이용하여 개발을 진행할수 있지만 편의를 위해 shortcut들을 만들었습니다.
 rails s, rails c, rails console --sandbox를 사용할때는 다음과 같이 사용할수 있습니다.
 ```bash
 # rails s
-rails_s
+railss
 
 # rails c
-rails_c
+console
 
 # rails console --sandbox
-rails_c_sandbox
+sandbox
 ```
 
 오늘의 개발이 끝나면 다음 명령어로 컨테이너와 docker-sync를 종료해주면 됩니다.
-(굳이 안해도 되지만 컨테이너가 계속 켜져있기 됩니다.)
+(굳이 안해도 되지만 컨테이너가 계속 켜져있게 됩니다.)
 ```bash
 dev_stop
 ```
