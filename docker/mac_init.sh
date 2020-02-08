@@ -23,9 +23,18 @@ cat ./docker/.envrc >> ./.envrc
 # container start
 docker-compose up -d
 
-# yarn_install
-docker run --rm -v platform-api_codes:/app platform-api bash -c 'yarn install'
+# bundle_install
+rm Gemfile.lock
+docker exec platform-api-web bash -c 'bundle install'
 
-# container and sync start
+# yarn_install
+docker exec platform-api-web bash -c 'yarn install'
+
+# direnv allow
 direnv allow
+
+# sync, container stop
+docker-compose stop
+docker-sync stop
+
 echo complete!
