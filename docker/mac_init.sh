@@ -15,7 +15,7 @@ then
 fi
 
 # .envrc setting copy
-echo "enter project ssh host name ex) store-api_prod: "
+echo "please enter project ssh host name! ex) store-api_prod: "
 read ssh_host_name
 echo ssh_host_name=${ssh_host_name} > ./.envrc
 cat ./docker/.envrc >> ./.envrc
