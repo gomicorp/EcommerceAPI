@@ -2,10 +2,9 @@ version: '3.1'
 
 services:
   web:
-    image: platform-api
+    image: gomicorp/rails:6.0.2.1
     container_name: platform-api-web
-    env_file:
-      - .env
+    working_dir: /app
     ports:
       - "3030:3030"
     volumes:
