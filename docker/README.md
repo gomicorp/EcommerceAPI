@@ -6,7 +6,7 @@
 해야 수비니겨 날로 쑤매 뻔한킈 하고져 할 따라미니라***
 
 ## 1. 개발환경 구축하기
-#### 1. 프로젝트를 clone 받아 주시고 master.key, .env를 설정해주세요. 
+#### 1. 프로젝트를 clone 받아 주시고 master.key를 받아 프로젝트의 config폴더에 넣어주시고, 프로젝트 루트 폴더에 .env를 작성해주세요. 
 ```bash
 git clone https://github.com/gomicorporation/platform-api.git
 ```
@@ -48,7 +48,7 @@ sandbox
 ```
 
 오늘의 개발이 끝나면 다음 명령어로 컨테이너와 docker-sync를 종료해주면 됩니다.
-(굳이 안해도 되지만 컨테이너가 계속 켜져있게 됩니다.)
+(굳이 안해도 되지만 컨테이너와 sync가 계속 켜져있게 됩니다.)
 ```bash
 dev_stop
 ```
