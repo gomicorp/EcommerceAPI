@@ -12,5 +12,6 @@ RUN rm -rf Gemfile.lock && bundle config set without 'development test' && bundl
     && yarn install && yarn cache clean \
     && SECRET_KEY_BASE=1 APP_FORCE_ENV=development RAILS_ENV=production rails assets:precompile \
     && cp ./docker/logrotate/api ./docker/logrotate/serverlog /etc/logrotate.d \
+    && cp ./docker/.bashrc /root/.bashrc \
     && rm -rf /app/tmp && mkdir /app/tmp && touch /app/tmp/.keep && chmod o+w /app/tmp \
     && git clean -fd && git reset --hard
