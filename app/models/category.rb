@@ -2,7 +2,7 @@ class Category < ApplicationRecord
   belongs_to :category
 
   has_many :product_categories, class_name: 'ProductCategory'
-  has_many :product, through: :product_categories
+  has_many :products, through: :product_categories
 
   extend_has_one_attached :image
 
