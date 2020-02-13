@@ -1,9 +1,11 @@
 class Product < ApplicationRecord
+  extend FriendlyId
   include Translatable
   extend_has_one_attached :thumbnail
   extend_has_many_attached :images
   extend_has_many_attached :catalogs
   translate_column :title
+  friendly_id :title, use: :slugged
 
   RUNNING_STATUSES = {
     pending: '판매대기',
