@@ -10,6 +10,7 @@ class CartItem < ApplicationRecord
   belongs_to :product_option
   has_many :cart_item_barcodes
   has_many :item_barcodes, class_name: 'ProductItemBarcode', through: :cart_item_barcodes
+  has_one :cancelled_tag, class_name: 'CartItemCancelledTag'
 
 
   ##========================================
