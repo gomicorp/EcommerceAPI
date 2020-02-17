@@ -15,6 +15,14 @@ class ProductCollection < ApplicationRecord
     group_by_alive.map { |keys, count| keys[1] / count }.min.to_i
   end
 
+  def unit_count
+    items_count
+  end
+
+  def items_count
+    @items_count ||= items.count
+  end
+
   def selling_price
     lists.sum(&:selling_price)
   end

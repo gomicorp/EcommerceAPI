@@ -3,5 +3,5 @@ json.partial! "gomisa/product_collections/product_collection", product_collectio
 #json.cost_price @product_collection.cost_price
 
 json.items do
-  json.array! @product_collection.lists
+  json.array! @product_collection.lists, partial: "gomisa/product_collections/lists/table_entries", as: :list
 end
