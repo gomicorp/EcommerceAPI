@@ -21,5 +21,5 @@ json.product_attribute product_item_group.product_attributes.each do |attribute|
 end
 
 json.product_item do
-  json.array! product_item_group.items
+  json.array! product_item_group.items, partial: "gomisa/product_item_groups/items/item", as: :product_item
 end
