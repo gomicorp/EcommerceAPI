@@ -27,14 +27,10 @@ module Gomisa
     def create
       @product_collection = ProductCollection.new(product_collection_params)
 
-      respond_to do |format|
-        if @product_collection.save
-          format.html { redirect_to office_product_collection_path(@product_collection), notice: 'Product collection was successfully created.' }
-          format.json { render :show, status: :created, location: @product_collection }
-        else
-          format.html { render :new }
-          format.json { render json: @product_collection.errors, status: :unprocessable_entity }
-        end
+      if @product_collection.save
+        render :show, status: :created
+      else
+        render json: @product_collection.errors, status: :bad_request
       end
     end
 
