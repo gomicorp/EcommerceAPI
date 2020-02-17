@@ -5,7 +5,7 @@ class Product < ApplicationRecord
   extend_has_many_attached :images
   extend_has_many_attached :catalogs
   translate_column :title
-  friendly_id :title, use: :slugged
+  friendly_id :title_en, use: :slugged
 
   RUNNING_STATUSES = {
     pending: '판매대기',
@@ -18,7 +18,7 @@ class Product < ApplicationRecord
 
   belongs_to :brand
 
-  belongs_to :country
+  belongs_to :country, optional: true
   has_many :option_groups, class_name: 'ProductOptionGroup'
   has_many :options, through: :option_groups
   belongs_to :default_option, class_name: 'ProductOption'
