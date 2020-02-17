@@ -17,13 +17,21 @@ class ProductItem < ApplicationRecord
 
   def stock
     quantity = 0
-    self.adjustment_product_items.each do |value|
-      if value.adjustment.zohomap["archived_at"] == nil
-        if value.adjustment["reason"] == "Xuất hàng (Orders)"
-          quantity -= value["quantity"]
-        else
-          quantity += value["quantity"]
-        end
+    self.adjustments.each do |adjustment|
+      if adjustment.reason == "Order"
+        quantity -= adjustment.amount
+      else
+        quantity += adjustment.amount
+      end
+    end
+    quantity
+  end
+
+  def accumulated_amounts
+    quantity = 0
+    self.adjustments.each do |adjustment|
+      if adjustment.reason != "Order"
+        quantity += adjustment.amount
       end
     end
     quantity

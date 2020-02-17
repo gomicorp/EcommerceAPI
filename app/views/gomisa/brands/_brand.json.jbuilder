@@ -7,4 +7,5 @@ else
   json.logo nil
 end
 
+json.sku_counts brand.items.count
 #json.exports product_item.exports_quantity(params[:from], params[:to], params[:channel])
