@@ -7,5 +7,5 @@ json.available_quantity list.available_quantity
 json.item do
   json.id list.item.id
   json.name list.item.name
-  json.url gomisa_product_item_url(list.item)
+  json.url gomisa_product_item_url(list.item, format: :json)
 end
