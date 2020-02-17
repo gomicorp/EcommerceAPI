@@ -28,6 +28,17 @@ module Gomisa
       end
     end
 
+    def destroy
+      # delete will only delete current object record from db but not its associated children records from db.
+      # destroy will delete current object record from db and also its associated children record from db.
+      begin
+        @product_item_group.delete
+        render json: {}, status: :no_content
+      rescue ActiveRecord::InvalidForeignKey => e
+        render json: { error: e.to_s }, status: :failed_dependency
+      end
+    end
+
     private
 
     def product_item_group_params
