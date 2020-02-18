@@ -37,24 +37,21 @@ module Gomisa
     # PATCH/PUT /product_collections/1
     # PATCH/PUT /product_collections/1.json
     def update
-      respond_to do |format|
-        if @product_collection.update(product_collection_params)
-          format.html { redirect_to office_product_collection_path(@product_collection), notice: 'Product collection was successfully updated.' }
-          format.json { render :show, status: :ok, location: @product_collection }
-        else
-          format.html { render :edit }
-          format.json { render json: @product_collection.errors, status: :unprocessable_entity }
-        end
+      if @product_collection.update(product_collection_params)
+        render :show , status: :reset_content
+      else
+        render json: @product_collection.errors, status: :bad_request
       end
     end
 
     # DELETE /product_collections/1
     # DELETE /product_collections/1.json
     def destroy
-      @product_collection.destroy
-      respond_to do |format|
-        format.html { redirect_to office_product_collections_url, notice: 'Product collection was successfully destroyed.' }
-        format.json { head :no_content }
+      begin
+        @product_collection.delete
+        render json: {}, status: :no_content
+      rescue ActiveRecord::InvalidForeignKey => e
+        render json: { error: e.to_s }, status: :failed_dependency
       end
     end
 
