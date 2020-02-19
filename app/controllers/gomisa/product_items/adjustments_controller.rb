@@ -19,7 +19,7 @@ module Gomisa
             @service = provider.new(@product_item, @adjustment)
 
             if @service.call
-              render json: @product_item, template: "gomisa/product_item_groups/items/show"
+              render status: :created, template: "gomisa/product_item_groups/items/show", formats: :json
             else
               render json: {}, status: :bad_request
             end

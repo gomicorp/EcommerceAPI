@@ -20,13 +20,13 @@ module Gomisa
         @product_collection_list = ProductCollectionList.find(@product_collection_list.item_id)
 
         # 어짜피 위에서 저장안되면 422 status code 반환
-        render json: @product_collection, status: :created
+        render status: :created, template: "gomisa/product_collections/show", formats: :json
       end
 
       def destroy
         elements = @product_collection.elements.where(product_item: @product_collection_list.item)
         @product_collection.elements.destroy(elements)
-        render json: {}, status: :no_content
+        render status: :no_content, template: "gomisa/product_collections/show", formats: :json
       end
 
       private

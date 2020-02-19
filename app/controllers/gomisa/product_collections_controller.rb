@@ -13,15 +13,6 @@ module Gomisa
     def show
     end
 
-    # GET /product_collections/new
-    def new
-      @product_collection = ProductCollection.new
-    end
-
-    # GET /product_collections/1/edit
-    def edit
-    end
-
     # POST /product_collections
     # POST /product_collections.json
     def create
