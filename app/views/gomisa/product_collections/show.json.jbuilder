@@ -5,5 +5,3 @@ json.cost_price @product_collection.cost_price
 json.items do
   json.array! @product_collection.lists, partial: "gomisa/product_collections/lists/table_entries", as: :list
 end
-
-#
