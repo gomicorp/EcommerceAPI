@@ -27,7 +27,7 @@ module Gomisa
       @company.attributes = company_params
 
       if @company.save
-        render json: @company, status: :reset_content
+        render json: @company, status: :ok
       else
         render json: @company.errors, status: :unprocessable_entity
       end
