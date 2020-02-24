@@ -7,7 +7,7 @@ module Gomisa
     end
 
     def create
-      @service = Gomisa::ProductItemGroupService::Saver.new(params)
+      @service = ProductItemGroupService::Saver.new(params)
       @product_item_group = @service.product_item_group
 
       if @service.save
@@ -18,7 +18,7 @@ module Gomisa
     end
 
     def update
-      @service = Gomisa::ProductItemGroupService::Saver.new(params)
+      @service = ProductItemGroupService::Saver.new(params)
       @product_item_group = @service.product_item_group
 
       if @service.save
