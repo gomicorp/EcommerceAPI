@@ -12,6 +12,7 @@ module Gomisa
       def save_product_item(item_params, item_group)
         id_or_nil = item_params.delete(:id)
         item = item_group.items.find_or_initialize_by(id: id_or_nil)
+        item.country = Country.find_by(short_name: ApplicationRecord.country_code)
         item.update! item_params
         item
       end
