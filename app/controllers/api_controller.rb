@@ -1,5 +1,5 @@
 class ApiController < ActionController::API
-  before_action :set_raven_context
+  before_action :set_raven_context, :set_app_locale, :set_country_code
 
   private
 
@@ -16,5 +16,14 @@ class ApiController < ActionController::API
 
   def production?
     Rails.env == 'production'
+  end
+
+  def set_country_code
+    @nation = params[:nation] || :ko
+    ApplicationRecord.country_code = @nation
+  end
+
+  def set_app_locale
+    I18n.default_locale = :ko
   end
 end
