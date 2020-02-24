@@ -1,5 +1,8 @@
 json.product_item_group do
-  json.except! product_item_group
+  json.except! product_item_group, :brand_id
+  json.brand do
+    json.extract! product_item_group.brand, :id, :name
+  end
 end
 
 #json.product_attribute do
