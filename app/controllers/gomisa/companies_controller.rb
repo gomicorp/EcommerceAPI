@@ -1,5 +1,5 @@
 module Gomisa
-  class CompaniesController < BaseController
+  class CompaniesController < ApiController
     before_action :set_company, only: [:show, :edit, :update, :destroy]
     # GET /gomisa/companies
     # GET /gomisa/companies.json
@@ -27,7 +27,7 @@ module Gomisa
       @company.attributes = company_params
 
       if @company.save
-        render json: @company, status: :ok
+        render json: @company, status: :reset_content
       else
         render json: @company.errors, status: :unprocessable_entity
       end
