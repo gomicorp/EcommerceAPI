@@ -1,4 +1,4 @@
-class ProductCollection < ApplicationRecord
+class ProductCollection < NationRecord
   has_many :elements, class_name: 'ProductCollectionElement'
   has_many :items, class_name: 'ProductItem', through: :elements, source: :product_item
   has_many :lists, class_name: 'ProductCollectionList', foreign_key: :collection_id

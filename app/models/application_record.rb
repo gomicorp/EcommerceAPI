@@ -1,5 +1,6 @@
 class ApplicationRecord < ActiveRecord::Base
   extend AutoIncrement
+  extend ParseCountryCode
   self.abstract_class = true
 
   def cls

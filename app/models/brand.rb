@@ -1,4 +1,4 @@
-class Brand < ApplicationRecord
+class Brand < NationRecord
   include Translatable
   include Approvable
   extend_has_one_attached :logo

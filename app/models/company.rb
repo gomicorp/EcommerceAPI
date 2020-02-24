@@ -1,4 +1,4 @@
-class Company < ApplicationRecord
+class Company < NationRecord
   include Approvable
   has_many :brands, dependent: :destroy
 

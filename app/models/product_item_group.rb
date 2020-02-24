@@ -1,4 +1,4 @@
-class ProductItemGroup < ApplicationRecord
+class ProductItemGroup < NationRecord
   belongs_to :brand
   has_many :items, class_name: 'ProductItem', foreign_key: :item_group_id
 

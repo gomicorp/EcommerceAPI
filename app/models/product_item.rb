@@ -1,4 +1,4 @@
-class ProductItem < ApplicationRecord
+class ProductItem < NationRecord
   extend_has_many_attached :images
 
   belongs_to :item_group, class_name: 'ProductItemGroup', foreign_key: :item_group_id
