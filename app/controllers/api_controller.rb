@@ -19,7 +19,7 @@ class ApiController < ActionController::API
   end
 
   def set_country_code
-    @nation = params[:nation] || :ko
+    @nation = params[:nation]
     ApplicationRecord.country_code = @nation
   end
 
