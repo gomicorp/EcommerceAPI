@@ -1,4 +1,4 @@
-class ProductItem < ApplicationRecord
+class ProductItem < NationRecord
   extend_has_many_attached :images
 
   belongs_to :item_group, class_name: 'ProductItemGroup', foreign_key: :item_group_id
@@ -17,13 +17,21 @@ class ProductItem < ApplicationRecord
 
   def stock
     quantity = 0
-    self.adjustment_product_items.each do |value|
-      if value.adjustment.zohomap["archived_at"] == nil
-        if value.adjustment["reason"] == "Xuất hàng (Orders)"
-          quantity -= value["quantity"]
-        else
-          quantity += value["quantity"]
-        end
+    self.adjustments.each do |adjustment|
+      if adjustment.reason == "Order"
+        quantity -= adjustment.amount
+      else
+        quantity += adjustment.amount
+      end
+    end
+    quantity
+  end
+
+  def accumulated_amounts
+    quantity = 0
+    self.adjustments.each do |adjustment|
+      if adjustment.reason != "Order"
+        quantity += adjustment.amount
       end
     end
     quantity
@@ -43,12 +51,11 @@ class ProductItem < ApplicationRecord
 
   def calculate_export_quantity_date_channel(object, from, to, channel)
     quantity = 0
-    object.adjustment_product_items.each do |value|
-      if from_to_date_check(value.adjustment["exported_at"], from, to) &&
-        channel_filter(value.adjustment["channel"], channel) &&
-        value.adjustment["reason"] == "Xuất hàng (Orders)" &&
-        value.adjustment.zohomap["archived_at"] == nil
-        quantity += value["quantity"]
+    object.adjustments.each do |value|
+      if from_to_date_check(value.created_at, from, to) &&
+        channel_filter(value.channel, channel) &&
+        value.reason == "Order"
+          quantity += value.amount
       end
     end
     quantity
@@ -56,11 +63,10 @@ class ProductItem < ApplicationRecord
 
   def calculate_export_quantity_date(object, from, to)
     quantity = 0
-    object.adjustment_product_items.each do |value|
-      if from_to_date_check(value.adjustment["exported_at"], from, to) &&
-        value.adjustment["reason"] == "Xuất hàng (Orders)" &&
-        value.adjustment.zohomap["archived_at"] == nil
-        quantity += value["quantity"]
+    object.adjustments.each do |value|
+      if from_to_date_check(value.created_at, from, to) &&
+        value.reason == "Order"
+          quantity += value.amount
       end
     end
     quantity
@@ -68,11 +74,10 @@ class ProductItem < ApplicationRecord
 
   def calculate_export_quantity_channel(object, channel)
     quantity = 0
-    object.adjustment_product_items.each do |value|
-      if channel_filter(value.adjustment["channel"], channel) &&
-        value.adjustment["reason"] == "Xuất hàng (Orders)" &&
-        value.adjustment.zohomap["archived_at"] == nil
-        quantity += value["quantity"]
+    object.adjustments.each do |value|
+      if channel_filter(value.channel, channel) &&
+        value.reason == "Order"
+          quantity += value.amount
       end
     end
     quantity
@@ -80,10 +85,9 @@ class ProductItem < ApplicationRecord
 
   def calculate_export_quantity(object)
     quantity = 0
-    object.adjustment_product_items.each do |value|
-      if value.adjustment["reason"] == "Xuất hàng (Orders)" &&
-        value.adjustment.zohomap["archived_at"] == nil
-        quantity += value["quantity"]
+    object.adjustments.each do |value|
+      if value.reason == "Order"
+        quantity += value.amount
       end
     end
     quantity

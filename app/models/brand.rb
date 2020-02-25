@@ -1,4 +1,4 @@
-class Brand < ApplicationRecord
+class Brand < NationRecord
   include Translatable
   include Approvable
   extend_has_one_attached :logo
@@ -8,6 +8,7 @@ class Brand < ApplicationRecord
   belongs_to :country
   has_many :products
   has_many :product_item_groups
+  has_many :items, through: :product_item_groups, class_name: :ProductItem
   has_many :managers, through: :company
 
   def official_site_url
