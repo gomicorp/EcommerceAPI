@@ -23,7 +23,7 @@ module Gomisa
     end
 
     def filter_by_brand_name_and_company_name
-      @collection = collection.includes(:brand, :company).where("companies.name LIKE ? OR brands.name LIKE ?", "%#{query}%", "%#{query}%").references(:brand, :company)
+      @collection = collection.where("name LIKE ?", "%#{query}%")
     end
   end
 end
