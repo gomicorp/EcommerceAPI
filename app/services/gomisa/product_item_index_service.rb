@@ -2,16 +2,23 @@ module Gomisa
   class ProductItemIndexService
     attr_reader :product_items
 
-    def initialize(from, to, channel)
+    def initialize(from, to, channel, query)
       @from = from
       @to = to
       @channel = channel
+      @query = query
     end
 
-    def aggregater
+    def search
+      search_service = Gomisa::ProductItemSearchService.new(ProductItem, @query)
+      search_service.call
+      @product_items = search_service.collection
+    end
+
+    def aggregater(collection)
       product_items = []
 
-      ProductItem.all.map{ |k, v|
+      collection.all.map{ |k, v|
         attributes = k.attributes
         attributes[:stock] = k.stock
         attributes[:quantity] = k.exports_quantity(@from, @to, @channel)
@@ -23,7 +30,10 @@ module Gomisa
     end
 
     def call
-      @product_items = aggregater
+      search
+      @product_items = aggregater @product_items
     end
   end
 end
+
+

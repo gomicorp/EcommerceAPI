@@ -3,6 +3,7 @@ class ProductItem < NationRecord
 
   belongs_to :item_group, class_name: 'ProductItemGroup', foreign_key: :item_group_id
   has_one :brand, class_name: 'Brand', through: :item_group
+  has_one :company, class_name: 'Company', through: :brand
 
   has_many :options, class_name: 'ProductOption', through: :product_item_product_options
 
