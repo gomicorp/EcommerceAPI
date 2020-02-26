@@ -20,8 +20,7 @@ module Gomisa
 
       collection.all.map{ |k, v|
         attributes = k.attributes
-        attributes[:stock] = k.stock
-        attributes[:quantity] = k.exports_quantity(@from, @to, @channel)
+        attributes[:exported_stock] = k.exports_quantity(@from, @to, @channel)
         attributes[:brand] = k.item_group.brand
         product_items.push(attributes)
       }
