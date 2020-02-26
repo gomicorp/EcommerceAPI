@@ -3,6 +3,7 @@ class ProductItem < NationRecord
 
   belongs_to :item_group, class_name: 'ProductItemGroup', foreign_key: :item_group_id
   has_one :brand, class_name: 'Brand', through: :item_group
+  has_one :company, class_name: 'Company', through: :brand
 
   has_many :options, class_name: 'ProductOption', through: :product_item_product_options
 
@@ -14,18 +15,6 @@ class ProductItem < NationRecord
   has_many :product_options, through: :bridges
 
   has_one :zohomap, as: :zohoable
-
-  def stock
-    quantity = 0
-    self.adjustments.each do |adjustment|
-      if adjustment.reason == "Order"
-        quantity -= adjustment.amount
-      else
-        quantity += adjustment.amount
-      end
-    end
-    quantity
-  end
 
   def accumulated_amounts
     quantity = 0
@@ -55,7 +44,7 @@ class ProductItem < NationRecord
       if from_to_date_check(value.created_at, from, to) &&
         channel_filter(value.channel, channel) &&
         value.reason == "Order"
-          quantity += value.amount
+          quantity -= value.amount
       end
     end
     quantity
@@ -66,7 +55,7 @@ class ProductItem < NationRecord
     object.adjustments.each do |value|
       if from_to_date_check(value.created_at, from, to) &&
         value.reason == "Order"
-          quantity += value.amount
+          quantity -= value.amount
       end
     end
     quantity
@@ -77,7 +66,7 @@ class ProductItem < NationRecord
     object.adjustments.each do |value|
       if channel_filter(value.channel, channel) &&
         value.reason == "Order"
-          quantity += value.amount
+          quantity -= value.amount
       end
     end
     quantity
@@ -87,7 +76,7 @@ class ProductItem < NationRecord
     quantity = 0
     object.adjustments.each do |value|
       if value.reason == "Order"
-        quantity += value.amount
+        quantity -= value.amount
       end
     end
     quantity

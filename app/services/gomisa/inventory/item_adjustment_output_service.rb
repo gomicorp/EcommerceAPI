@@ -19,7 +19,6 @@ module Gomisa
           item.barcodes.destroy(item.barcodes.alive.limit(quantity))
 
           adjustment.amount = quantity.abs * -1
-          adjustment.memo = '[Amount over fit > auto fix] ' + adjustment.memo
           adjustment.result_quantity = item.barcodes_count
           adjustment.save!
         end
