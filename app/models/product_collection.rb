@@ -3,9 +3,11 @@ class ProductCollection < NationRecord
   has_many :items, class_name: 'ProductItem', through: :elements, source: :product_item
   has_many :lists, class_name: 'ProductCollectionList', foreign_key: :collection_id
   has_one :zohomap, as: :zohoable
-  has_many :product_option_bridges, as: :connectable
+  has_many :bridges, class_name: 'ProductOptionBridge', as: :connectable, dependent: :destroy
 
   validates :name, presence: true
+
+  scope :item_with, ->(product_item) { includes(:elements).where(elements: ProductCollectionElement.where(product_item: product_item)) }
 
   def group_by_alive
     items.group(:id, :alive_barcodes_count).count
