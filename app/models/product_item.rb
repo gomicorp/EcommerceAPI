@@ -17,84 +17,15 @@ class ProductItem < NationRecord
   has_one :zohomap, as: :zohoable
 
   def accumulated_amounts
-    quantity = 0
-    self.adjustments.each do |adjustment|
-      if adjustment.reason != "Order"
-        quantity += adjustment.amount
-      end
-    end
-    quantity
+    @accumulated_amounts ||= adjustments.where.not(reason: 'Order').sum(:amount)
   end
 
   def exports_quantity(from = nil, to = nil, channel = nil)
-    if from == nil && to == nil && channel
-      calculate_export_quantity_channel(self, channel)
-    elsif from == nil && to == nil && channel == nil
-      calculate_export_quantity(self)
-    elsif from && to && channel == nil
-      calculate_export_quantity_date(self, from, to)
-    else
-      calculate_export_quantity_date_channel(self, from, to, channel)
-    end
+    query = {}
+    query[:created_at] = from.to_date..to.to_date if from && to
+    query[:channel] = channel if channel && channel.to_s != 'All'
+    Math.abs(adjustments.where(reason: 'Order').where(query).sum(:amount))
   end
-
-  def calculate_export_quantity_date_channel(object, from, to, channel)
-    quantity = 0
-    object.adjustments.each do |value|
-      if from_to_date_check(value.created_at, from, to) &&
-        channel_filter(value.channel, channel) &&
-        value.reason == "Order"
-          quantity -= value.amount
-      end
-    end
-    quantity
-  end
-
-  def calculate_export_quantity_date(object, from, to)
-    quantity = 0
-    object.adjustments.each do |value|
-      if from_to_date_check(value.created_at, from, to) &&
-        value.reason == "Order"
-          quantity -= value.amount
-      end
-    end
-    quantity
-  end
-
-  def calculate_export_quantity_channel(object, channel)
-    quantity = 0
-    object.adjustments.each do |value|
-      if channel_filter(value.channel, channel) &&
-        value.reason == "Order"
-          quantity -= value.amount
-      end
-    end
-    quantity
-  end
-
-  def calculate_export_quantity(object)
-    quantity = 0
-    object.adjustments.each do |value|
-      if value.reason == "Order"
-        quantity -= value.amount
-      end
-    end
-    quantity
-  end
-
-  def channel_filter(channel, query_channel)
-    if query_channel == 'All'
-      true
-    else
-      channel == query_channel
-    end
-  end
-
-  def from_to_date_check(exported_at, from, to)
-    exported_at >= Date.strptime(from, '%Y-%m-%d') &&
-      exported_at <= Date.strptime(to, '%Y-%m-%d')
-  end
-
 
   private
 

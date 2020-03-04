@@ -9,13 +9,20 @@ module Gomisa
       @query = query
     end
 
+    def call
+      search
+      @product_items = aggregator @product_items
+    end
+
+    private
+
     def search
       search_service = Gomisa::ProductItemSearchService.new(ProductItem, @query)
       search_service.call
       @product_items = search_service.collection
     end
 
-    def aggregater(collection)
+    def aggregator(collection)
       product_items = []
 
       collection.all.map{ |k, v|
@@ -27,12 +34,5 @@ module Gomisa
 
       product_items
     end
-
-    def call
-      search
-      @product_items = aggregater @product_items
-    end
   end
 end
-
-
