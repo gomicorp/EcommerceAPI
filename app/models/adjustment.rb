@@ -6,6 +6,7 @@
 class Adjustment < NationRecord
   REASONS = ['Input from Korea', 'Order', 'Return back'].freeze
 
+  belongs_to :order_info
   has_many :adjustment_product_items
   has_many :product_items, through: :adjustment_product_items
   has_one :zohomap, as: :zohoable
