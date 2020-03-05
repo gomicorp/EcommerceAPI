@@ -7,6 +7,7 @@ module AlIsWell
         national_models = [
           Brand,
           Adjustment,
+          Product,
           ProductCollection,
           ProductItemGroup,
           ProductItem
