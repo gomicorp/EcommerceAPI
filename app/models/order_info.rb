@@ -1,5 +1,6 @@
 class OrderInfo < ApplicationRecord
   belongs_to :cart
+  belongs_to :channel
   has_one :ship_info, dependent: :destroy
   has_one :payment, dependent: :destroy
   has_one :user, through: :cart
@@ -42,5 +43,21 @@ class OrderInfo < ApplicationRecord
 
   def quantity
     cart.items.sum(:barcode_count)
+  end
+
+  def self.set_default_attribute(attributes)
+    attributes = {} if !attributes
+    attributes[:channel_id] = Channel.find_by(name: "Gomi").id if !attributes[:channel_id]
+    attributes
+  end
+
+  def self.new(attributes = nil, &block)
+    attributes = set_default_attribute(attributes)
+    super
+  end
+
+  def self.create(attributes = nil, &block)
+    attributes = set_default_attribute(attributes)
+    super
   end
 end
