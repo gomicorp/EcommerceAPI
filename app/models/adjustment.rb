@@ -4,6 +4,7 @@
 # 이렇게 하면 Adjustment가 반환된다.
 # Zohomap.all[0].zohoable
 class Adjustment < NationRecord
+  belongs_to :order_info
   has_many :adjustment_product_items
   has_many :product_items, through: :adjustment_product_items
   has_one :zohomap, as: :zohoable

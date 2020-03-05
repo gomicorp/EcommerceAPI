@@ -4,6 +4,7 @@ class OrderInfo < ApplicationRecord
   has_one :payment, dependent: :destroy
   has_one :user, through: :cart
   has_many :cart_items, through: :cart
+  has_many :adjustments, class_name: 'Adjustment'
 
   validates_presence_of :cart_id, :enc_id
   validates_uniqueness_of :cart_id, :enc_id
