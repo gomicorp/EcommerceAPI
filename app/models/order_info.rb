@@ -1,5 +1,6 @@
 class OrderInfo < ApplicationRecord
   belongs_to :cart
+  belongs_to :channel
   has_one :ship_info, dependent: :destroy
   has_one :payment, dependent: :destroy
   has_one :user, through: :cart

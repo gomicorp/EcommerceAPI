@@ -5,6 +5,8 @@ class ProductOption < ApplicationRecord
 
   has_many :bridges, class_name: 'ProductOptionBridge'
 
+  belongs_to :channel
+
   delegate :product, to: :option_group
 
   enum discount_type: %i[no const ratio]
