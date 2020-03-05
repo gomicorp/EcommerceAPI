@@ -1,4 +1,4 @@
-class Category < ApplicationRecord
+class Category < NationRecord
   belongs_to :category
 
   has_many :product_categories, class_name: 'ProductCategory'

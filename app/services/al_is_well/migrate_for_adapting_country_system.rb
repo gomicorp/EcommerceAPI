@@ -10,7 +10,8 @@ module AlIsWell
           Product,
           ProductCollection,
           ProductItemGroup,
-          ProductItem
+          ProductItem,
+          Category,
         ]
 
         national_models.each(&:migrate_original_record_to_thai_record)
