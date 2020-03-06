@@ -5,6 +5,7 @@ module AlIsWell
         Country.migrate_input_seed_data
 
         national_models = [
+          OrderInfo,
           Brand,
           Adjustment,
           Product,

@@ -3,11 +3,11 @@ class NationRecord < ApplicationRecord
 
   belongs_to :country, optional: true
 
-  default_scope -> { th }
-  scope :th, -> { unscoped.left_joins(:country).where(countries: { short_name: 'th' }) }
-  scope :vn, -> { unscoped.left_joins(:country).where(countries: { short_name: 'vn' }) }
-  scope :undef, -> { unscoped.left_joins(:country).where(countries: { short_name: nil }) }
-  scope :at, ->(key) { unscoped.left_joins(:country).where(countries: { short_name: key }) }
+  default_scope -> { send(country_code.to_sym) }
+  scope :th, -> { unscoped.includes(:country).where(country: Country.th) }
+  scope :vn, -> { unscoped.includes(:country).where(country: Country.vn) }
+  scope :undef, -> { unscoped.includes(:country).where(country: Country.undef) }
+  scope :at, ->(key) { unscoped.includes(:country).where(country: Country.at(key)) }
 
   before_save :callback_attaching_country
 
@@ -18,6 +18,6 @@ class NationRecord < ApplicationRecord
   private
 
   def callback_attaching_country
-    self.country ||= Country.th
+    self.country ||= Country.send(ENV['APP_COUNTRY'])
   end
 end
