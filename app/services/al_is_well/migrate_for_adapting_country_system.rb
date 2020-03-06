@@ -5,6 +5,7 @@ module AlIsWell
         Country.migrate_input_seed_data
 
         national_models = [
+          OrderInfo,
           Brand,
           Adjustment,
           Product,
@@ -12,6 +13,8 @@ module AlIsWell
           ProductItemGroup,
           ProductItem,
           Category,
+          Banner::Home,
+          Banner::Category,
         ]
 
         national_models.each(&:migrate_original_record_to_thai_record)
