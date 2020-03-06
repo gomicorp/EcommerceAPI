@@ -13,6 +13,8 @@ module AlIsWell
           ProductItemGroup,
           ProductItem,
           Category,
+          Banner::Home,
+          Banner::Category,
         ]
 
         national_models.each(&:migrate_original_record_to_thai_record)
