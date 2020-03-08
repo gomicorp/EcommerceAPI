@@ -1,4 +1,4 @@
-class Channel < ApplicationRecord
+class Channel < NationRecord
   has_many :order_infos
   has_many :product_options
 
