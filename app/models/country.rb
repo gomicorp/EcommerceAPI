@@ -3,13 +3,17 @@ class Country < ApplicationRecord
   has_many :products
 
   validates_presence_of :name, :name_ko, :locale, :short_name
+  alias_attribute :code, :short_name
+
+  TH = find_by(short_name: :th)
+  VN = find_by(short_name: :vn)
 
   def self.th
-    find_by(short_name: 'th')
+    TH
   end
 
   def self.vn
-    find_by(short_name: 'vn')
+    VN
   end
 
   def self.undef
