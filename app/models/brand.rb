@@ -5,7 +5,6 @@ class Brand < NationRecord
   translate_column :name
 
   belongs_to :company
-  belongs_to :country
   has_many :products
   has_many :product_item_groups
   has_many :items, through: :product_item_groups, class_name: :ProductItem

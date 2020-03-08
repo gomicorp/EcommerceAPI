@@ -9,9 +9,9 @@ class ProductItem < NationRecord
 
   has_many :adjustment_product_items
   has_many :adjustments, through: :adjustment_product_items
-  has_many :barcodes, class_name: 'ProductItemBarcode'
+  has_many :barcodes, class_name: 'ProductItemBarcode', dependent: :destroy
 
-  has_many :bridges, class_name: 'ProductOptionBridge', as: :connectable
+  has_many :bridges, class_name: 'ProductOptionBridge', as: :connectable, dependent: :destroy
   has_many :product_options, through: :bridges
 
   has_one :zohomap, as: :zohoable
