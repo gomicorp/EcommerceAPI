@@ -1,4 +1,5 @@
 class OrderInfo < NationRecord
+  include ChannelRecordable
   belongs_to :cart
   belongs_to :channel
   has_one :ship_info, dependent: :destroy
