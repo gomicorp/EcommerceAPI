@@ -1,7 +1,5 @@
 module Gomisa
   class BaseController < ApiController
-    before_action :set_app_locale
-
     # CRUD stuff
     def index; end
 
@@ -22,11 +20,5 @@ module Gomisa
 
     # CRUD stuff
     def destroy; end
-
-    protected
-
-    def set_app_locale
-      I18n.default_locale = :ko
-    end
   end
 end

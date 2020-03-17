@@ -1,4 +1,4 @@
-class Product < ApplicationRecord
+class Product < NationRecord
   include Translatable
   extend_has_one_attached :thumbnail
   extend_has_many_attached :images

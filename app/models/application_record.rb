@@ -1,6 +1,7 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
   extend AutoIncrement
+  extend ParseCountryCode
   include HistoricalRecordable
 
   def cls

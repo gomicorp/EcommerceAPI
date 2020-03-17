@@ -1,9 +1,12 @@
 class ProductOption < ApplicationRecord
+  include ChannelRecordable
   belongs_to :option_group, class_name: 'ProductOptionGroup', dependent: :destroy, foreign_key: :product_option_group_id
   has_many :barcode_options
   has_many :barcodes, through: :barcode_options
 
   has_many :bridges, class_name: 'ProductOptionBridge'
+
+  belongs_to :channel
 
   delegate :product, to: :option_group
 
