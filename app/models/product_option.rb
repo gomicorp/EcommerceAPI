@@ -1,3 +1,15 @@
+### Calculate ProductOption
+#
+## ===== source columns ======
+# :additional_price
+# :discount_type, :discount_amount
+#
+## ===== calculated columns ======
+# :base_price
+# :discount_price
+# :price_change
+# :retail_price (:price)
+#
 class ProductOption < ApplicationRecord
   include ChannelRecordable
   belongs_to :option_group, class_name: 'ProductOptionGroup', dependent: :destroy, foreign_key: :product_option_group_id
@@ -6,44 +18,149 @@ class ProductOption < ApplicationRecord
 
   has_many :bridges, class_name: 'ProductOptionBridge'
 
-  belongs_to :channel
-
-  delegate :product, to: :option_group
+  # delegate :product, to: :option_group
+  has_one :product, foreign_key: :default_option_id, dependent: :nullify
+  has_one :product_page, class_name: 'Product', through: :option_group, source: :product
 
   enum discount_type: %i[no const ratio]
 
+  scope :active, -> { where(is_active: true) }
+  scope :inactive, -> { where(is_active: [false, nil]) }
+
+  scope :products_with, ->(products) { where(option_group: ProductOptionGroup.where(product: products)) }
+
+  def unit_count
+    bridges.map(&:unit_count).sum
+  end
+
+  def alive_barcodes_count
+    bridges.map(&:alive_barcodes_count).sum
+  end
+
   def title
-    "#{option_group.name}: #{name}"
+    parent_name = [product_page.translate.title, option_group.name].map(&:presence).compact.join(' ')
+    "#{parent_name}: #{name}"
   end
 
-  def base_price
-    @base_price ||= bridges.map(&:price).sum #product.price + additional_price
+  def available_quantity
+    bridges.group(:connectable_id, :connectable_type).count.map do |keys, count|
+      Object.const_get(keys[1]).find(keys[0]).available_quantity / count
+    end.min.to_i
   end
 
-  def retail_price
-    @retail_price ||= base_price + price_change
+  def sold_out?
+    available_quantity.zero?
   end
 
-  # TODO: 할인/추가 금액 관련. 리펙토링 필요.
-  def price_change
-    @price_change = 0
+  def activable?
+    !bridges.map(&:active).any? false
+  end
+
+  alias can_be_active? activable?
+
+  ##=============================
+  ## 현재 존재하는 옵션들의 unit count 를 + 기준으로 구하여 옵션명에 반영하는 함수
+  ##=============================
+  # def self.set_all_unit_count
+  #   multi_unit_options = ProductOption.where('name LIKE ?', '%+%')
+  #   multi_unit_options.each do |opt|
+  #     opt.barcodes.first.unit_count!(opt.name.count('+') + 1)
+  #   end
+  # end
+
+  def connect_with(connectable)
+    bridges.create(connectable: connectable)
+  end
+
+  def disconnect_with(connectable)
+    bridges.destroy bridges.find_by(connectable: connectable)
+  end
+
+  def items
+    ## V1
+    # ProductItem.where(bridges: ProductOptionBridge.where(product_option: self))
+    # bridges.joins_connectable.where(connectable: [ProductItem, ProductCollection])
+
+    ## V2
+    # items = bridges.where(connectable_type: 'ProductCollection').joins_connectable.map { |b| b.connectable.items }
+    # items += bridges.where(connectable_type: 'ProductItem').connectables
+    # items.flatten
+
+    @items ||= ProductItem.product_option_with self
+  end
+
+
+  ## ===== before calculator =====
+
+  # def base_price
+  #   @base_price ||= bridges.map(&:selling_price).sum # product.price + additional_price
+  # end
+  #
+  # # 추가 가격 (column)
+  # # def additional_price
+  # #   # stuff
+  # # end
+  # #
+  # # 할인 금액 => 1. 정액 | 정률 (column)
+  # # def discount_amount
+  # #   # stuff
+  # # end
+  #
+  # # 할인 금액 => 2. 현금액수
+  # def discount_price
+  #   case discount_type
+  #   when 'const'
+  #     discount_amount
+  #   when 'ratio'
+  #     base_price * discount_amount
+  #   else
+  #     0
+  #   end
+  # end
+  #
+  # # 변동액수
+  # def price_change
+  #   additional_price - discount_price
+  # end
+  #
+  # def retail_price
+  #   base_price + price_change
+  # end
+
+  alias price retail_price
+
+
+  ## ===== Calculators =====
+
+  def calc_base_price
+    bridges.map(&:selling_price).sum
+  end
+
+  # 할인 금액 => 2. 현금액수
+  def calc_discount_price
     case discount_type
     when 'const'
-      @price_change -= discount_amount
+      discount_amount
     when 'ratio'
-      @price_change -= (base_price * discount_amount)
-    end
-    @price_change
-  end
-
-  #=============================
-  # 현재 존재하는 옵션들의 unit count를 + 기준으로 구하여 옵션명에 반영하는 함수
-  #=============================
-  def self.set_all_unit_count
-    multi_unit_options = ProductOption.where('name LIKE ?', '%+%')
-    multi_unit_options.each do |opt|
-      opt.barcodes.first.unit_count!(opt.name.count('+') + 1)
+      base_price * discount_amount
+    else
+      0
     end
   end
 
+  # 변동액수
+  def calc_price_change
+    additional_price - discount_price
+  end
+
+  def calc_retail_price
+    base_price + price_change
+  end
+
+  def callback_calculate_price_columns
+    self.base_price = calc_base_price
+    self.discount_price = calc_discount_price
+    self.price_change = calc_price_change
+    self.retail_price = calc_retail_price
+  end
 end
