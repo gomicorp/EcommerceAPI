@@ -69,6 +69,8 @@ class ProductOptionBridge < ApplicationRecord
 
   def calculate_price_columns
     self.selling_price = calc_selling_price
+
+    print_columns :selling_price
   end
 
 

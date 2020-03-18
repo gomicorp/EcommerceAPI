@@ -86,6 +86,8 @@ class ProductCollection < NationRecord
   def calculate_price_columns
     self.cost_price = calc_cost_price
     self.selling_price = calc_selling_price
+
+    print_columns :cost_price, :selling_price
   end
 
 

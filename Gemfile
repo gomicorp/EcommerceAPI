@@ -7,6 +7,7 @@ ruby '2.6.3'
 
 
 gem 'yajl-ruby', require: 'yajl'
+gem 'data_migrate'
 
 ## => Store Service
 gem 'sentry-raven'

@@ -129,7 +129,7 @@ class ProductOption < ApplicationRecord
   #   base_price + price_change
   # end
 
-  alias price retail_price
+  # alias price retail_price
 
 
   ## ===== Calculators =====
@@ -164,6 +164,8 @@ class ProductOption < ApplicationRecord
     self.discount_price = calc_discount_price
     self.price_change = calc_price_change
     self.retail_price = calc_retail_price
+
+    print_columns :base_price, :discount_price, :price_change, :retail_price
   end
 
 
