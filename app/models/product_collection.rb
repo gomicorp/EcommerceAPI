@@ -18,6 +18,8 @@ class ProductCollection < NationRecord
   scope :item_with, ->(product_item) { includes(:elements).where(elements: ProductCollectionElement.where(product_item: product_item)) }
   scope :product_option_with, ->(product_options) { where(bridges: ProductOptionBridge.where(product_option: product_options)) }
 
+  after_save :after_save_propagation
+
   def brand
     items.first&.brand
   end
@@ -68,7 +70,7 @@ class ProductCollection < NationRecord
   # def selling_price
   #   lists.sum(&:selling_price)
   # end
-  alias price selling_price
+  # alias price selling_price
 
 
   ## ===== Calculators =====
@@ -81,8 +83,18 @@ class ProductCollection < NationRecord
     lists.sum(&:selling_price)
   end
 
-  def callback_calculate_price_columns
+  def calculate_price_columns
     self.cost_price = calc_cost_price
     self.selling_price = calc_selling_price
+  end
+
+
+  ## ===== ActiveRecord Callbacks =====
+
+  def after_save_propagation
+    bridges.each do |bridge|
+      bridge.calculate_price_columns
+      bridge.save
+    end
   end
 end

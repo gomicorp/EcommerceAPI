@@ -26,6 +26,8 @@ class ProductOptionBridge < ApplicationRecord
     joins(get_sql.call(ProductItem)).joins(get_sql.call(ProductCollection))
   }
 
+  after_save :after_save_propagation
+
   def active
     connectable.active
   end
@@ -55,7 +57,7 @@ class ProductOptionBridge < ApplicationRecord
   # def selling_price
   #   connectable&.selling_price.to_i
   # end
-  alias price selling_price
+  # alias price selling_price
 
 
   ## ===== Calculators =====
@@ -65,7 +67,17 @@ class ProductOptionBridge < ApplicationRecord
   end
 
 
-  def callback_calculate_price_columns
+  def calculate_price_columns
     self.selling_price = calc_selling_price
+  end
+
+
+  ## ===== ActiveRecord Callbacks =====
+
+  def after_save_propagation
+    product_option.tap do |option|
+      option.calculate_price_columns
+      option.save
+    end
   end
 end

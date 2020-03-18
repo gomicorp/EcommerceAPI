@@ -29,6 +29,8 @@ class ProductOption < ApplicationRecord
 
   scope :products_with, ->(products) { where(option_group: ProductOptionGroup.where(product: products)) }
 
+  after_save :after_save_propagation
+
   def unit_count
     bridges.map(&:unit_count).sum
   end
@@ -157,10 +159,17 @@ class ProductOption < ApplicationRecord
     base_price + price_change
   end
 
-  def callback_calculate_price_columns
+  def calculate_price_columns
     self.base_price = calc_base_price
     self.discount_price = calc_discount_price
     self.price_change = calc_price_change
     self.retail_price = calc_retail_price
+  end
+
+
+  ## ===== ActiveRecord Callbacks =====
+
+  def after_save_propagation
+    # stuff
   end
 end
