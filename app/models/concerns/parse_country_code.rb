@@ -1,10 +1,12 @@
 module ParseCountryCode
+  @@country_code ||= 'th'
+
   def country_code
-    @country_code ||= 'th'
+    @@country_code
   end
 
   def country_code=(code)
-    @country_code = (code || 'th').downcase
+    @@country_code = (code || 'th').downcase
   end
 
   def country_context_with(code, &block)
