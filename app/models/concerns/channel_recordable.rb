@@ -12,6 +12,7 @@ module ChannelRecordable
   private
 
   def callback_attaching_channel
+    self.channel_id = nil if channel_id.to_i.zero?
     self.channel_id ||= Channel.default_channel.id
   end
 end
