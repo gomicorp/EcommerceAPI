@@ -33,25 +33,27 @@
 #
 class CalculatePriceColumns < ActiveRecord::Migration[6.0]
   def up
-    PaperTrail.request(enabled: false) do
-      ProductCollection.without_callback(:save, :after, :after_save_propagation) do
-        ProductCollection.unscoped.all.each do |collection|
-          collection.calculate_price_columns
-          collection.save!
+    ApplicationRecord.country_context_with 'global' do
+      PaperTrail.request(enabled: false) do
+        ProductCollection.without_callback(:save, :after, :after_save_propagation) do
+          ProductCollection.unscoped.all.each do |collection|
+            collection.calculate_price_columns
+            collection.save!
+          end
         end
-      end
 
-      ProductOptionBridge.without_callback(:save, :after, :after_save_propagation) do
-        ProductOptionBridge.unscoped.all.each do |bridge|
-          bridge.calculate_price_columns
-          bridge.save!
+        ProductOptionBridge.without_callback(:save, :after, :after_save_propagation) do
+          ProductOptionBridge.unscoped.all.each do |bridge|
+            bridge.calculate_price_columns
+            bridge.save!
+          end
         end
-      end
 
-      ProductOption.without_callback(:save, :after, :after_save_propagation) do
-        ProductOption.unscoped.all.each do |product_option|
-          product_option.calculate_price_columns
-          product_option.save!
+        ProductOption.without_callback(:save, :after, :after_save_propagation) do
+          ProductOption.unscoped.all.each do |product_option|
+            product_option.calculate_price_columns
+            product_option.save!
+          end
         end
       end
     end

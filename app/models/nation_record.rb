@@ -8,6 +8,7 @@ class NationRecord < ApplicationRecord
   scope :vn, -> { unscoped.includes(:country).where(country: Country.vn) }
   scope :undef, -> { unscoped.includes(:country).where(country: Country.undef) }
   scope :at, ->(key) { unscoped.includes(:country).where(country: Country.at(key)) }
+  scope :global, -> { unscoped.includes(:country).where(country: Country.all) }
 
   after_initialize :callback_set_default_country
   before_save :callback_attaching_country
