@@ -24,6 +24,10 @@ class Country < ApplicationRecord
     find_by(short_name: key)
   end
 
+  def self.global
+    all
+  end
+
   def self.migrate_input_seed_data
     transaction do
       seed_data.each do |country_seed|

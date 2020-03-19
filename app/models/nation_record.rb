@@ -28,6 +28,6 @@ class NationRecord < ApplicationRecord
   end
 
   def default_country
-    @default_country ||= Country.send(self.class.country_code)
+    @default_country ||= Country.send(self.class.default_country_code)
   end
 end

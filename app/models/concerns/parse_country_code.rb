@@ -1,8 +1,12 @@
 module ParseCountryCode
-  @@country_code ||= 'th'
+  @@country_code = nil
+
+  def default_country_code
+    'th'
+  end
 
   def country_code
-    @@country_code
+    @@country_code || default_country_code
   end
 
   def country_code=(code)
