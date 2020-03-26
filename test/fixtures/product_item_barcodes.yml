@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  product_item: one
+  cancelled_at: 2020-01-30 15:02:34
+
+two:
+  product_item: two
+  cancelled_at: 2020-01-30 15:02:34

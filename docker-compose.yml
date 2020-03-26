@@ -1,0 +1,19 @@
+version: '3.1'
+
+services:
+  web:
+    image: gomicorp/rails:6.0.2.1
+    container_name: platform-api-web
+    working_dir: /app
+    ports:
+      - "3030:3030"
+    volumes:
+      - platform-api_codes:/app
+    stdin_open: true
+    tty: true
+    command:
+      - /bin/bash
+
+volumes:
+  platform-api_codes:
+    external: true

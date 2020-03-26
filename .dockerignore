@@ -1,0 +1,30 @@
+# envs
+.env
+
+# master.key
+/config/master.key
+
+# Ignore related Docker
+docker/.docker_password.txt
+docker/.envs
+.docker-sync/
+.direnv/
+
+# Ignore all logfiles and tempfiles.
+/log
+/tmp/*
+!/tmp/.keep
+.rakeTasks
+
+# Ignore uploaded files in development.
+/storage/*
+!/storage/.keep
+
+# node_modules
+node_modules/
+yarn.lock
+
+# Ignore private IDE setting files.
+.idea
+.idea/*
+.generators

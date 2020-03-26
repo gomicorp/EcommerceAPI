@@ -19,5 +19,6 @@ module Api
     # the framework and any gems in your application.
 
     config.autoload_paths << Rails.root.join('lib')
+    config.eager_load_paths << Rails.root.join('app', 'time_machines')
   end
 end

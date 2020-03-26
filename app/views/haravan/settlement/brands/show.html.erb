@@ -1,0 +1,187 @@
+<% content_for(:page_title, params[:id]) %>
+
+<!--<div id="brandData" data-brands="<%##= @service.brands.to_json %>"></div>-->
+<% content_for :search_console do %>
+  <form action="<%= haravan_settlement_brand_path(params[:id], format: :html) %>" onsubmit="return confirm('구간이 넓은 조회는 5 ~ 10 분 가량 소요됩니다.\n새로 고침 하지 말고 기다려주세요.\n계속 진행할까요?')">
+    <div class="form-row">
+      <div class="col-12 col-sm-6 col-md-4 mb-3">
+        <label for="range-from">시작일</label>
+        <input name="from" id="range-from" class="form-control form-control-sm datePicker" value="<%= @from_day.strftime('%F') %>">
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-4 mb-3">
+        <label for="range-to">종료일</label>
+        <input name="to" id="range-to" class="form-control form-control-sm datePicker" value="<%= @to_day.strftime('%F') %>">
+      </div>
+
+      <div class="col-12 col-md-4 mb-3">
+        <label for="search-method">세부조건</label>
+        <select name="search[method]" id="search-method" class="form-control form-control-sm">
+          <option value="fulfillment_status"  <%= 'selected' if @search_method.presence.nil? || @search_method == 'fulfillment_status' %>><%= @method_labels['fulfillment_status'] %></option>
+          <option value="financial_status" <%= 'selected' if @search_method == 'financial_status' %>><%= @method_labels['financial_status'] %></option>
+        </select>
+      </div>
+
+      <div class="col"></div>
+
+      <div class="col-12 mb-3 text-right">
+        <div class="btn-group btn-group-sm float-left" role="group" aria-label="Basic example">
+          <a href="<%= haravan_settlement_brand_path(params[:id], format: :html, from: (@from_day - 1.month).strftime('%F'), to: (@from_day).strftime('%F'), search: { method: params.dig(:search, :method) }) %>"
+             onclick="return confirm('월 단위 조회는 3 ~ 10 분 가량 소요됩니다.\n새로 고침 하지 말고 기다려주세요.\n계속 진행할까요?')"
+             class="btn btn-outline-secondary rounded-0"><%= (@from_day - 1.month).month %>월</a>
+          <a href="<%= haravan_settlement_brand_path(params[:id], format: :html, from: (Time.now.in_time_zone('UTC').beginning_of_month).strftime('%F'), to: (Time.now.in_time_zone('UTC').beginning_of_month + 1.month).strftime('%F'), search: { method: params.dig(:search, :method) }) %>"
+             onclick="return confirm('월 단위 조회는 3 ~ 10 분 가량 소요됩니다.\n새로 고침 하지 말고 기다려주세요.\n계속 진행할까요?')"
+             class="btn btn-outline-secondary rounded-0"><%= @from_day.month %>월</a>
+          <a href="<%= haravan_settlement_brand_path(params[:id], format: :html, from: (@from_day + 1.month).strftime('%F'), to: (@from_day + 2.month).strftime('%F'), search: { method: params.dig(:search, :method) }) %>"
+             onclick="return confirm('월 단위 조회는 3 ~ 10 분 가량 소요됩니다.\n새로 고침 하지 말고 기다려주세요.\n계속 진행할까요?')"
+             class="btn btn-outline-secondary rounded-0"><%= (@from_day + 1.month).month %>월</a>
+        </div>
+
+        <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+          <button class="btn btn-primary rounded-0">조회</button>
+          <a href="<%= haravan_settlement_brand_path(params[:id], format: :html) %>" class="btn btn-success rounded-0">초기화(Today)</a>
+        </div>
+      </div>
+    </div>
+  </form>
+<% end %>
+
+<%= render 'sublayout' do %>
+  <% @brands.each.with_index do |brand, brand_index| %>
+    <!-- brand / total -->
+    <tr class="tr-brand tr-brand-<%= brand_index %>" data-brand_index="<%= brand_index %>" data-rowspan="<%= brand.rowspan %>">
+      <!-- # -->
+      <th class="d-none d-sm-table-cell" rowspan="1" data-column_name="index"><%= brand_index + 1 %></th>
+
+      <!-- 브랜드 -->
+      <th class="text-nowrap" rowspan="1" data-toggle="brand_folder" data-column_name="brand_name"><%= brand.name %></th>
+
+      <td class="table-warning" colspan="2" data-column_name="brand_total">총 계</td>
+
+      <!-- 주문건수 -->
+      <td class="table-warning text-nowrap text-right" data-toggle="modal" data-target="#order-list-modal"><%= brand.total.orders.count %> 건</td>
+
+      <!-- 합계수량 -->
+      <td class="table-warning text-nowrap text-right"><%= unit_format(brand.total.quantity) %></td>
+
+      <!-- 합계금액 -->
+      <td class="table-warning text-nowrap text-right"><%= currency_format(brand.total.price, unit: 'VND') %></td>
+    </tr>
+
+    <!-- brand / variants -->
+    <% brand.variants.each do |variant| %>
+      <% variant.prices.each.with_index do |variant_price, pricing_index| %>
+        <% variant_item = variant_price.items.first %>
+
+        <tr class="tr-sku tr-brand-<%= brand_index %>" style="display: none;">
+          <% if pricing_index.zero? %>
+            <!-- 상품명 -->
+            <td rowspan="<%= variant.prices.count %>">
+              <span><%= variant_item.title %></span>
+              <small class="d-block text-muted">[SKU: <b><%= variant_item.sku || '-' %></b> / Variant ID: <b><%= variant.id %></b>]</small>
+              <p class="d-block" style="margin: 0">
+                <% if variant.prices.count > 1 %>
+                  <small class="badge badge-info"># 다중가격</small>
+                <% end %>
+              </p>
+            </td>
+          <% end %>
+
+          <!-- 판매가 -->
+          <td class="text-right text-nowrap"><%= currency_format(variant_price.price, unit: 'VND') %></td>
+
+          <!-- 주문건수 -->
+          <td class="text-right text-nowrap"
+              data-toggle="modal" data-target="#order-list-modal"
+              data-variant_title="<%= variant_item.title %>"
+              data-sku="<%= variant_item.sku %>"
+              data-variant_id="<%= variant.id %>"
+              data-variant_price="<%= variant_price.price %>"
+              data-orders="<%= variant_price.items.to_json %>"><%= variant_price.total.orders.count %> 건</td>
+
+          <!-- 합계수량 -->
+          <td class="text-right text-nowrap"><%= unit_format(variant_price.total.quantity) %></td>
+
+          <!-- 합계금액 -->
+          <td class="text-right text-nowrap"><%= currency_format(variant_price.total.price, unit: 'VND') %></td>
+        </tr>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <style>
+    #toggle_brand-all,
+    [data-toggle="brand_folder"] {
+      cursor: pointer;
+      position: relative;
+    }
+
+    #toggle_brand-all:hover,
+    [data-toggle="brand_folder"]:hover {
+      background-color: #ffe186 !important;
+    }
+
+    #toggle_brand-all:after,
+    [data-toggle="brand_folder"]:after {
+      content: '[펼치기]';
+      /*position: absolute;*/
+      /*top: 0;*/
+      /*bottom: 0;*/
+      /*right: .5rem;*/
+      /*margin: auto 0;*/
+      /*height: 1rem;*/
+      font-weight: initial;
+      margin-left: 10px;
+      /*height: 3px;*/
+      /*border-left: 3px solid transparent;*/
+      /*border-right: 3px solid transparent;*/
+      /*border-top: 3px solid;*/
+      /*border-bottom: 3px solid transparent;*/
+    }
+
+    #toggle_brand-all.spanned:after,
+    tr.spanned > [data-toggle="brand_folder"]:after {
+      content: '[접기]';
+      /*border-bottom: 3px solid;*/
+      /*border-top: 3px solid transparent;*/
+    }
+  </style>
+  <script>
+      function toggle_brand(trigger, spanned) {
+          var root_tr = trigger.closest('.tr-brand');
+          var rowspan = root_tr.dataset.rowspan;
+          var brand_index = root_tr.dataset.brand_index;
+
+          var rowspan_trs = $(root_tr.querySelectorAll('th[rowspan]'));
+          var sku_trs = $('.tr-sku.tr-brand-'+brand_index);
+
+          var toggle_method = spanned === undefined ? root_tr.classList.contains('spanned') : spanned;
+
+          if (toggle_method) {
+              rowspan_trs.attr('rowspan', 1);
+              sku_trs.hide();
+              root_tr.classList.remove('spanned');
+          } else {
+              rowspan_trs.attr('rowspan', rowspan);
+              sku_trs.show();
+              root_tr.classList.add('spanned');
+          }
+      }
+
+      $(function() {
+          $('[data-toggle="brand_folder"]').click(function() {
+              toggle_brand(this);
+          });
+
+          $('#toggle_brand-all').click(function() {
+              var spanned = this.classList.contains('spanned');
+              $('[data-toggle="brand_folder"]').each(function(i, el) {
+                  toggle_brand(el, spanned);
+              });
+              this.classList.toggle('spanned');
+          }).click();
+      })
+  </script>
+<% end %>
+
+<%= console if Rails.env == 'development' %>

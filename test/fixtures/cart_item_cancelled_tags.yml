@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  cart_item: one
+  price: 1
+  quantity: 1
+  cancelled_at: 2020-02-13 03:50:24
+
+two:
+  cart_item: two
+  price: 1
+  quantity: 1
+  cancelled_at: 2020-02-13 03:50:24
