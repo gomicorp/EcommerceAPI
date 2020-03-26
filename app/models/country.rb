@@ -2,11 +2,12 @@ class Country < ApplicationRecord
   has_many :brands
   has_many :products
 
+  #validates_uniqueness_of Country.attribute_names
   validates_presence_of :name, :name_ko, :locale, :short_name
   alias_attribute :code, :short_name
 
-  TH = find_by(short_name: :th)
-  VN = find_by(short_name: :vn)
+  TH = find_or_create_by(name: 'thailand', name_ko: '태국', locale: 'th', short_name: :th)
+  VN = find_or_create_by(name: 'vietnam', name_ko: '베트남', locale: 'vi', short_name: :vn)
 
   def self.th
     TH

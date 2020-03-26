@@ -90,7 +90,7 @@ class ProductCollection < NationRecord
     print_columns :cost_price, :selling_price
   end
 
-
+  private
   ## ===== ActiveRecord Callbacks =====
 
   def after_save_propagation
