@@ -73,7 +73,7 @@ class ProductOptionBridge < ApplicationRecord
     print_columns :selling_price
   end
 
-
+  private
   ## ===== ActiveRecord Callbacks =====
 
   def after_save_propagation

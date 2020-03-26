@@ -89,6 +89,6 @@
 
 # Country 튜플 예제
 #Country.create!([
-#  { name: 'vietnam', short_name: :vi, name_ko: '베트남', locale: :vn },
+#  { name: 'vietnam', short_name: :vn, name_ko: '베트남', locale: :vi },
 #  { name: 'thailand', short_name: :th,  name_ko: '태국', locale: :th }
 #])
