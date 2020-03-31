@@ -6,12 +6,29 @@ class CartCalculator
     @items = cart.items
   end
 
-  def price_sum
-    items.map(&:price_sum).sum
+  # def price_sum
+  #   items.map(&:price_sum).sum
+  # end
+
+  # 품목 단위 수량 합계
+  def unit_count
+    items.map(&:unit_count_sum).sum
   end
 
+  # 정가 합계
+  def base_price
+    items.map(&:base_price).sum
+  end
+
+  # 정가 총 합계
+  def base_price_sum
+    items.map(&:base_price_sum).sum
+  end
+
+  # 변동가 합계
+  # 일반적인 경우, 음수값을 가짐
   def discount_amount
-    items.map(&:discount_amount).sum
+    items.map(&:price_change_sum).sum
   end
 
   def delivery_amount
@@ -19,9 +36,10 @@ class CartCalculator
   end
 
   def final_result_price
-    price_sum - discount_amount + delivery_amount
+    base_price_sum + discount_amount + delivery_amount
   end
 end
+
 
 class Cart < ApplicationRecord
   # 신규(desk) 입금대기(pay) 결제완료(paid) 배송준비(ship_ready) 배송중(ship_ing) 취소요청(cancel-request) 반품요청(refund-request) 환불실패 보관함(complete)
@@ -38,34 +56,47 @@ class Cart < ApplicationRecord
   enum order_status: ORDER_STATUSES
 
   belongs_to :user
-  has_many :items, class_name: CartItem.name, dependent: :destroy
+  has_many :items, class_name: 'CartItem', dependent: :destroy
   has_one :order_info, dependent: :nullify
 
   delegate :ordered_at, to: :order_info, allow_nil: true
   delegate :delivery_amount, to: :order_info, allow_nil: true
 
   scope :active, -> { where(active: true) }
+  scope :sold, -> { where(order_status: SOLD_STATUSES) }
 
   def self.current
     @_current = find_or_create_by(order_status: 0, current: true)
   end
 
-  def price_sum
-    calculator.price_sum # 총 상품 가격
+  # 품목 단위 수량 합계
+  def unit_count
+    calculator.unit_count
+  end
+
+  # 총 정가 합계
+  def base_price_sum
+    calculator.base_price_sum
+  end
+
+  # 총 할인 가격
+  def discount_amount
+    calculator.discount_amount
   end
 
   alias_method :_delivery_amount, :delivery_amount
   def delivery_amount
-    _delivery_amount || ShipInfo.fee_table('normal') # 배송비
+    _delivery_amount || ShipInfo.fee_table(unit_count < 3 ? 'express' : 'bulk_express') # 배송비
   end
 
-  def discount_amount
-    calculator.discount_amount # 총 할인 가격
-  end
-
+  # 총 합계 (최종 결제액)
   def final_price
-    calculator.final_result_price # 총 합계
+    calculator.final_result_price
   end
+
+  # def price_sum
+  #   calculator.price_sum # 총 상품 가격
+  # end
 
   def sender_name
     user.name
