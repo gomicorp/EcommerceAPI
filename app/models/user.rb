@@ -14,6 +14,14 @@ class User < ApplicationRecord
   has_many :payments, through: :order_infos
   has_many :ship_infos, through: :order_infos
 
+  has_one :default_receiver, class_name: 'receiver', optional: true
+  has_one :default_address, class_name: 'shipping_address', optional: true
+
+  has_many :user_shipping_address, dependent: :destroy
+  has_many :user_receiver, dependent: :destroy
+  has_many :shipping_addresses, through: :user_shipping_address
+  has_many :receivers, through: :user_receiver
+
   def cart_attached?
     carts.active.any?
   end
