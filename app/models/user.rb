@@ -4,23 +4,26 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :omniauthable, omniauth_providers: [:facebook]
 
-  # Role scopes
+  # 역할과 관련된 스코프
   scope :admins, -> { where(is_admin: true) }
   scope :managers, -> { where(is_manager: true) }
   scope :sellers, -> { where(is_seller: true) }
 
+  # 장바구니 또는 주문으로부터의 모델관계
   has_many :carts, -> { order(created_at: :desc) }
-  has_many :order_infos, through: :carts
-  has_many :payments, through: :order_infos
-  has_many :ship_infos, through: :order_infos
+  has_many :order_infos, class_name: 'OrderInfo', through: :carts
+  has_many :payments, class_name: 'Payment', through: :order_infos
+  has_many :ship_infos, class_name: 'ShipInfo', through: :order_infos
 
-  has_one :default_receiver, class_name: 'receiver', optional: true
-  has_one :default_address, class_name: 'shipping_address', optional: true
-
+  # 배송지에 대하여..
   has_many :user_shipping_address, dependent: :destroy
-  has_many :user_receiver, dependent: :destroy
   has_many :shipping_addresses, through: :user_shipping_address
+  belongs_to :default_address, class_name: 'ShippingAddress', optional: true
+
+  # 수령인에 대하여..
+  has_many :user_receiver, dependent: :destroy
   has_many :receivers, through: :user_receiver
+  belongs_to :default_receiver, class_name: 'Receiver', optional: true
 
   def cart_attached?
     carts.active.any?
