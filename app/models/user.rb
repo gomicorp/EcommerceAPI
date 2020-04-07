@@ -21,8 +21,7 @@ class User < ApplicationRecord
   belongs_to :default_address, class_name: 'ShippingAddress', optional: true
 
   # 수령인에 대하여..
-  has_many :user_receiver, dependent: :destroy
-  has_many :receivers, through: :user_receiver
+  has_many :receivers
   belongs_to :default_receiver, class_name: 'Receiver', optional: true
 
   def cart_attached?

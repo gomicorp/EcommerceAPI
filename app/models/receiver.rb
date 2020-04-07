@@ -1,4 +1,3 @@
 class Receiver < ApplicationRecord
-  has_one :user_receiver, dependent: :destroy
-  has_one :user, through: :user_receiver
+  belongs_to :user, dependent: :destroy
 end
