@@ -5,5 +5,5 @@ LocaleRouter.configuration(Rails) do |config|
   config.default_locale = :ko
   config.auto_follow_access_header = false
   config.auto_prepend_before_action = false
-  config.locale_param_matcher = :week unless Rails.env.production?
+  config.locale_param_matcher = :week unless %w[production staging].include? Rails.env
 end
