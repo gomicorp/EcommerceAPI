@@ -52,6 +52,15 @@ test:
 production:
   <<: *default
   database: store_production
-  host: <%= Rails.application.credentials.dig(:database, ENV['APP_FORCE_ENV'].to_sym, :host) %>
-  username: <%= Rails.application.credentials.dig(:database, ENV['APP_FORCE_ENV'].to_sym, :username) %>
-  password: <%= Rails.application.credentials.dig(:database, ENV['APP_FORCE_ENV'].to_sym, :password) %>
+  host: <%= Rails.application.credentials.dig(:database, ENV['RAILS_ENV'].to_sym, :host) %>
+  username: <%= Rails.application.credentials.dig(:database, ENV['RAILS_ENV'].to_sym, :username) %>
+  password: <%= Rails.application.credentials.dig(:database, ENV['RAILS_ENV'].to_sym, :password) %>
+
+
+staging:
+  <<: *default
+  #데이터베이스 복사 및 이름 변경 필요. store_production => store_staging
+  database: store_production
+  username: <%= Rails.application.credentials.dig(ENV['RAILS_ENV'].to_sym, :database, :username) %>
+  password: <%= Rails.application.credentials.dig(ENV['RAILS_ENV'].to_sym, :database, :password) %>
+  host: <%= Rails.application.credentials.dig(ENV['RAILS_ENV'].to_sym, :database, :host) %>
