@@ -97,7 +97,7 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   Raven.configure do |config|
-    config.dsn = ENV['SENTRY_DSN'] || Rails.application.credentials.dig(:sentry, ENV['RAILS_ENV'].to_sym, :dsn)
+    config.dsn = ENV['SENTRY_DSN'] || Rails.application.credentials.dig(:sentry, Rails.env.to_sym, :dsn)
   end
 
   # Inserts middleware to perform automatic connection switching.
