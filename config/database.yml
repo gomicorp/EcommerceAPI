@@ -11,7 +11,8 @@
 #
 default: &default
   adapter: mysql2
-  encoding: utf8
+  encoding: utf8mb4
+  collate: utf8mb4_general_ci
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
   host: <%= ENV['DATABASE_HOST'] %>
@@ -51,6 +52,13 @@ test:
 production:
   <<: *default
   database: store_production
-  host: <%= Rails.application.credentials.dig(:database, ENV['APP_FORCE_ENV'].to_sym, :host) %>
-  username: <%= Rails.application.credentials.dig(:database, ENV['APP_FORCE_ENV'].to_sym, :username) %>
-  password: <%= Rails.application.credentials.dig(:database, ENV['APP_FORCE_ENV'].to_sym, :password) %>
+  host: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :host) %>
+  username: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :username) %>
+  password: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :password) %>
+
+staging:
+  <<: *default
+  database: store_staging
+  host: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :host) %>
+  username: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :username) %>
+  password: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :password) %>

@@ -1,10 +1,10 @@
 class ApiController < ActionController::API
-  before_action :set_raven_context
+  before_action :set_raven_context, :set_app_locale, :set_country_code
 
   private
 
   def set_raven_context
-    return unless production?
+    return unless %w[production staging].include?(Rails.env)
 
     # Raven.user_context(id: session[:current_user_id]) # or anything else in session
     Raven.extra_context(
@@ -14,7 +14,12 @@ class ApiController < ActionController::API
     )
   end
 
-  def production?
-    Rails.env == 'production'
+  def set_country_code
+    @nation = params[:nation]
+    ApplicationRecord.country_code = @nation
+  end
+
+  def set_app_locale
+    I18n.default_locale = :ko
   end
 end

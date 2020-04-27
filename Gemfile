@@ -7,6 +7,7 @@ ruby '2.6.3'
 
 
 gem 'yajl-ruby', require: 'yajl'
+gem 'data_migrate'
 
 ## => Store Service
 gem 'sentry-raven'
@@ -43,7 +44,7 @@ gem 'rubocop', require: false
 gem 'rubocop-performance'
 gem 'seed_dump'
 gem 'simple_trans', git: 'https://github.com/yhk1038/simple_trans.git'
-
+gem 'paper_trail'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.1'

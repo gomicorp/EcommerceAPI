@@ -22,6 +22,9 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+/config/credentials/development.key
+/config/credentials/test.key
+/config/credentials/staging.key
 
 /public/packs
 /public/packs-test

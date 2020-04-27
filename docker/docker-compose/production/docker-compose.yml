@@ -1,17 +1,29 @@
 version: '3.1'
 
 services:
-  web:
-    image: gomicorp/platform-api:latest
-    env_file:
-      - .env
+  nginx:
+    image: nginx:latest
     ports:
       - "80:80"
     volumes:
-      - ./log/nginx:/opt/nginx/logs
-      - ./log:/app/log
-      - ./master.key:/app/config/master.key
-      - ./nginx.conf:/opt/nginx/conf/nginx.conf
+      - nginx/nginx.conf.template.template:/etc/nginx/nginx.conf.template.template:ro
+    container_name: platform-api-nginx
+    stdin_open: true
+    tty: true
+    command:
+      - /bin/bash
+      - -c
+      - |
+        nginx -g 'daemon off;'
+  blue:
+    image: gomicorp/platform-api:${NEW_VERSION}
+    env_file:
+      - .env
+    volumes:
+      - web/blue/log/nginx:/opt/nginx/logs
+      - web/blue/log:/app/log
+      - web/master.key:/app/config/master.key
+    container_name: platform-api-blue
     stdin_open: true
     tty: true
     command:
@@ -22,3 +34,24 @@ services:
         chmod o+w /app/log/production.log
         crond
         /opt/nginx/sbin/nginx -g 'daemon off;'
+
+    green:
+      image: gomicorp/platform-api:${NEW_VERSION}
+      env_file:
+        - .env
+      volumes:
+        - ./log/nginx:/opt/nginx/logs
+        - ./log:/app/log
+        - ./master.key:/app/config/master.key
+        - ./nginx.conf.template.template:/opt/nginx/conf/nginx.conf.template.template
+      container_name: platform-api-green
+      stdin_open: true
+      tty: true
+      command:
+        - /bin/bash
+        - -c
+        - |
+          touch /app/log/production.log && touch /app/log/.keep
+          chmod o+w /app/log/production.log
+          crond
+          /opt/nginx/sbin/nginx -g 'daemon off;'

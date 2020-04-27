@@ -1,0 +1,2 @@
+json.except! product_item
+json.accumulated_amounts product_item.accumulated_amounts

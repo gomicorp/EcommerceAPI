@@ -1,4 +1,6 @@
 class ProductItemBarcode < ApplicationRecord
+  has_not_paper_trail
+
   belongs_to :product_item, counter_cache: :barcodes_count
   # belongs_to :product_option_bridge
   # has_many :options, class_name: 'ProductOption', through: :product_option_bridge
