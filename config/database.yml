@@ -52,6 +52,13 @@ test:
 production:
   <<: *default
   database: store_production
-  host: <%= Rails.application.credentials.dig(:database, ENV['APP_FORCE_ENV'].to_sym, :host) %>
-  username: <%= Rails.application.credentials.dig(:database, ENV['APP_FORCE_ENV'].to_sym, :username) %>
-  password: <%= Rails.application.credentials.dig(:database, ENV['APP_FORCE_ENV'].to_sym, :password) %>
+  host: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :host) %>
+  username: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :username) %>
+  password: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :password) %>
+
+staging:
+  <<: *default
+  database: store_staging
+  host: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :host) %>
+  username: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :username) %>
+  password: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :password) %>
