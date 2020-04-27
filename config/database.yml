@@ -58,7 +58,7 @@ production:
 
 staging:
   <<: *default
-  database: store_production
+  database: store_staging
   host: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :host) %>
   username: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :username) %>
   password: <%= Rails.application.credentials.dig(:database, Rails.env.to_sym, :password) %>
