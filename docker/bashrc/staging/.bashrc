@@ -21,5 +21,7 @@ alias dbdbdb="db_drop; create; migrate"
 alias credit="EDITOR=vi rails credentials:edit --environment staging"
 alias safety_check="ls -al | grep .env && ls -al config | grep master.key"
 
+alias nginx_restart="/opt/nginx/sbin/nginx -s reload"
+
 alias gemgem="bundle install --without development test"
 alias gogogo="gemgem; migrate; asset; tt"
