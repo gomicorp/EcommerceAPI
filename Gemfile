@@ -47,7 +47,7 @@ gem 'simple_trans', git: 'https://github.com/yhk1038/simple_trans.git'
 gem 'paper_trail'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '6.0.2.2'
+gem 'rails', '6.0.3'
 # Use mysql as the database for Active Record
 gem 'mysql2', '>= 0.4.4'
 # Use Puma as the app server
