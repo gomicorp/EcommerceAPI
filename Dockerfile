@@ -1,36 +1,30 @@
-#### 배포용 이미지 빌드 ####
-FROM gomicorp/rails-with_passenger:6.0.2.1 as staging
+#### 스테이징용 이미지 빌드 ####
+# 추후 staging service 이미지로 배포 가능
+FROM gomicorp/rails-with_passenger:6.0.3 as staging
+
 WORKDIR /app
 
-#gem 설치 및 logrotate 설치
-COPY Gemfile ./
-RUN bundle install --without 'development test' && rm -rf /tmp/* /var/tmp/* /usr/lib/ruby/gems/*/cache/*.gem
-
-# 비즈니스 로직 복사, 로그 설정 및 nginx 설정 복사
-COPY . .
-RUN rm -rf Gemfile.lock && bundle config set without 'development test' && bundle install && rm -rf /tmp/* /var/tmp/* /usr/lib/ruby/gems/*/cache/*.gem \
-    && yarn install && yarn cache clean \
-    && SECRET_KEY_BASE=1 RAILS_ENV=staging rails assets:precompile \
-    && cp ./docker/logrotate/staging/api ./docker/logrotate/staging/serverlog /etc/logrotate.d \
-    && cp ./docker/bashrc/staging/.bashrc /root/.bashrc \
-    && rm -rf /app/tmp && mkdir /app/tmp && touch /app/tmp/.keep && chmod o+w /app/tmp \
+#소스코드 복사
+RUN git clone https://github.com/gomicorp/EcommerceAPI.git -b develop /app \
     && git checkout develop && git clean -fd && git reset --hard
 
-
-#### 배포용 이미지 빌드 ####
-FROM gomicorp/rails-with_passenger:6.0.2.1 as production
-WORKDIR /app
-
-#gem 설치 및 logrotate 설치
-COPY Gemfile ./
-RUN bundle install --without 'development test' && rm -rf /tmp/* /var/tmp/* /usr/lib/ruby/gems/*/cache/*.gem
-
-# 비즈니스 로직 복사, 로그 설정 및 nginx 설정 복사
-COPY . .
+# gem 설치 및 logrotate 설치
 RUN rm -rf Gemfile.lock && bundle config set without 'development test' && bundle install && rm -rf /tmp/* /var/tmp/* /usr/lib/ruby/gems/*/cache/*.gem \
     && yarn install && yarn cache clean \
-    && SECRET_KEY_BASE=1 RAILS_ENV=production rails assets:precompile \
-    && cp ./docker/logrotate/production/api ./docker/logrotate/production/serverlog /etc/logrotate.d \
-    && cp ./docker/bashrc/production/.bashrc /root/.bashrc \
-    && rm -rf /app/tmp && mkdir /app/tmp && touch /app/tmp/.keep && chmod o+w /app/tmp \
+    && rm -rf /app/tmp && mkdir /app/tmp && touch /app/tmp/.keep && chmod o+w /app/tmp
+
+
+#### 프로덕션용 이미지 빌드 ####
+# 추후 production service 이미지로 배포 가능
+FROM gomicorp/rails-with_passenger:6.0.3 as production
+
+WORKDIR /app
+
+#소스코드 복사
+RUN git clone https://github.com/gomicorp/EcommerceAPI.git -b master /app \
     && git checkout master && git clean -fd && git reset --hard
+
+# gem 설치 및 logrotate 설치
+RUN rm -rf Gemfile.lock && bundle config set without 'development test' && bundle install && rm -rf /tmp/* /var/tmp/* /usr/lib/ruby/gems/*/cache/*.gem \
+    && yarn install && yarn cache clean \
+    && rm -rf /app/tmp && mkdir /app/tmp && touch /app/tmp/.keep && chmod o+w /app/tmp

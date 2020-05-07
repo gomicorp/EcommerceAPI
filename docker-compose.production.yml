@@ -6,14 +6,16 @@ services:
       context: ./
       dockerfile: Dockerfile
       target: production
-    env_file:
-      - ./docker/env/production/.env
     ports:
       - "80:80"
     volumes:
       - ./log/nginx/production:/opt/nginx/logs
       - ./log:/app/log
       - ./config/master.key:/app/config/master.key
+      - ./docker/env/production/.env:/app/.env
+      - ./docker/bashrc/production/.bashrc:/root/.bashrc
+      - ./docker/logrotate/production/api:/etc/logrotate.d/api
+      - ./docker/logrotate/production/serverlog:/etc/logrotate.d/serverlog
       - ./docker/nginx/production/nginx.conf:/opt/nginx/conf/nginx.conf
     stdin_open: true
     tty: true

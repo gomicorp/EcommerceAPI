@@ -6,14 +6,16 @@ services:
       context: ./
       dockerfile: Dockerfile
       target: staging
-    env_file:
-      - ./docker/env/staging/.env
     ports:
       - "8080:80"
     volumes:
       - ./log/nginx/staging:/opt/nginx/logs
       - ./log:/app/log
       - ./config/credentials/staging.key:/app/config/credentials/staging.key
+      - ./docker/env/staging/.env:/app/.env
+      - ./docker/bashrc/staging/.bashrc:/root/.bashrc
+      - ./docker/logrotate/staging/api:/etc/logrotate.d/api
+      - ./docker/logrotate/staging/serverlog:/etc/logrotate.d/serverlog
       - ./docker/nginx/staging/nginx.conf:/opt/nginx/conf/nginx.conf
     stdin_open: true
     tty: true

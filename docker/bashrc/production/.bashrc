@@ -8,7 +8,7 @@ alias bash_run="source /root/.bashrc"
 
 alias pull="git pull origin develop"
 alias tt="touch $MY_APP_ROOT/tmp/restart.txt"
-alias asset="cd $MY_APP_ROOT; rails assets:precompile RAILS_ENV=production"
+alias asset="cd $MY_APP_ROOT; RAILS_ENV=production rails assets:precompile"
 
 alias log="sudo tail -f $MY_APP_ROOT/log/production.log"
 alias console="spring stop; rails c -e production"
