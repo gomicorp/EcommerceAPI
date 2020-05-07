@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+  production_web:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "80:80"
+    volumes:
+      - ./log/nginx/production:/opt/nginx/logs
+      - ./log:/app/log
+      - ./config/master.key:/app/config/master.key
+      - ./docker/env/production/.env:/app/.env
+      - ./docker/bashrc/production/.bashrc:/root/.bashrc
+      - ./docker/logrotate/production/api:/etc/logrotate.d/api
+      - ./docker/logrotate/production/serverlog:/etc/logrotate.d/serverlog
+      - ./docker/nginx/production/nginx.conf:/opt/nginx/conf/nginx.conf
+    stdin_open: true
+    tty: true
+    command:
+      - /bin/bash
+      - -c
+      - |
+        touch /app/log/production.log && touch /app/log/.keep
+        chmod o+w /app/log/production.log
+        crond
+        /opt/nginx/sbin/nginx -g 'daemon off;'

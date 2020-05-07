@@ -1,10 +1,11 @@
-/app/log/production.log {
+/app/log/staging.log {
+   copytruncate
    daily
-   rotate 28
+   rotate 5
    missingok
    dateext
    create 0666 root root
    postrotate
      touch /app/tmp/restart.txt
    endscript
- }
+}

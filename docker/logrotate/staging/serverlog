@@ -1,0 +1,16 @@
+/app/log/nginx/*.log {
+  weekly
+  missingok
+  rotate 4
+  dateext
+  notifempty
+  sharedscripts
+  prerotate
+    if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
+        run-parts /etc/logrotate.d/httpd-prerotate; \
+    fi \
+  endscript
+  postrotate
+    [ ! -f /opt/nginx/logs/nginx.pid ] || kill -USR1 `cat /opt/nginx/logs/nginx.pid`
+  endscript
+}
