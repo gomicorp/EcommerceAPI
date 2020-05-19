@@ -12,7 +12,8 @@ class SetCountriesDataToCart < ActiveRecord::Migration[6.0]
       ap 'ea updated'
       ordered_carts.each do |ordered_cart|
         if ordered_cart.items.any?
-          ordered_cart.update!(country: ordered_cart.items.first.product_page.country)
+          country_source = ordered_cart.items.first.product || ordered_cart.items.first.product_page
+          ordered_cart.update!(country: country_source.country)
         else
           ordered_cart.update!(country: default_country)
         end
