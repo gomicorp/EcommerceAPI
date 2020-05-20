@@ -47,6 +47,7 @@ ignore/*
 db/backups
 db/backups/*
 db/schema.rb
+db/data_schema.rb
 
 .DS_Store
 **/*/.DS_Store
