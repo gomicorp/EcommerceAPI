@@ -41,7 +41,7 @@ class CartCalculator
 end
 
 
-class Cart < ApplicationRecord
+class Cart < NationRecord
   # 신규(desk) 입금대기(pay) 결제완료(paid) 배송준비(ship_ready) 배송중(ship_ing) 취소요청(cancel-request) 반품요청(refund-request) 환불실패 보관함(complete)
 
   # 요청 -> 접수(처리중) -> { 반려 -> 요청 -> ... } -> 완료

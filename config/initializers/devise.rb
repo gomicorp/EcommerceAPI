@@ -265,6 +265,10 @@ Devise.setup do |config|
     fb_app_id = ENV['FACEBOOK_DEV_APP_ID'] || Rails.application.credentials.dig(:facebook, :app_id)
     fb_app_secret = ENV['FACEBOOK_DEV_APP_SECRET'] || Rails.application.credentials.dig(:facebook, :app_secret)
     config.omniauth :facebook, fb_app_id, fb_app_secret
+  when :staging
+    fb_app_id = ENV['FACEBOOK_DEV_APP_ID'] || Rails.application.credentials.dig(:facebook, :app_id)
+    fb_app_secret = ENV['FACEBOOK_DEV_APP_SECRET'] || Rails.application.credentials.dig(:facebook, :app_secret)
+    config.omniauth :facebook, fb_app_id, fb_app_secret
   else
     config.omniauth :facebook, ENV['FACEBOOK_DEV_APP_ID'], ENV['FACEBOOK_DEV_APP_SECRET']
   end

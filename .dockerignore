@@ -1,8 +1,11 @@
 # envs
 .env
 
-# master.key
+# credential keys
 /config/master.key
+/config/credentials/development.key
+/config/credentials/test.key
+/config/credentials/staging.key
 
 # Ignore related Docker
 docker/.docker_password.txt

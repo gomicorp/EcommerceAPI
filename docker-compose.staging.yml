@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+  staging_web:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: staging
+    ports:
+      - "8080:80"
+    volumes:
+      - ./log/nginx/staging:/opt/nginx/logs
+      - ./log:/app/log
+      - ./config/credentials/staging.key:/app/config/credentials/staging.key
+      - ./docker/env/staging/.env:/app/.env
+      - ./docker/bashrc/staging/.bashrc:/root/.bashrc
+      - ./docker/logrotate/staging/api:/etc/logrotate.d/api
+      - ./docker/logrotate/staging/serverlog:/etc/logrotate.d/serverlog
+      - ./docker/nginx/staging/nginx.conf:/opt/nginx/conf/nginx.conf
+    stdin_open: true
+    tty: true
+    command:
+      - /bin/bash
+      - -c
+      - |
+        touch /app/log/staging.log && touch /app/log/.keep
+        chmod o+w /app/log/staging.log
+        crond
+        /opt/nginx/sbin/nginx -g 'daemon off;'
