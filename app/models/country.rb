@@ -8,6 +8,7 @@ class Country < ApplicationRecord
 
   TH = find_or_create_by(name: 'thailand', name_ko: '태국', locale: 'th', short_name: :th)
   VN = find_or_create_by(name: 'vietnam', name_ko: '베트남', locale: 'vi', short_name: :vn)
+  KO = find_or_create_by(name: 'korea', name_ko: '한국', locale: 'ko', short_name: 'ko', iso_code: 'KRW')
 
   def self.th
     TH
@@ -15,6 +16,10 @@ class Country < ApplicationRecord
 
   def self.vn
     VN
+  end
+
+  def self.ko
+    KO
   end
 
   def self.undef
@@ -42,7 +47,8 @@ class Country < ApplicationRecord
   def self.seed_data
     [
       { name: 'vietnam', name_ko: '베트남', locale: 'vi', short_name: 'vn' },
-      { name: 'thailand', name_ko: '태국', locale: 'th', short_name: 'th' }
+      { name: 'thailand', name_ko: '태국', locale: 'th', short_name: 'th' },
+      { name: 'korea', name_ko: '한국', locale: 'ko', short_name: 'ko' }
     ]
   end
 end
