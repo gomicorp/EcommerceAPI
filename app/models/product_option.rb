@@ -23,7 +23,7 @@ class ProductOption < ApplicationRecord
   has_one :product_page, class_name: 'Product', through: :option_group, source: :product
 
   # ===============================================
-  has_many :product_option_brands, class_name: 'ProductOptionBrand'
+  has_many :product_option_brands, class_name: 'ProductOptionBrand', dependent: :delete_all
   has_many :brands, through: :product_option_brands
   # ===============================================
 
