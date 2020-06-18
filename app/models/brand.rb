@@ -10,6 +10,14 @@ class Brand < NationRecord
   has_many :items, through: :product_item_groups, class_name: :ProductItem
   has_many :managers, through: :company
 
+  # ===============================================
+  has_many :product_option_brands, class_name: 'ProductOptionBrand', dependent: :delete_all
+  has_many :product_options, through: :product_option_brands
+  # ===============================================
+  has_many :order_info_brands, class_name: 'OrderInfoBrand', dependent: :delete_all
+  has_many :order_infos, through: :order_info_brands
+  # ===============================================
+
   def official_site_url
     '#'
   end

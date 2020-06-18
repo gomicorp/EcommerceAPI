@@ -51,6 +51,14 @@ class ProductOptionBridge < ApplicationRecord
     end
   end
 
+  def brands
+    case connectable_type
+    when 'ProductItem'
+      [] << connectable.brand
+    when 'ProductCollection'
+      connectable.brands.uniq
+    end
+  end
 
   ## ===== before calculator =====
 
