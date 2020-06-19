@@ -1,0 +1,2 @@
+class StatusCode < ApplicationRecord
+end
