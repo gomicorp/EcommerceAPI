@@ -1,0 +1,8 @@
+// Load Active Admin's styles into Webpacker,
+// see `active_admin.scss` for customization.
+import "../stylesheets/active_admin";
+
+import "@fortawesome/fontawesome-free/js/all";
+
+import "@activeadmin/activeadmin";
+import 'arctic_admin';

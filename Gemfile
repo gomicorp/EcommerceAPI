@@ -34,6 +34,9 @@ gem 'mailgun-ruby'
 gem 'omniauth-facebook' # 페이스북 로그인
 gem 'rolify' # role 관리
 
+# Active Admin
+gem 'activeadmin'
+
 gem 'active_link_to'
 gem 'awesome_print'
 gem 'aws-sdk-s3', require: false

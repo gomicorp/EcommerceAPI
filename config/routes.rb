@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  devise_for :admin_users, ActiveAdmin::Devise.config
+  ActiveAdmin.routes(self)
   devise_for :users, controllers: {
     sessions: 'users/sessions',
     registrations: 'users/registrations',
@@ -16,7 +18,4 @@ Rails.application.routes.draw do
       resources :brands, only: %i[index show]
     end
   end
-  
-  devise_for :pandals
-  mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 end

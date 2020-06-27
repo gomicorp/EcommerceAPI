@@ -6,3 +6,6 @@ ko:
       admin: 관리자
       manager: 담당자
       seller: 판매자
+      admin_user: 관리 계정
+      order_info: 주문
+      status_code: 상태코드
