@@ -69,4 +69,37 @@ class ApplicationRecord < ActiveRecord::Base
     puts "\n\n"
     res
   end
+
+  # 각 모델 클래스에서, 자신의 관계 모델에 대하여 좀비레코드 가능을 명시적으로 주입합니다.
+  def self.zombie(name)
+    target_association = self.associations[self.association_names.index(name)]
+    method_name = "zombie_#{name}"
+    variable = "#{method_name}"
+
+    class_eval <<-METHOD, __FILE__, __LINE__ + 1
+      def #{method_name}
+        return @#{variable} if @#{variable}
+
+        @#{variable} = self.#{name}
+        unless @#{variable}
+          last_version = PaperTrail::Version.where(item_id: #{name}_id, item_type: '#{target_association[:klass].name}').last
+          @#{variable} = last_version.reify if last_version && last_version.event == 'destroy'
+        end
+        @#{variable}
+      end
+    METHOD
+  end
+
+  # Zombie Query Method (삭제한 놈도 찾아드림)
+  def self.zombie_find(id)
+    find(id)
+  rescue ActiveRecord::RecordNotFound => e
+    record = nil
+    last_version = PaperTrail::Version.where(item_id: id, item_type: name).last
+    record = last_version.reify if last_version && last_version.event == 'destroy'
+
+    return record if record
+
+    raise e
+  end
 end

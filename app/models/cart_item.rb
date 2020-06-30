@@ -123,7 +123,13 @@ class CartItem < ApplicationRecord
   end
 
   def imprint_price_values
-
+    update(
+      base_price: product_option.base_price,
+      discount_price: product_option.discount_price,
+      additional_price: product_option.additional_price,
+      retail_price: product_option.retail_price,
+      price_change: product_option.price_change
+    )
   end
 
   # def _barcode_count
