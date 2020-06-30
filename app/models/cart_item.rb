@@ -37,23 +37,32 @@ class CartItem < ApplicationRecord
   #   @_barcode_count ||= barcodes.length
   # end
 
+  zombie :product_option
+
+  delegate :page_title, to: :zombie_product_option
+  delegate :title, to: :zombie_product_option, prefix: :option # option_title
+  delegate :name, to: :zombie_product_option, prefix: :option # option_name
+  delegate :thumbnail, to: :product_page, prefix: :page
+
   # 단위 정가 & 합계
+  delegate :base_price, to: :zombie_product_option
   def base_price_sum
-    option_count * product_option.base_price
+    option_count * (captured ? captured_base_price : base_price)
   end
 
   # 구성 품목 수량 & 합계
   # A.K.A. EA (e.g. 10 EA)
   # 몇 개의 ProductItem 재고단위로 구성되었는가.
-  delegate :unit_count, to: :product_option
+  delegate :unit_count, to: :zombie_product_option
   def unit_count_sum
     option_count * unit_count
   end
 
   # 단위 변동가 & 합계
   # 일반적인 경우, 음수값을 가짐
+  delegate :price_change, to: :zombie_product_option
   def price_change_sum
-    option_count * price_change
+    option_count * (captured ? captured_price_change : price_change)
   end
 
   # 합산 가격
@@ -122,14 +131,21 @@ class CartItem < ApplicationRecord
     all.map { |cart_item| cart_item.item_count(product_item) }.sum
   end
 
-  def imprint_price_values
-    update(
-      base_price: product_option.base_price,
-      discount_price: product_option.discount_price,
-      additional_price: product_option.additional_price,
-      retail_price: product_option.retail_price,
-      price_change: product_option.price_change
-    )
+  def capture_price_fields!
+    capture_price_fields
+    save!
+  end
+
+  def capture_price_fields
+    po = zombie_product_option
+    tap do |item|
+      item.captured_base_price = po.base_price
+      item.captured_discount_price = po.discount_price
+      item.captured_additional_price = po.additional_price
+      item.captured_price_change = po.price_change
+      item.captured_retail_price = po.retail_price
+      item.captured = true
+    end
   end
 
   # def _barcode_count
