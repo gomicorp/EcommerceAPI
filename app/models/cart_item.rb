@@ -38,7 +38,6 @@ class CartItem < ApplicationRecord
   # end
 
   # 단위 정가 & 합계
-  delegate :base_price, to: :product_option
   def base_price_sum
     option_count * product_option.base_price
   end
@@ -53,7 +52,6 @@ class CartItem < ApplicationRecord
 
   # 단위 변동가 & 합계
   # 일반적인 경우, 음수값을 가짐
-  delegate :price_change, to: :product_option
   def price_change_sum
     option_count * price_change
   end
@@ -122,6 +120,10 @@ class CartItem < ApplicationRecord
 
   def self.item_count(product_item)
     all.map { |cart_item| cart_item.item_count(product_item) }.sum
+  end
+
+  def imprint_price_values
+
   end
 
   # def _barcode_count
