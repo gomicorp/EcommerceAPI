@@ -19,7 +19,6 @@ class OrderInfo < NationRecord
 
   delegate :order_status, to: :cart
   # alias_attribute :status, :order_status
-  alias_attribute :ordered_at, :created_at
   delegate :delivery_amount, to: :ship_info, allow_nil: true
   delegate :amount, to: :payment, allow_nil: true
   delegate :pay_method, to: :payment, allow_nil: true
