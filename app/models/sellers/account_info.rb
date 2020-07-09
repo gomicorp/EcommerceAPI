@@ -1,2 +1,4 @@
-class Sellers::AccountInfo < ApplicationRecord
+module Sellers
+  class AccountInfo < ApplicationRecord
+  end
 end
