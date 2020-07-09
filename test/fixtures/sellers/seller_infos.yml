@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: 
+  store_info: 
+  account_info: 
+  cumulative_profit: 
+  present_profit: 
+  withdrawable_profit: 
+  grade: 
+
+two:
+  user: 
+  store_info: 
+  account_info: 
+  cumulative_profit: 
+  present_profit: 
+  withdrawable_profit: 
+  grade: 

@@ -1,0 +1,2 @@
+class UserInterestTag < ApplicationRecord
+end

@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  order_info: 
+  seller_info: 
+  adjust_profit: 1
+  paid: false
+  paid_at: 2020-07-09 14:14:26
+
+two:
+  order_info: 
+  seller_info: 
+  adjust_profit: 1
+  paid: false
+  paid_at: 2020-07-09 14:14:26

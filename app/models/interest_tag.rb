@@ -1,0 +1,2 @@
+class InterestTag < ApplicationRecord
+end
