@@ -1,4 +1,4 @@
-class Sellers
+module Sellers
   class SellerInfo < ApplicationRecord
     belongs_to :seller
     has_one :store_info, class_name: 'Sellers::StoreInfo'
