@@ -10,12 +10,14 @@ module Sellers
 
     has_many :order_infos, through: :order_sold_papers
 
+    scope :permitted, -> { where(permit_change_lists) }
+
     def permit_status
       init_permit_status! if permit_change_lists.empty?
       permit_change_lists.last.permit_status
     end
 
-    def play_permit!(reason)
+    def play_permit!(reason = nil)
       permit_change_lists << Sellers::PermitChangeList.new(
         permit_status: Sellers::PermitStatus.permitted,
         reason: reason
