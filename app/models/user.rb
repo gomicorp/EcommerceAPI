@@ -4,6 +4,9 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :omniauthable, omniauth_providers: [:facebook]
 
+  # SNS 로그인 등 각종 로그인 정보
+  has_many :authentications, dependent: :destroy
+
   # 역할과 관련된 스코프
   scope :admins, -> { where(is_admin: true) }
   scope :managers, -> { where(is_manager: true) }
@@ -33,7 +36,7 @@ class User < ApplicationRecord
   end
 
   def self.find_for_oauth(auth, signed_in_resource = nil)
-    user = signed_in_resource || find_by(provider: auth.provider, uid: auth.uid)
+    user = signed_in_resource || Authentication.find_by(provider: auth.provider, uid: auth.uid)&.user
 
     # Directly return user if already exists or signed_in.
     return user if user
@@ -47,8 +50,7 @@ class User < ApplicationRecord
       # if nobody have this email, create new user.
 
       # Common Auth has.
-      user.provider = auth.provider
-      user.uid = auth.uid
+      new_auth = Authentication.create provider: auth.provider, uid: auth.uid, user_id: user.id
       user.password = Devise.friendly_token[0, 20]
 
       # It's a little difference for each provider's auth hash.
@@ -63,6 +65,7 @@ class User < ApplicationRecord
         user.profile_image = auth.info.image
       end
 
+      new_auth.save!
       user.save!
     end
 
