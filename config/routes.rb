@@ -11,6 +11,9 @@ Rails.application.routes.draw do
   draw :partner_center_routes
   draw :gomisa_routes
 
+  draw :common_routes
+  draw :sellers_routes
+
   namespace :haravan do
     namespace :settlement do
       resources :brands, only: %i[index show]
