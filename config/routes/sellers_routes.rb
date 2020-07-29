@@ -3,19 +3,21 @@ namespace :sellers, except: %i[new edit] do
   #
   resources :users do
     #
-    resource :seller_info, controller: 'users/seller_infos'
+    scope module: :users do
+      resource :seller_info, controller: 'seller_infos'
 
-    # === 관심사 태그 API
-    #
-    # 관심사 태그와 셀러를 연결/해제 하는 행동을 컨트롤 합니다
-    resources :interest_tags, controller: 'users/interest_tags'
+      # === 관심사 태그 API
+      #
+      # 관심사 태그와 셀러를 연결/해제 하는 행동을 컨트롤 합니다
+      resources :interest_tags, controller: 'interest_tags'
 
-    # === 정산 API
-    #
-    resources :settlement_statements, controller: 'users/settlement_statements'
-    resources :account_infos, controller: 'users/settlement_statements'
-    resources :order_sold_papers, controller: 'users/settlement_statements' do
-      get 'sum', on: :collection
+      # === 정산 API
+      #
+      resources :settlement_statements, controller: 'settlement_statements'
+      resources :account_infos, controller: 'settlement_statements'
+      resources :order_sold_papers, controller: 'settlement_statements' do
+        get 'sum', on: :collection
+      end
     end
   end
 
