@@ -20,13 +20,15 @@ module Users
         case params[:level]
         when 'seller' then @user.update(is_seller: true)
         end
-      end
 
-      # super 내의 warden.authenticate! 메소드를 무시하기 위해
-      # super 를 override 했습니다.
-      self.resource = @user   # 원래 self.resource = warden.authenticate!(auth_options) 였습니다.
-      sign_in(resource_name, resource)
-      respond_with resource, location: after_sign_in_path_for(resource)
+        # super 내의 warden.authenticate! 메소드를 무시하기 위해
+        # super 를 override 했습니다.
+        self.resource = @user   # 원래 self.resource = warden.authenticate!(auth_options) 였습니다.
+        sign_in(resource_name, resource)
+        respond_with resource, location: after_sign_in_path_for(resource)
+      else
+        super
+      end
     end
 
     # DELETE /resource/sign_out
