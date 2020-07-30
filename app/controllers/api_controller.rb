@@ -1,5 +1,17 @@
 class ApiController < ActionController::API
+  respond_to :json
+
   before_action :set_raven_context, :set_app_locale, :set_country_code
+
+  NotAuthorized = Class.new(StandardError)
+
+  rescue_from ActiveRecord::RecordNotFound do |exception|
+    render_error_page(status: 404, text: 'Not found')
+  end
+
+  rescue_from ApiController::NotAuthorized do |exception|
+    render_error_page(status: 403, text: 'Forbidden')
+  end
 
   def render_resource(resource)
     if resource.errors.empty?
@@ -42,5 +54,12 @@ class ApiController < ActionController::API
 
   def set_app_locale
     I18n.default_locale = :ko
+  end
+
+  private def render_error_page(status:, text:)
+    respond_with do |format|
+      format.json { render json: {errors: [message: "#{status} #{text}"]}, status: status }
+      format.any  { head status }
+    end
   end
 end
