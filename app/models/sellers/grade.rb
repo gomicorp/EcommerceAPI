@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: sellers_grades
+#
+#  id              :bigint           not null, primary key
+#  name            :string(255)
+#  commission_rate :decimal(10, 2)   default(0.0), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#
 module Sellers
   class Grade < ApplicationRecord
     validates_inclusion_of :name, in: %w[beginner bronze silver gold]

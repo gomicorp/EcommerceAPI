@@ -1,3 +1,11 @@
+# == Schema Information
+#
+# Table name: product_collection_lists
+#
+#  item_id       :bigint           not null, primary key
+#  collection_id :bigint           not null
+#  unit_count    :bigint           default(0), not null
+#
 class ProductCollectionList < ApplicationRecord
   self.primary_key = :item_id
 
