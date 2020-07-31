@@ -18,10 +18,7 @@ module Sellers
     def update
       # 프로필 이미지 업데이트
       # 생일, 성별 업데이트
-      @seller.birth_day = params[:birth_day].to_datetime.to_date
-      @seller.gender = params[:gender]
-
-      if @seller.save
+      if @seller.update(seller_params)
         render json: @seller, status: :ok
       else
         render json: @seller.errors, status: :unprocessable_entity
@@ -31,12 +28,16 @@ module Sellers
     # = DELETE /sellers/users/:id
     def destroy; end
 
-    protected
+    private
 
     def set_seller
       @seller = Seller.find(params[:id])
 
       raise ActiveRecord::RecordNotFound unless @seller
+    end
+
+    def seller_params
+      params.require(:seller).permit!
     end
 
     def check_authorization!
