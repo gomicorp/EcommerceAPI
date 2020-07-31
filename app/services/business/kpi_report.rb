@@ -14,7 +14,7 @@ module Business
 
 
       # 기간
-      range = date.beginning_of_month..date.end_of_month
+      range = date.beginning_of_month.in_time_zone..date.end_of_month.in_time_zone.end_of_day
 
       # 주문 완료
       complete_data = data_format.call(orders.where(ordered_at: range).sold)

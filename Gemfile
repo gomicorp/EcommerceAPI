@@ -28,6 +28,7 @@ gem 'rails-file_storage', git: 'https://github.com/yhk1038/file_storage.git'
 # 회원인증 및 권한설정을 위한 젬
 gem 'authority' # 권한설정
 gem 'devise' # 회원가입 및 인증
+gem 'devise-jwt' # jwt 사용
 gem 'jwt'
 gem 'letter_opener', group: :development # 개발 모드에서 이메일을 보내지 않고 브라우저에서 미리보기하는 젬
 gem 'mailgun-ruby'
@@ -75,6 +76,8 @@ gem 'bootsnap', '>= 1.4.2', require: false
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'faker'
+  gem 'annotate'
 end
 
 group :development do

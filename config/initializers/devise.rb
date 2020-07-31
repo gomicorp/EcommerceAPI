@@ -12,7 +12,7 @@ Devise.setup do |config|
 
   # ==> Controller configuration
   # Configure the parent class to the devise controllers.
-  # config.parent_controller = 'DeviseController'
+  config.parent_controller = 'ApiController'
 
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
@@ -272,6 +272,21 @@ Devise.setup do |config|
   else
     config.omniauth :facebook, ENV['FACEBOOK_DEV_APP_ID'], ENV['FACEBOOK_DEV_APP_SECRET']
   end
+
+  # ==> JWT configuration
+  # JWT 를 생성할 때 사용하게 될 secret key 를 구성합니다
+  config.jwt do |jwt|
+    jwt.secret = Rails.application.credentials.dig(:devise_jwt_secret_key_base).to_s #ENV['DEVISE_JWT_SECRET_KEY']
+    jwt.dispatch_requests = [
+      ['POST', %r{^users/sign_in$}]
+    ]
+    jwt.revocation_requests = [
+      ['DELETE', %r{^users/sign_out$}]
+    ]
+    jwt.expiration_time = 365.day.to_i
+  end
+
+  config.navigational_formats = []
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
