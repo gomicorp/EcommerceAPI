@@ -2,7 +2,9 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :omniauthable, omniauth_providers: [:facebook]
+         :recoverable, :rememberable, :validatable,
+         :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
+  devise :omniauthable, omniauth_providers: [:facebook]
 
   # SNS 로그인 등 각종 로그인 정보
   has_many :authentications, dependent: :destroy
@@ -50,7 +52,7 @@ class User < ApplicationRecord
       # if nobody have this email, create new user.
 
       # Common Auth has.
-      new_auth = Authentication.create provider: auth.provider, uid: auth.uid, user_id: user.id
+      new_auth = user.authentications.build(provider: auth.provider, uid: auth.uid)
       user.password = Devise.friendly_token[0, 20]
 
       # It's a little difference for each provider's auth hash.
@@ -60,12 +62,8 @@ class User < ApplicationRecord
         user.email = auth.info.email || "#{auth.uid}@#{auth.provider}.gomicorp.com"
         user.name = auth.info.name
         user.profile_image = auth.info.image
-
-      when 'kakao' # Note. Kakao doesn't support email field.
-        user.profile_image = auth.info.image
       end
 
-      new_auth.save!
       user.save!
     end
 
