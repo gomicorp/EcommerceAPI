@@ -38,8 +38,8 @@ module Sellers
 
     has_many :order_infos, through: :order_sold_papers
 
-    scope :permitted, -> { where(permission: Sellers::PermitChangeList.where(permit_status: Sellers::PermitStatus.permitted)) }
-    scope :applied, -> { where(permission: Sellers::PermitChangeList.where(permit_status: Sellers::PermitStatus.applied)) }
+    scope :permitted, -> { where(permission: PermitChangeList.where(permit_status: PermitStatus.permitted)) }
+    scope :applied, -> { where(permission: PermitChangeList.where(permit_status: PermitStatus.applied)) }
 
     delegate :name, to: :seller
     delegate :email, to: :seller
@@ -48,28 +48,28 @@ module Sellers
 
     def permitted?
       update_status_cache
-      permit_status == Sellers::PermitStatus.permitted
+      permit_status == PermitStatus.permitted
     end
 
     def play_permit!(reason = nil)
-      permit_change_lists << Sellers::PermitChangeList.new(
-        permit_status: Sellers::PermitStatus.permitted,
+      permit_change_lists << PermitChangeList.new(
+        permit_status: PermitStatus.permitted,
         reason: reason
       )
       update_status_cache
     end
 
     def play_stop!(reason)
-      permit_change_lists << Sellers::PermitChangeList.new(
-        permit_status: Sellers::PermitStatus.stopped,
+      permit_change_lists << PermitChangeList.new(
+        permit_status: PermitStatus.stopped,
         reason: reason
       )
       update_status_cache
     end
 
     def init_permit_status!
-      permit_change_lists << Sellers::PermitChangeList.new(
-        permit_status: Sellers::PermitStatus.applied
+      permit_change_lists << PermitChangeList.new(
+        permit_status: PermitStatus.applied
       )
       update_status_cache
     end
