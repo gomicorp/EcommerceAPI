@@ -6,11 +6,14 @@
 #  cumulative_amount   :integer          default(0)
 #  cumulative_profit   :integer          default(0)
 #  present_profit      :integer          default(0)
+#  purpose             :text(65535)
+#  sns_name            :string(255)
 #  withdrawable_profit :integer          default(0)
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  grade_id            :bigint           not null
 #  seller_id           :bigint           not null
+#  sns_id              :string(255)
 #
 # Indexes
 #
@@ -27,6 +30,8 @@ module Sellers
     belongs_to :seller
     has_one :store_info, class_name: 'Sellers::StoreInfo', dependent: :destroy
     has_one :account_info, class_name: 'Sellers::AccountInfo', dependent: :destroy
+    has_many :user_interest_tags, class_name: 'UserInterestTag', dependent: :delete_all
+    has_many :interest_tags, through: :user_interest_tags
     belongs_to :grade, class_name: 'Sellers::Grade'
 
     has_many :permit_change_lists, class_name: 'Sellers::PermitChangeList', dependent: :destroy
