@@ -27,5 +27,5 @@ end
 
 desc 'gogogo + server'
 task start: :environment do
-  rake :gogogo, :server
+  rake 'install:all', :gogogo, :server
 end
