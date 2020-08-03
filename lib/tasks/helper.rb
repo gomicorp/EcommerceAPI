@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require 'fileutils'
+require_relative 'helper/constant'
+require_relative 'helper/root_context'
+
 module Rake
   ## Rake::Helper
   # Helper 모듈을 포함해 내부의 헬퍼 메소드들은 사실 Rails 에 컨벤션이
@@ -30,7 +34,7 @@ module Rake
     # Example:
     #   Rake::Helper.rake_alias 'db:migrate', 'db:schema:dump'
     #
-    def self.rake_alias(old_task, new_task, &block)
+    def rake_alias(old_task, new_task, &block)
       # 기존 동작 취소
       ::Rake::Task[old_task].clear
 
@@ -45,5 +49,38 @@ module Rake
         block.call if block_given?
       end
     end
+    module_function :rake_alias
+
+    def exec(*args)
+      ppp(output: :puts) { 'Invoke'.cyan + "\t#{args}".blue }
+      system(*args) || abort("\n== Command #{args} failed ==")
+    end
+    module_function :exec
+
+    def run(name)
+      ppp(output: :puts) { 'Invoke'.cyan + "\tRails #{name}".blue }
+      ::Rake::Task[name.to_sym].invoke
+    rescue RuntimeError
+      run_command name
+    end
+    module_function :run
+
+    def run_command(name)
+      ppp(output: :puts) { 'Command'.cyan + "\tRails #{name}".blue }
+      ::Rails::Command.invoke name.to_s
+    end
+    module_function :run_command
+
+    def pipe(*tasks)
+      tasks.each do |t|
+        run t
+      end
+    end
+    module_function :pipe
   end
 end
+
+require_relative 'helper/file_handler'
+require_relative 'helper/improve_dsl'
+
+self.extend Rake::Helper::ImproveDSL

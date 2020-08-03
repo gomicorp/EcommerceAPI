@@ -260,18 +260,9 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
-  case Rails.env.to_sym
-  when :production
-    fb_app_id = ENV['FACEBOOK_DEV_APP_ID'] || Rails.application.credentials.dig(:facebook, :app_id)
-    fb_app_secret = ENV['FACEBOOK_DEV_APP_SECRET'] || Rails.application.credentials.dig(:facebook, :app_secret)
-    config.omniauth :facebook, fb_app_id, fb_app_secret
-  when :staging
-    fb_app_id = ENV['FACEBOOK_DEV_APP_ID'] || Rails.application.credentials.dig(:facebook, :app_id)
-    fb_app_secret = ENV['FACEBOOK_DEV_APP_SECRET'] || Rails.application.credentials.dig(:facebook, :app_secret)
-    config.omniauth :facebook, fb_app_id, fb_app_secret
-  else
-    config.omniauth :facebook, ENV['FACEBOOK_DEV_APP_ID'], ENV['FACEBOOK_DEV_APP_SECRET']
-  end
+  fb_app_id = Rails.application.credentials.dig(:facebook, :app_id)
+  fb_app_secret = Rails.application.credentials.dig(:facebook, :app_secret)
+  config.omniauth :facebook, fb_app_id, fb_app_secret
 
   # ==> JWT configuration
   # JWT 를 생성할 때 사용하게 될 secret key 를 구성합니다
