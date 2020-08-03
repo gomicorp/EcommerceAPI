@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+require 'fileutils'
+require 'forwardable'
+
+# path to your application root.
+APP_ROOT = File.expand_path('../..', __dir__)
+
 module Rake
   ## Rake::Helper
   # Helper 모듈을 포함해 내부의 헬퍼 메소드들은 사실 Rails 에 컨벤션이
@@ -45,5 +51,54 @@ module Rake
         block.call if block_given?
       end
     end
+
+    def self.exec(*args)
+      ppp(output: :puts) { 'Invoke'.cyan + "\t#{args}".blue }
+      system(*args) || abort("\n== Command #{args} failed ==")
+    end
+
+    def self.run(name)
+      ppp(output: :puts) { 'Invoke'.cyan + "\tRails #{name}".blue }
+      ::Rake::Task[name.to_sym].invoke
+    rescue RuntimeError
+      run_command name
+    end
+
+    def self.run_command(name)
+      ppp(output: :puts) { 'Command'.cyan + "\tRails #{name}".blue }
+      ::Rails::Command.invoke name.to_s
+    end
+
+    def self.pipe(*tasks)
+      tasks.each do |t|
+        run t
+      end
+    end
+
+    def self.root_context(&block)
+      FileUtils.chdir APP_ROOT, &block
+    end
+
+
+    module ImproveDSL
+      extend Forwardable
+      def_delegators :'::Rake::Helper', :root_context, :run, :pipe
+
+      def rake(*names)
+        names.any? ? pipe(*names) : MethodChain.new
+      end
+
+
+      class MethodChain
+        extend Forwardable
+        def_delegators :'::Rake::Helper', :exec, :rake_alias
+
+        def alias(old_task, new_task, &block)
+          rake_alias(old_task, new_task, &block)
+        end
+      end
+    end
   end
 end
+
+self.extend Rake::Helper::ImproveDSL
