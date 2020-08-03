@@ -13,11 +13,6 @@
 #  index_barcode_options_on_barcode_id         (barcode_id)
 #  index_barcode_options_on_product_option_id  (product_option_id)
 #
-# Foreign Keys
-#
-#  fk_rails_...  (barcode_id => barcodes.id)
-#  fk_rails_...  (product_option_id => product_options.id)
-#
 class BarcodeOption < ApplicationRecord
   belongs_to :barcode, dependent: :destroy
   belongs_to :product_option, dependent: :destroy

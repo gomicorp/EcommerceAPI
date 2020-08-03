@@ -54,6 +54,8 @@ class CartItem < ApplicationRecord
 
   has_one :order_info, through: :cart
 
+  has_one :item_sold_paper, class_name: 'Sellers::ItemSoldPaper', foreign_key: :item_id, dependent: :destroy
+
   scope :cancelled, -> { where(cancelled_tag: CartItemCancelledTag.all) }
   scope :not_cancelled, -> { where.not(cancelled_tag: CartItemCancelledTag.all) }
 
