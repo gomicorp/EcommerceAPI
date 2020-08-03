@@ -30,7 +30,7 @@ module Sellers
     belongs_to :seller
     has_one :store_info, class_name: 'Sellers::StoreInfo', dependent: :destroy
     has_one :account_info, class_name: 'Sellers::AccountInfo', dependent: :destroy
-    has_many :user_interest_tags, class_name: 'UserInterestTag', dependent: :delete_all
+    has_many :user_interest_tags, class_name: 'UserInterestTag', dependent: :destroy
     has_many :interest_tags, through: :user_interest_tags
     belongs_to :grade, class_name: 'Sellers::Grade'
 
@@ -41,7 +41,7 @@ module Sellers
     has_many :settlement_statements, class_name: 'Sellers::SettlementStatement', dependent: :destroy
     has_many :item_sold_papers, class_name: 'Sellers::ItemSoldPaper', dependent: :destroy
     has_many :items, through: :item_sold_papers
-    has_many :order_infos, -> { distinct }, through: :items
+    has_many :order_infos, -> { distinct }, class_name: 'OrderInfo', through: :items
 
     scope :permitted, -> { where(permission: Sellers::PermitChangeList.where(permit_status: Sellers::PermitStatus.permitted)) }
     scope :applied, -> { where(permission: Sellers::PermitChangeList.where(permit_status: Sellers::PermitStatus.applied)) }
