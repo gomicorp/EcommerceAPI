@@ -21,4 +21,7 @@
 class UserInterestTag < ApplicationRecord
   belongs_to :user
   belongs_to :interest_tag
+
+  validates_presence_of :user, :interest_tag
+  validates_uniqueness_of :user_id, scope: :interest_tag_id
 end

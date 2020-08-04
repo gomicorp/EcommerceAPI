@@ -23,4 +23,5 @@ class SellerInfoInterestTag < ApplicationRecord
   belongs_to :interest_tag
 
   validates_presence_of :seller_info, :interest_tag
+  validates_uniqueness_of :seller_info_id, scope: :interest_tag_id
 end
