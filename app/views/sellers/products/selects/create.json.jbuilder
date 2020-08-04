@@ -1,0 +1,1 @@
+json.selected_product @selected_product
