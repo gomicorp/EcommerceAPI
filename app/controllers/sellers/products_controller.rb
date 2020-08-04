@@ -1,12 +1,20 @@
 module Sellers
   class ProductsController < BaseController
+    before_action :set_product, only: %i[show]
 
-    def index; end
+    def index
+      @products = Product.all.limit(10)
+      # = index.json.jbuilder
+    end
 
-    def show; end
+    def show
+      # = show.json.jbuilder
+    end
 
-    def sort; end
+    private
 
-    def search; end
+    def set_product
+      @product = Product.find(params[:id])
+    end
   end
 end
