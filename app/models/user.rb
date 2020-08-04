@@ -40,6 +40,10 @@ class User < ApplicationRecord
   # SNS 로그인 등 각종 로그인 정보
   has_many :authentications, dependent: :destroy
 
+  # 관심 태그 정보
+  has_many :user_interest_tags, class_name: 'UserInterestTag', dependent: :destroy
+  has_many :interest_tags, through: :user_interest_tags
+
   # 역할과 관련된 스코프
   scope :admins, -> { where(is_admin: true) }
   scope :managers, -> { where(is_manager: true) }

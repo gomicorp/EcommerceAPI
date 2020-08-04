@@ -19,5 +19,6 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class UserInterestTag < ApplicationRecord
+  belongs_to :user
   belongs_to :interest_tag
 end
