@@ -16,8 +16,6 @@ module Sellers
 
       # = 관심 태그 생성
       @interest_tags = []
-      @seller_info_interest_tags = []
-
       @interest_tag_params[:interest_tags].each do |tag_name|
         @interest_tags << InterestTag.find_or_initialize_by(name: tag_name) do |interest_tag|
           interest_tag.created_by = "user"
@@ -51,6 +49,7 @@ module Sellers
           valid_save @seller
 
           # 5. create seller_info_interest_tags
+          @seller_info_interest_tags = []
           @interest_tags.each do |interest_tag|
             @seller_info_interest_tags << SellerInfoInterestTag.new(seller_info: @seller_info, interest_tag: interest_tag)
           end
