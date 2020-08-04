@@ -19,7 +19,10 @@ module Sellers
     def update
       # 프로필 이미지 업데이트
       # 생일, 성별 업데이트
-      if @seller.update(seller_params)
+      # 관심 태그 업데이트
+      @service = SellerUpdateService.new(seller_service_params, current_user)
+
+      if @service.save
         render json: @seller, status: :ok
       else
         render json: @seller.errors, status: :unprocessable_entity
@@ -38,7 +41,18 @@ module Sellers
     end
 
     def seller_params
-      params.require(:seller).permit!
+      params.require(:seller).permit(:birth_day, :gender)
+    end
+
+    def interest_tag_params
+      params.require(:seller).permit(:interest_tags => [])
+    end
+
+    def seller_service_params
+      {
+          seller_params: seller_params,
+          interest_tag_params: interest_tag_params
+      }
     end
 
     def check_authorization!
