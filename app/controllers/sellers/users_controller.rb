@@ -9,6 +9,7 @@ module Sellers
 
     # = GET /sellers/users/:id
     def show
+      # = show.json.jbuilder
     end
 
     # = POST /sellers/users
