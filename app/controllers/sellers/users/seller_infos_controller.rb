@@ -46,7 +46,7 @@ module Sellers
       end
 
       def seller_params
-        params.require(:seller).permit!
+        params.require(:seller).permit(:name, :phone_number)
       end
 
       def seller_info_service_params
