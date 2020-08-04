@@ -30,8 +30,8 @@ module Sellers
     belongs_to :seller
     has_one :store_info, class_name: 'Sellers::StoreInfo', dependent: :destroy
     has_one :account_info, class_name: 'Sellers::AccountInfo', dependent: :destroy
-    has_many :user_interest_tags, class_name: 'UserInterestTag', dependent: :destroy
-    has_many :interest_tags, through: :user_interest_tags
+    has_many :seller_info_interest_tags, class_name: 'SellerInfoInterestTag', dependent: :destroy
+    has_many :interest_tags, through: :seller_info_interest_tags
     belongs_to :grade, class_name: 'Sellers::Grade'
 
     has_many :permit_change_lists, class_name: 'Sellers::PermitChangeList', dependent: :destroy
@@ -50,6 +50,8 @@ module Sellers
     delegate :email, to: :seller
     delegate :phone_number, to: :seller
     delegate :commission_rate, to: :grade
+
+    validates_uniqueness_of :seller_id
 
     def permitted?
       update_status_cache
