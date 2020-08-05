@@ -180,6 +180,15 @@ class CartItem < ApplicationRecord
     end
   end
 
+  def write_sold_paper(seller)
+    update(item_sold_paper:
+             Sellers::ItemSoldPaper.new(
+               adjusted_profit: result_price * seller.commission_rate,
+               seller_info: seller
+             )
+    )
+  end
+
   # def _barcode_count
   #   @_barcode_count ||= barcodes.length
   # end
