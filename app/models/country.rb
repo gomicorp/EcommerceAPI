@@ -14,6 +14,7 @@
 class Country < ApplicationRecord
   has_many :brands
   has_many :products
+  has_many :banks
 
   #validates_uniqueness_of Country.attribute_names
   validates_presence_of :name, :name_ko, :locale, :short_name
