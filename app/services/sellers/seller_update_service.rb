@@ -1,5 +1,7 @@
 module Sellers
   class SellerUpdateService
+    attr_reader :errors
+
     def initialize(service_params, seller)
       @seller = Seller.find seller.id
       @seller_params = service_params[:seller_params]
@@ -12,40 +14,23 @@ module Sellers
       begin
         ApplicationRecord.transaction do
           # 1. update seller
-          @seller.assign_attributes(@seller_params)
-          valid_save @seller
+          @seller.update!(@seller_params)
 
           # 2. create user_interest_tags
-          @user_interest_tags = []
-          @interest_tag_params[:interest_tags].each do |tag_name|
-            @user_interest_tags << UserInterestTag.new(user: @seller, interest_tag: InterestTag.find_by(name: tag_name))
-          end
-          valid_save @user_interest_tags
-
-          raise ActiveRecord::Rollback if @errors
+          @seller.interest_tags = InterestTag.where(name: interest_tag_params_names)
         end
       end
 
-      @seller.interest_tags.any?
+      return true
+
+    rescue ActiveRecord::ActiveRecordError => e
+      # 이곳은 깨졌을 때만 실행되는 에러 핸들링 구역입니다.
+      @errors = e
+      return false
     end
 
-    private
-
-    def valid_save(record)
-      if record.is_a? Array
-        record.each { |rec| rec.save! if valid_record? rec }
-      else
-        record.save! if valid_record? record
-      end
-    end
-
-    def valid_record?(record)
-      if record.invalid?
-        @errors = record.errors
-        false
-      else
-        true
-      end
+    private def interest_tag_params_names
+      @interest_tag_params[:interest_tags]
     end
   end
 end
