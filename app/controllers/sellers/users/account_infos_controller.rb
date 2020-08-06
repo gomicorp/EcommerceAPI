@@ -7,9 +7,9 @@ module Sellers
       # before_action :check_authorization!, only: %i[create destroy]
 
       def index
-        @account_info = @seller.seller_info.account_info
+        @account_infos = @seller.seller_info.account_infos
 
-        render 'index', locals: { account_info: @account_info }
+        render 'index', locals: { account_infos: @account_infos }
       end
 
       def create

@@ -29,7 +29,7 @@ module Sellers
   class SellerInfo < ApplicationRecord
     belongs_to :seller
     has_one :store_info, class_name: 'Sellers::StoreInfo', dependent: :destroy
-    has_one :account_info, class_name: 'Sellers::AccountInfo', dependent: :destroy
+    has_many :account_infos, class_name: 'Sellers::AccountInfo', dependent: :destroy
     has_many :seller_info_interest_tags, class_name: 'SellerInfoInterestTag', dependent: :destroy
     has_many :interest_tags, through: :seller_info_interest_tags
     belongs_to :grade, class_name: 'Sellers::Grade'
