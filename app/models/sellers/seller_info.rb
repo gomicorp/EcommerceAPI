@@ -51,7 +51,14 @@ module Sellers
     delegate :phone_number, to: :seller
     delegate :commission_rate, to: :grade
 
+    SNS_SERVICE = %w[facebook instagram youtube blog]
+
     validates_uniqueness_of :seller_id
+    validates_inclusion_of :sns_name, in: SNS_SERVICE
+
+    def self.sns_service
+      SNS_SERVICE
+    end
 
     def permitted?
       update_status_cache
