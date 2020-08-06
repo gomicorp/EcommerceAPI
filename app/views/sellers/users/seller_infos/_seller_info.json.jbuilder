@@ -14,4 +14,6 @@ json.seller_info do
       end
     end
   end
+  json.settlement_statements seller_info.settlement_statements
+  json.item_sold_papers seller_info.item_sold_papers
 end
