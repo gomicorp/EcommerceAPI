@@ -22,8 +22,9 @@ module Sellers
       # 관심 태그 업데이트
       @service = SellerUpdateService.new(seller_service_params, current_user)
 
-      if @service.save
-        render json: @seller, status: :ok
+      if @service.save && @seller.reload
+        render "update"
+        # render json: @seller.reload, status: :ok
       else
         render json: @seller.errors, status: :unprocessable_entity
       end

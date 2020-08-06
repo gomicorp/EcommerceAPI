@@ -1,5 +1,6 @@
 json.seller_info do
   json.default_info seller_info
+  json.interest_tags seller_info.interest_tags
   json.store_info do
     json.default_info seller_info.store_info
     json.products seller_info.store_info.products do |product|
