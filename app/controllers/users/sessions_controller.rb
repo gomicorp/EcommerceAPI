@@ -25,7 +25,7 @@ module Users
         # super 를 override 했습니다.
         self.resource = @user   # 원래 self.resource = warden.authenticate!(auth_options) 였습니다.
         sign_in(resource_name, resource)
-        respond_with resource, location: after_sign_in_path_for(resource)
+        render 'sellers/users/show', locals: { seller: Seller.find(@user.id) }
       else
         super
       end

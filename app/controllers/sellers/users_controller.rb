@@ -9,7 +9,7 @@ module Sellers
 
     # = GET /sellers/users/:id
     def show
-      # = show.json.jbuilder
+      render "show", locals: { seller: @seller }
     end
 
     # = POST /sellers/users
@@ -22,8 +22,8 @@ module Sellers
       # 관심 태그 업데이트
       @service = SellerUpdateService.new(seller_service_params, current_user)
 
-      if @service.save && @seller.reload
-        render "update"
+      if @service.save
+        render "update", locals: { seller: @seller.reload }
         # render json: @seller.reload, status: :ok
       else
         render json: @seller.errors, status: :unprocessable_entity

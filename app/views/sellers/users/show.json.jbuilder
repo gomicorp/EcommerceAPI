@@ -1,1 +1,1 @@
-json.partial! 'sellers/users/seller', seller: @seller
+json.partial! 'sellers/users/seller', seller: seller
