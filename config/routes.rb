@@ -3,11 +3,13 @@ Rails.application.routes.draw do
   resources :files, only: %i[show create destroy]
 
   constraints format: :json do
-    devise_for :users, controllers: {
-        sessions: 'users/sessions',
-        registrations: 'users/registrations',
-        passwords: 'users/passwords'
-    }
+    devise_for :users,
+               defaults: { format: :json },
+               controllers: {
+                                sessions: 'users/sessions',
+                                registrations: 'users/registrations',
+                                passwords: 'users/passwords'
+                            }
 
     draw :partner_center_routes
     draw :gomisa_routes
