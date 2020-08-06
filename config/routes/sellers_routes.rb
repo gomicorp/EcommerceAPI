@@ -14,7 +14,7 @@ namespace :sellers, except: %i[new edit] do
       # === 정산 API
       #
       resources :settlement_statements, controller: 'settlement_statements'
-      resources :account_infos, controller: 'settlement_statements'
+      resources :account_infos, controller: 'account_infos'
       resources :item_sold_papers, controller: 'settlement_statements' do
         get 'sum', on: :collection
       end
