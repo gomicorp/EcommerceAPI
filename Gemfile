@@ -24,6 +24,7 @@ gem 'locale_router', git: 'https://github.com/yhk1038/locale_router.git'
 gem 'omise'
 gem 'rack-cors'
 gem 'rails-file_storage', git: 'https://github.com/yhk1038/file_storage.git'
+gem 'ransack'
 
 # 회원인증 및 권한설정을 위한 젬
 gem 'authority' # 권한설정
