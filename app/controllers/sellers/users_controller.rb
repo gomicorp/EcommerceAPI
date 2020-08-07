@@ -42,7 +42,7 @@ module Sellers
     end
 
     def seller_params
-      params.require(:seller).permit(:birth_day, :gender)
+      params.require(:seller).permit(:birth_day, :gender, :email, :name)
     end
 
     def interest_tag_params
