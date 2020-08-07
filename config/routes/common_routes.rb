@@ -6,4 +6,5 @@ namespace :common, except: %i[new edit] do
   end
 
   resources :categories, only: %i[index], controller: 'categories'
+  resources :countries, only: %i[index], controller: 'countries'
 end
