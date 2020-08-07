@@ -11,6 +11,10 @@ module Sellers
       # = show.json.jbuilder
     end
 
+    def search
+      @products = Product.ransack(params[:query]).result
+    end
+
     private
 
     def set_product

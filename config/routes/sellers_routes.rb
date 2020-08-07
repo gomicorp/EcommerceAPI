@@ -24,6 +24,10 @@ namespace :sellers, except: %i[new edit] do
   # === 상품 API
   #
   resources :products, only: %i[index show] do
+    collection do
+      match 'search' => 'products#search', via: [:get, :post], as: :search
+    end
+
     resource :select, only: %i[create destroy], controller: 'products/selects'
   end
 end
