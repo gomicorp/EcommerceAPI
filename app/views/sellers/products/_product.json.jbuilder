@@ -1,4 +1,4 @@
-store_info = Seller.find(current_user.id).seller_info.store_info
+store_info = Seller.find(current_user.id)&.seller_info&.store_info
 
 json.product do
   json.default_info product
