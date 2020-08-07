@@ -15,6 +15,10 @@ module Sellers
       @products = Product.ransack(params[:query]).result
     end
 
+    def category
+      @products = Product.joins(:categories).ransack(params[:query]).result
+    end
+
     private
 
     def set_product

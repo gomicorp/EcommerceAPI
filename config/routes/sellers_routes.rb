@@ -26,6 +26,7 @@ namespace :sellers, except: %i[new edit] do
   resources :products, only: %i[index show] do
     collection do
       match 'search' => 'products#search', via: [:get, :post], as: :search
+      match 'category' => 'products#category', via: [:get, :post], as: :category
     end
 
     resource :select, only: %i[create destroy], controller: 'products/selects'
