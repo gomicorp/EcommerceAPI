@@ -3,7 +3,7 @@ module Sellers
     before_action :set_product, only: %i[show]
 
     def index
-      @products = Product.all.limit(10)
+      @products = running_products.all.limit(10)
       # = index.json.jbuilder
     end
 
@@ -12,17 +12,21 @@ module Sellers
     end
 
     def search
-      @products = Product.ransack(params[:query]).result
+      @products = running_products.ransack(params[:query]).result
     end
 
     def category
-      @products = Product.joins(:categories).ransack(params[:query]).result
+      @products = running_products.joins(:categories).ransack(params[:query]).result
     end
 
     private
 
     def set_product
-      @product = Product.find(params[:id])
+      @product = running_products.find(params[:id])
+    end
+
+    def running_products
+      @running_products = Product.where(running_status: %w[running sold_out])
     end
   end
 end
