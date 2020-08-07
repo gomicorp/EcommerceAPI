@@ -7,6 +7,7 @@
 #  cumulative_profit   :integer          default(0)
 #  present_profit      :integer          default(0)
 #  purpose             :text(65535)
+#  seller_email        :string(255)
 #  sns_name            :string(255)
 #  withdrawable_profit :integer          default(0)
 #  created_at          :datetime         not null
