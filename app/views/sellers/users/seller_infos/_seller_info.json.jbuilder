@@ -4,6 +4,7 @@ store_info = seller_info.store_info || Sellers::StoreInfo.new
 
 json.seller_info do
   json.default_info seller_info
+  json.commission_rate seller_info.grade.commission_rate
   json.interest_tags interest_tags
   json.store_info do
     json.default_info store_info
