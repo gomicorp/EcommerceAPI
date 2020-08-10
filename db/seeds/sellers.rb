@@ -42,7 +42,7 @@ sellers = seller_tester_emails.map do |tester_mail|
 
   tester.update!(is_seller: true)
   Seller.find(tester.id)
-end.compact!
+end.compact
 
 #=== sellers seller info ===#
 #=== sellers store info ===#

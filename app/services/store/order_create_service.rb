@@ -46,10 +46,6 @@ module Store
           item_sold_papers = cart.items.map(&:item_sold_paper).compact
           item_sold_papers.each(&:order!)
 
-          # 7. update seller info cache
-          item_sold_papers.each do |paper|
-            paper.seller_info.update_counter_cache paper
-          end
           raise ActiveRecord::Rollback if errors
         end
       rescue ActiveRecord::RecordNotUnique => e
