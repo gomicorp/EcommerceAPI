@@ -3,7 +3,7 @@ module Sellers
     before_action :set_product, only: %i[show]
 
     def index
-      @products = running_products.all.limit(10)
+      @products = running_products.ransack.result.paginate(page: params[:page], per_page: params[:per_page])
       # = index.json.jbuilder
     end
 
@@ -12,11 +12,11 @@ module Sellers
     end
 
     def search
-      @products = running_products.ransack(params[:query]).result
+      @products = running_products.ransack(params[:query]).result.paginate(page: params[:page], per_page: params[:per_page])
     end
 
     def category
-      @products = running_products.joins(:categories).ransack(params[:query]).result
+      @products = running_products.joins(:categories).ransack(params[:query]).result.paginate(page: params[:page], per_page: params[:per_page])
     end
 
     private
