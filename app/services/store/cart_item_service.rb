@@ -5,9 +5,10 @@ module Store
     attr_reader :product_option, :barcodes, :cart_item
     attr_reader :errors
 
-    def initialize(cart)
+    def initialize(cart, seller_info = nil)
       @cart = cart
       @items = cart.items
+      @seller_info = seller_info unless seller_info.nil?
     end
 
     def add(product_option_id, quantity = 0)

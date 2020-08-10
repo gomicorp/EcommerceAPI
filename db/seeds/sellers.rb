@@ -143,7 +143,7 @@ ApplicationRecord.transaction do
       #대상 카트
       cart = orderer.current_cart
       #카트에 product option를 넣습니다.
-      cart_item_service = Store::CartItemService.new(cart)
+      cart_item_service = Store::CartItemService.new(cart, seller.seller_info)
       cart_item_service.add(product.default_option.id, 1)
       order_param = {
         cart_id: cart.id,
