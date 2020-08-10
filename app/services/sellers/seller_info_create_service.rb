@@ -5,6 +5,7 @@ module Sellers
     def initialize(service_params, seller)
       @seller = Seller.find seller.id
       @seller_info_params = service_params[:seller_info_params]
+      @social_media_params = service_params[:social_media_params]
       @interest_tag_params = service_params[:interest_tag_params]
       @store_info_params = service_params[:store_info_params]
       @seller_params = service_params[:seller_params]   # = 셀러 정보 업데이트는 save 메소드에서 진행합니다.
@@ -23,6 +24,7 @@ module Sellers
         # 0. Associations
         @seller_info.seller = @seller
         @seller_info.grade = Grade.first
+        @seller_info.social_media_service = SocialMediaService.find_by(name: @social_media_params[:sns_name])
         @store_info.seller_info = @seller_info
 
         # 1. save seller_info

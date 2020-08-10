@@ -2,24 +2,25 @@
 #
 # Table name: sellers_seller_infos
 #
-#  id                  :bigint           not null, primary key
-#  cumulative_amount   :integer          default(0)
-#  cumulative_profit   :integer          default(0)
-#  present_profit      :integer          default(0)
-#  purpose             :text(65535)
-#  seller_email        :string(255)
-#  sns_name            :string(255)
-#  withdrawable_profit :integer          default(0)
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  grade_id            :bigint           not null
-#  seller_id           :bigint           not null
-#  sns_id              :string(255)
+#  id                      :bigint           not null, primary key
+#  cumulative_amount       :integer          default(0)
+#  cumulative_profit       :integer          default(0)
+#  present_profit          :integer          default(0)
+#  purpose                 :text(65535)
+#  seller_email            :string(255)
+#  withdrawable_profit     :integer          default(0)
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  grade_id                :bigint           not null
+#  seller_id               :bigint           not null
+#  sns_id                  :string(255)
+#  social_media_service_id :bigint
 #
 # Indexes
 #
-#  index_sellers_seller_infos_on_grade_id   (grade_id)
-#  index_sellers_seller_infos_on_seller_id  (seller_id)
+#  index_sellers_seller_infos_on_grade_id                 (grade_id)
+#  index_sellers_seller_infos_on_seller_id                (seller_id)
+#  index_sellers_seller_infos_on_social_media_service_id  (social_media_service_id)
 #
 # Foreign Keys
 #
@@ -29,6 +30,7 @@
 module Sellers
   class SellerInfo < ApplicationRecord
     belongs_to :seller
+    belongs_to :social_media_service, class_name: 'SocialMediaService'
     has_one :store_info, class_name: 'Sellers::StoreInfo', dependent: :destroy
     has_many :account_infos, class_name: 'Sellers::AccountInfo', dependent: :destroy
     has_many :seller_info_interest_tags, class_name: 'SellerInfoInterestTag', dependent: :destroy
@@ -52,14 +54,7 @@ module Sellers
     delegate :phone_number, to: :seller
     delegate :commission_rate, to: :grade
 
-    SNS_SERVICE = %w[facebook instagram youtube blog]
-
     validates_uniqueness_of :seller_id
-    validates_inclusion_of :sns_name, in: SNS_SERVICE
-
-    def self.sns_service
-      SNS_SERVICE
-    end
 
     def permitted?
       update_status_cache

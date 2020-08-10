@@ -34,7 +34,11 @@ module Sellers
       end
 
       def seller_info_params
-        params.require(:seller_info).permit(:sns_name, :sns_id, :purpose)
+        params.require(:seller_info).permit(:sns_id, :purpose)
+      end
+
+      def social_media_params
+        params.require(:seller_info).permit(:sns_name)
       end
 
       def interest_tag_params
@@ -52,6 +56,7 @@ module Sellers
       def seller_info_service_params
         {
             seller_info_params: seller_info_params,
+            social_media_params: social_media_params,
             interest_tag_params: interest_tag_params,
             store_info_params: store_info_params,
             seller_params: seller_params
