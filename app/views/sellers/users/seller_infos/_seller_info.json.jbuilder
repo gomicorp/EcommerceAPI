@@ -11,9 +11,11 @@ json.seller_info do
   json.store_info do
     json.default_info store_info
     if store_info.products
-      json.products do
-        json.array! store_info.products,partial: 'sellers/products/product', as: :product
-      end
+      json.products store_info.products do |product|
+        json.default_info product
+        json.thumbnail_url url_for(product.thumbnail)
+        json.is_selected Sellers::SelectedProduct.find_by(store_info: store_info, product: product).present?
+      end 
     end
   end
   json.settlement_statements seller_info.settlement_statements
