@@ -7,6 +7,22 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 
+#=== social media services ===#
+ApplicationRecord.transaction do
+  SocialMediaService.find_or_create_by(name: "facebook")
+  SocialMediaService.find_or_create_by(name: "instagram")
+  SocialMediaService.find_or_create_by(name: "youtube")
+  SocialMediaService.find_or_create_by(name: "blog")
+end
+
+#=== bank ===#
+ApplicationRecord.transaction do
+  Bank.find_or_create_by(name: 'kakao', country: Country.ko)
+  Bank.find_or_create_by(name: 'kb', country: Country.ko)
+  Bank.find_or_create_by(name: 'shinhan', country: Country.ko)
+  Bank.find_or_create_by(name: 'woori', country: Country.ko)
+end
+
 #=== seller ===#
 # def seller_seed_breeder(n)
 #   return [] unless n > 0
