@@ -27,6 +27,8 @@ module Sellers
     belongs_to :item, class_name: 'CartItem'
     belongs_to :seller_info, class_name: 'Sellers::SellerInfo'
 
+    scope :paid, -> { where(paid: true) }
+
     def paid?
       paid
     end
