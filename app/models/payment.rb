@@ -116,7 +116,7 @@ class Payment < ApplicationRecord
   def payment_account_data
     {
       amount: cart.final_price,
-      total_price_sum: cart.price_sum,
+      total_price_sum: cart.base_price_sum,
       total_discount_amount: cart.discount_amount,
       delivery_amount: cart.delivery_amount
     }

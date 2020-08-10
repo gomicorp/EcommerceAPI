@@ -26,7 +26,6 @@
 module Sellers
   class SettlementStatement < ApplicationRecord
     belongs_to :seller_info, class_name: 'Sellers::SellerInfo'
-    after_create_commit :write_initial_state
 
     STATUSES = %w(requested accepted rejected)
 
@@ -65,26 +64,25 @@ module Sellers
       STATUSES
     end
 
-
-    private
-
     def write_initial_state
-      return false unless status.nil?
+      return false if status.nil?
 
       capture_account
-      update(status: 'requested')
       withdraw_request
     end
 
+    private
+
     def withdraw_request
-      seller_info.update(withdrawable_profit: seller_info.withdrawable_profit - settlement_amount)
+      seller_info.update!(withdrawable_profit: seller_info.withdrawable_profit - settlement_amount)
     end
 
-    def capture_account
-      account = seller_info.account_info
-      update(
-        captured_country: account.country,
-        captured_bank: account.bank,
+    def capture_account(account_info = nil)
+      account = account_info || seller_info.account_infos.first
+      ap account
+      assign_attributes(
+        captured_country: account.bank.country.name,
+        captured_bank: account.bank.name,
         captured_owner_name: account.owner_name,
         captured_account_number: account.account_number
       )

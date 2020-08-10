@@ -45,6 +45,25 @@ module Sellers
       ordered
     end
 
+    # paid 상태에 따라 증/감 해야하는지를 판단하여 토글식으로 동작
+    def apply_seller_profit
+      if paid?
+        seller_info.update(
+          cumulative_amount: seller_info.cumulative_amount - item.result_price,
+          cumulative_profit: seller_info.cumulative_profit - adjusted_profit,
+          present_profit: seller_info.present_profit - adjusted_profit,
+          withdrawable_profit: seller_info.withdrawable_profit - adjusted_profit # 현재 별도의 출금방어 정책이 없어 present_profit와 동일함.
+        )
+      else
+        seller_info.update(
+          cumulative_amount: seller_info.cumulative_amount + item.result_price,
+          cumulative_profit: seller_info.cumulative_profit + adjusted_profit,
+          present_profit: seller_info.present_profit + adjusted_profit,
+          withdrawable_profit: seller_info.withdrawable_profit + adjusted_profit # 현재 별도의 출금방어 정책이 없어 present_profit와 동일함.
+        )
+      end
+    end
+
     def reset_profit
       return if paid?
 

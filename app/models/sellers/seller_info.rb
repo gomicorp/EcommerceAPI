@@ -89,19 +89,15 @@ module Sellers
       update_status_cache
     end
 
-    def update_counter_cache(item_sold_paper = nil)
-      if item_sold_paper.nil?
-        update_columns(
-          cumulative_amount: items.sum(&:captured_retail_price),
-          cumulative_profit: item_sold_papers.sum(&:adjusted_profit)
-        )
-      else
-        cart_item = item_sold_paper.cart_item
-        update_columns(
-          cumulative_amount: cumulative_amount + cart_item.captured_retail_price,
-          cumulative_profit: cumulative_profit + item_sold_paper.adjusted_profit
-        )
-      end
+    def update_seller_counts
+      cumulative_profit = item_sold_papers.paid.sum(&:adjusted_profit)
+      withdrew_profit = settlement_statements.accepted.sum(&:settlement_amount)
+      update(
+        cumulative_amount: items.captured.not_cancelled.sum(&:result_price),
+        cumulative_profit: cumulative_profit,
+        present_profit: cumulative_profit - withdrew_profit,
+        withdrawable_profit: cumulative_profit - withdrew_profit # 현재 별도의 출금방어 정책이 없어 present_profit와 동일함.
+      )
     end
 
     private
