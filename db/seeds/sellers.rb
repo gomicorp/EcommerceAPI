@@ -69,15 +69,15 @@ def seller_info_seed_breeder(seller, store, account)
     store_info: store,
     account_infos: [account],
     grade: Sellers::Grade.beginner,
-    sns_name: 'facebook',
+    social_media_service: SocialMediaService.first,
     sns_id: seller.email.split('@').first
   }
 end
 
 sellers.select{ |s| s.seller_info.nil? }.each do |seller|
   ApplicationRecord.transaction do
-    seller_info = Sellers::SellerInfo.create(seller: seller, grade: Sellers::Grade.beginner)
-    store = Sellers::StoreInfo.create(
+    seller_info = Sellers::SellerInfo.create!(seller: seller, grade: Sellers::Grade.beginner)
+    store = Sellers::StoreInfo.create!(
       seller_info: seller_info,
       name: 'pop S2 up sotre for' << seller.name,
       comment: 'Here is test store'
@@ -88,7 +88,7 @@ sellers.select{ |s| s.seller_info.nil? }.each do |seller|
     ap 'store info is created'
     ap store
 
-    account = Sellers::AccountInfo.create(
+    account = Sellers::AccountInfo.create!(
       seller_info: seller_info,
       bank: Bank.all.sample,
       account_number: Random.rand(1.0).to_s.slice(2..14),
@@ -107,7 +107,7 @@ ApplicationRecord.transaction do
   #=== permit_change_list ===#
   sellers.each do |seller|
     seller_info = seller.seller_info
-    seller_info.permit_change_lists << Sellers::PermitChangeList.create(
+    seller_info.permit_change_lists << Sellers::PermitChangeList.create!(
       permit_status: Sellers::PermitStatus.permitted
     )
     ap 'permitted'
@@ -124,8 +124,8 @@ ApplicationRecord.transaction do
   sellers.map(&:seller_info).map(&:store_info).each do |seller_store|
     linkable_products = live_products.sample(2)
 
-    Sellers::SelectedProduct.create(store_info: seller_store, product: linkable_products.first)
-    Sellers::SelectedProduct.create(store_info: seller_store, product: linkable_products.last)
+    Sellers::SelectedProduct.create!(store_info: seller_store, product: linkable_products.first)
+    Sellers::SelectedProduct.create!(store_info: seller_store, product: linkable_products.last)
     ap 'product linked'
     ap({store: seller_store.name, product: linkable_products})
   end
@@ -140,6 +140,7 @@ ship_info_samples = OrderInfo.last(5).map(&:ship_info).map do |ship_info|
     sample.delete('order_info_id')
     sample.delete('created_at')
     sample.delete('updated_at')
+    sample.update(ship_type: 'normal')
     sample
   end
 end
@@ -199,6 +200,7 @@ ApplicationRecord.transaction do
       status: 'requested'
     )
     settlement.write_initial_state
+    settlement.save
     ap 'seller\'s settlement is requested'
     ap seller_info
     ap settlement
