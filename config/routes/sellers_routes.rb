@@ -15,7 +15,7 @@ namespace :sellers, except: %i[new edit] do
       #
       resources :settlement_statements, controller: 'settlement_statements'
       resources :account_infos, controller: 'account_infos'
-      resources :item_sold_papers, controller: 'settlement_statements' do
+      resources :item_sold_papers, controller: 'item_sold_papers' do
         get 'sum', on: :collection
       end
     end

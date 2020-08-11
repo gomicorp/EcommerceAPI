@@ -28,9 +28,27 @@ module Sellers
     belongs_to :seller_info, class_name: 'Sellers::SellerInfo'
 
     scope :paid, -> { where(paid: true) }
+    scope :not_paid, -> { where(paid: false) }
+    scope :cancelled, -> { where(item: CartItem.cancelled) }
+
+    #======== ransack custom methd ========
+    def self.paid_at_monthly_range(date)
+      date_time = date.to_time
+      range = date_time.beginning_of_month..date_time.end_of_month
+      where(paid_at: range)
+    end
+
+    def self.ransackable_scopes(auth = nil)
+      %i[paid_at_monthly_range]
+    end
+    #======================================
 
     def paid?
       paid
+    end
+
+    def cancelled?
+      item.cancelled?
     end
 
     def pay!
