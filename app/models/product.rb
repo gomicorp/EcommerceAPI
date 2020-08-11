@@ -56,6 +56,9 @@ class Product < NationRecord
 
   scope :running, -> { where.not(running_status: %w[pending paused stopped]) }
 
+  # ============================================================================
+  # = ransack 커스텀 쿼리입니다.
+
   def self.category_ids_has(category_id)
     where(id: ProductCategory.where(category_id: category_id).pluck(:product_id))
   end
@@ -63,6 +66,8 @@ class Product < NationRecord
   def self.ransackable_scopes(auth = nil)
     %i[category_ids_has]
   end
+
+  # ============================================================================
 
   def say_running_status
     self.class.running_statuses[running_status.to_sym]
