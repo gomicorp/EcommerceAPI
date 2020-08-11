@@ -31,6 +31,21 @@ module Sellers
 
     validates_inclusion_of :status, in: STATUSES
 
+    # ============================================================================
+    # = ransack 커스텀 쿼리입니다.
+
+    def self.created_at_monthly_range(date)
+      range = date.to_time.beginning_of_month..date.to_time.end_of_month
+      ap range
+      where(created_at: range)
+    end
+
+    def self.ransackable_scopes(auth = nil)
+      %i[created_at_monthly_range]
+    end
+
+    # ============================================================================
+
     def confirm!
       return false if status != 'requested'
 
