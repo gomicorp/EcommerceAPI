@@ -5,6 +5,7 @@ namespace :sellers, except: %i[new edit] do
     #
     scope module: :users do
       resource :seller_info, controller: 'seller_infos'
+      resource :store_info, controller: 'store_infos'
 
       # === 관심사 태그 API
       #
