@@ -29,6 +29,10 @@ module Sellers
 
     STATUSES = %w(requested accepted rejected)
 
+    scope :requested, -> { where(status: 'requested') }
+    scope :accepted, -> { where(status: 'accepted') }
+    scope :rejected, -> { where(status: 'rejected') }
+
     validates_inclusion_of :status, in: STATUSES
 
     # ============================================================================
@@ -36,12 +40,18 @@ module Sellers
 
     def self.created_at_monthly_range(date)
       range = date.to_time.beginning_of_month..date.to_time.end_of_month
-      ap range
       where(created_at: range)
     end
 
     def self.ransackable_scopes(auth = nil)
       %i[created_at_monthly_range]
+    end
+
+    # ============================================================================
+    # = 레코드의 settlement amount 합계를 구하는 메소드입니다.
+
+    def self.amount_sum(record)
+      record.sum(&:settlement_amount)
     end
 
     # ============================================================================
