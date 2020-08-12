@@ -4,6 +4,7 @@
 #
 #  id               :bigint           not null, primary key
 #  background_color :string(255)      default("#ffffff"), not null
+#  footer_text      :string(255)
 #  href             :string(255)
 #  sord             :integer          default(0), not null
 #  created_at       :datetime         not null
