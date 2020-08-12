@@ -3,7 +3,9 @@ module Sellers
     before_action :set_product, only: %i[show]
 
     def index
-      @products = running_products.ransack.result.paginate(page: params[:page], per_page: params[:per_page])
+      @search = running_products.ransack
+      @search.sorts = params[:sort] if params[:sort].present?
+      @products = @search.result.paginate(page: params[:page], per_page: params[:per_page])
       # = index.json.jbuilder
     end
 
@@ -12,11 +14,15 @@ module Sellers
     end
 
     def search
-      @products = running_products.ransack(params[:query]).result.paginate(page: params[:page], per_page: params[:per_page])
+      @search = running_products.ransack(params[:query])
+      @search.sorts = params[:sort] if params[:sort].present?
+      @products = @search.result.paginate(page: params[:page], per_page: params[:per_page])
     end
 
     def category
-      @products = running_products.includes(:categories).ransack(params[:query]).result.paginate(page: params[:page], per_page: params[:per_page])
+      @search = running_products.includes(:categories).ransack(params[:query])
+      @search.sorts = params[:sort] if params[:sort].present?
+      @products = @search.result.paginate(page: params[:page], per_page: params[:per_page])
     end
 
     private
