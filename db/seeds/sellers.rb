@@ -57,7 +57,7 @@ def seller_info_seed_breeder(seller, store, account)
   }
 end
 
-sellers.select{ |s| s.seller_info.nil? }.each do |seller|
+sellers.select { |s| s.seller_info.nil? }.each do |seller|
   ApplicationRecord.transaction do
     seller_info = Sellers::SellerInfo.create!(seller: seller, grade: Sellers::Grade.beginner, social_media_service: SocialMediaService.first)
     store = Sellers::StoreInfo.create!(
@@ -90,7 +90,7 @@ ApplicationRecord.transaction do
   #=== permit_change_list ===#
   sellers.each do |seller|
     seller_info = seller.seller_info
-    next if seller_info.permitted?
+    next if seller_info.permit_change_lists.any?
 
     seller_info.permit_change_lists << Sellers::PermitChangeList.create(
       permit_status: Sellers::PermitStatus.permitted
@@ -133,13 +133,13 @@ ship_info_samples = OrderInfo.last(5).map(&:ship_info).map do |ship_info|
 end
 
 # 주문이 가능한 유저데이터로, 스토어마다 주문을 5번 합니다.
-# 3개의 주문 중 2개의 주문을 결제완료처리합니다.
+# 5개의 주문 중 3개의 주문을 결제완료처리합니다.
 ApplicationRecord.transaction do
   sellers.each do |seller|
     seller_store = seller.seller_info.store_info
     5.times do
       #셀러의 스토어에 존재하는 상품 한개
-      product = seller_store.selected_products.first.product
+      product = seller_store.selected_products.sample.product
       #current cart가 비어있어, 상품을 추가하고 주문 생성이 가능한 user 한명
       orderer = User.where(is_admin: nil, is_seller: nil, is_manager: nil).limit(100).select do |user|
         user.current_cart.items.empty?
@@ -162,9 +162,11 @@ ApplicationRecord.transaction do
       ap 'order and paper created'
       ap order_create_service.order_info
     end
-    seller.seller_info.order_infos.sample(3).each do |order_info|
+    seller.seller_info.order_infos.sample(4).each do |order_info|
+      # 결제 완료
       paid_at = Time.zone.now
       order_info.payment.update!(paid: true, paid_at: paid_at)
+      order_info.cart.update!(order_status: 3)
       # 셀러 수익을 반영
       seller_papers = order_info.cart.items.map(&:item_sold_paper).compact
       seller_papers.each do |paper|
@@ -173,18 +175,36 @@ ApplicationRecord.transaction do
       end
       ap 'order payments completed'
       ap order_info
+      # 한달 전의 주문을 만듭니다.
+      if (rand * 2) > 1
+        time = 1.month.ago
+        order_info.update!(ordered_at: time, created_at: time)
+        order_info.cart.update!(created_at: time)
+        order_info.payment.update!(created_at: time, paid_at: (time + 2.hours))
+        order_info.ship_info.update!(created_at: time)
+        items = order_info.items.where.not(item_sold_paper: nil)
+        items.each do |item|
+          item.update!(created_at: time)
+          item.item_sold_paper.update!(created_at: 1.month.ago, paid_at: (1.month.ago + 2.hours))
+        end
+        ap 'order is moved to past'
+        ap order_info
+      end
     end
   end
 end
 
-# 셀러 중에 2명을 뽑아서 출금신청을 합니다.
+# 출금신청을 합니다. 돈이 없으면 못합니다.
 ApplicationRecord.transaction do
-  sellers.sample(2).each do |seller|
+  sellers.each do |seller|
     seller_info = seller.seller_info
+    next if seller_info.withdrawable_profit.zero?
+
     settlement = Sellers::SettlementStatement.new(
       seller_info: seller_info,
       settlement_amount: seller_info.withdrawable_profit,
-      status: 'requested'
+      status: 'requested',
+      requested_at: Time.now
     )
     settlement.write_initial_state
     settlement.save
