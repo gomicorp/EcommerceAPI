@@ -34,11 +34,7 @@ ApplicationRecord.transaction do
   InterestTag.find_or_create_by(name: 'electronics', created_by: 'gomi')
 end
 
-seller_tester_emails = [
-  'tobepygrammer',
-  'titiwood@nate.com',
-  'ywsis@daum.net'
-]
+seller_tester_emails = %w[tobepygrammer titiwood@nate.com ywsis@daum.net dltmdcks702@naver.com]
 
 sellers = seller_tester_emails.map do |tester_mail|
   tester = User.where('email like ?', "%#{tester_mail}%").first
@@ -109,7 +105,7 @@ end
 live_products = Product.running.select do |product|
   product.default_option && !product.default_option.available_quantity.zero?
 end
-# live_products중 두개 셀러의 스토어에 연결
+# live_products중 두개를 셀러의 스토어에 연결
 ApplicationRecord.transaction do
   sellers.map(&:seller_info).map(&:store_info).each do |seller_store|
     next if seller_store.products.any?
