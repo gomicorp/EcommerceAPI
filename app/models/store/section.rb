@@ -10,12 +10,15 @@
 #  connection_type      :integer          default("no"), not null
 #  expire_at            :datetime
 #  href                 :string(255)
+#  margin_bottom        :boolean          default(TRUE), not null
+#  margin_top           :boolean          default(TRUE), not null
 #  padding_bottom       :boolean          default(TRUE), not null
 #  padding_top          :boolean          default(TRUE), not null
 #  publish_at           :datetime
 #  sord                 :integer          default(0), not null
 #  title                :string(255)      default(""), not null
 #  use_title            :boolean          default(TRUE), not null
+#  view_port            :integer          default("desktop"), not null
 #  wide_mode            :boolean          default(FALSE), not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
@@ -32,7 +35,9 @@
 module Store
   class Section < NationRecord
     CONNECTION_TYPES = %i[no product_page-card-large product_page-card-compact].freeze
+    VIEW_PORTS = %i[desktop mobile].freeze
     enum connection_type: CONNECTION_TYPES
+    enum view_port: VIEW_PORTS
 
     has_many :connections, class_name: 'Store::SectionConnection', foreign_key: :store_section_id
 
