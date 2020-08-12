@@ -23,28 +23,16 @@ ApplicationRecord.transaction do
   Bank.find_or_create_by(name: 'woori', country: Country.ko)
 end
 
-#=== seller ===#
-# def seller_seed_breeder(n)
-#   return [] unless n > 0
-#
-#   n -= 1
-#   seller_seed_breeder(n) + [{
-#                               name: 'gomi_seller_' << SecureRandom.base36(2),
-#                               email: "gomi_seller_#{ SecureRandom.base36(2) }@gomi.com",
-#                               password: 'elimsimog2020',
-#                               birth_day: (DateTime.now - 20.years),
-#                               gender: ['F', 'N', nil].sample,
-#                               phone_number: "010-#{ Random.rand(1.0).to_s.slice(2..9).insert(4, '-') }"
-#                             }]
-# end
-#
-# seller_set = seller_seed_breeder 2
-# seller_set.each do |seller_attr|
-#   seller = Seller.create(seller_attr)
-#   ap 'created'
-#   Authentication.create(user_id: seller.id, provider: 'facebook', uid: SecureRandom.uuid)
-#   ap seller
-# end
+#=== interest tag ===#
+ApplicationRecord.transaction do
+  InterestTag.find_or_create_by(name: 'fashion', created_by: 'gomi')
+  InterestTag.find_or_create_by(name: 'food', created_by: 'gomi')
+  InterestTag.find_or_create_by(name: 'life', created_by: 'gomi')
+  InterestTag.find_or_create_by(name: 'kitchen', created_by: 'gomi')
+  InterestTag.find_or_create_by(name: 'sports', created_by: 'gomi')
+  InterestTag.find_or_create_by(name: 'pets', created_by: 'gomi')
+  InterestTag.find_or_create_by(name: 'electronics', created_by: 'gomi')
+end
 
 seller_tester_emails = [
   'tobepygrammer',
@@ -107,7 +95,9 @@ ApplicationRecord.transaction do
   #=== permit_change_list ===#
   sellers.each do |seller|
     seller_info = seller.seller_info
-    seller_info.permit_change_lists << Sellers::PermitChangeList.create!(
+    next if seller_info.permitted?
+
+    seller_info.permit_change_lists << Sellers::PermitChangeList.create(
       permit_status: Sellers::PermitStatus.permitted
     )
     ap 'permitted'
@@ -122,6 +112,8 @@ end
 # live_products중 두개 셀러의 스토어에 연결
 ApplicationRecord.transaction do
   sellers.map(&:seller_info).map(&:store_info).each do |seller_store|
+    next if seller_store.products.any?
+
     linkable_products = live_products.sample(2)
 
     Sellers::SelectedProduct.create!(store_info: seller_store, product: linkable_products.first)
@@ -145,12 +137,12 @@ ship_info_samples = OrderInfo.last(5).map(&:ship_info).map do |ship_info|
   end
 end
 
-# 주문이 가능한 유저데이터로, 스토어마다 주문을 3번 합니다.
+# 주문이 가능한 유저데이터로, 스토어마다 주문을 5번 합니다.
 # 3개의 주문 중 2개의 주문을 결제완료처리합니다.
 ApplicationRecord.transaction do
   sellers.each do |seller|
     seller_store = seller.seller_info.store_info
-    3.times do
+    5.times do
       #셀러의 스토어에 존재하는 상품 한개
       product = seller_store.selected_products.first.product
       #current cart가 비어있어, 상품을 추가하고 주문 생성이 가능한 user 한명
@@ -175,7 +167,7 @@ ApplicationRecord.transaction do
       ap 'order and paper created'
       ap order_create_service.order_info
     end
-    seller.seller_info.order_infos.sample(2).each do |order_info|
+    seller.seller_info.order_infos.sample(3).each do |order_info|
       paid_at = Time.zone.now
       order_info.payment.update!(paid: true, paid_at: paid_at)
       # 셀러 수익을 반영

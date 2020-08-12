@@ -30,6 +30,7 @@ module Sellers
     scope :paid, -> { where(paid: true) }
     scope :not_paid, -> { where(paid: false) }
     scope :cancelled, -> { where(item: CartItem.cancelled) }
+    scope :not_cancelled, -> { where.not(item: CartItem.cancelled)}
 
     #======== ransack custom methd ========
     def self.paid_at_monthly_range(date)

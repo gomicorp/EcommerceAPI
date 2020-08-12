@@ -26,6 +26,7 @@
 #
 #  fk_rails_...  (grade_id => sellers_grades.id)
 #  fk_rails_...  (seller_id => users.id)
+#  fk_rails_...  (social_media_service_id => social_media_services.id)
 #
 require 'test_helper'
 
