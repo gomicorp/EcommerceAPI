@@ -53,14 +53,13 @@ def seller_info_seed_breeder(seller, store, account)
     store_info: store,
     account_infos: [account],
     grade: Sellers::Grade.beginner,
-    social_media_service: SocialMediaService.first,
     sns_id: seller.email.split('@').first
   }
 end
 
 sellers.select{ |s| s.seller_info.nil? }.each do |seller|
   ApplicationRecord.transaction do
-    seller_info = Sellers::SellerInfo.create!(seller: seller, grade: Sellers::Grade.beginner)
+    seller_info = Sellers::SellerInfo.create!(seller: seller, grade: Sellers::Grade.beginner, social_media_service: SocialMediaService.first)
     store = Sellers::StoreInfo.create!(
       seller_info: seller_info,
       name: 'pop S2 up sotre for' << seller.name,
