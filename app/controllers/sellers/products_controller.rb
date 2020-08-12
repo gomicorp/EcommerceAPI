@@ -16,7 +16,7 @@ module Sellers
     end
 
     def category
-      @products = running_products.joins(:categories).ransack(params[:query]).result.paginate(page: params[:page], per_page: params[:per_page])
+      @products = running_products.includes(:categories).ransack(params[:query]).result.paginate(page: params[:page], per_page: params[:per_page])
     end
 
     private
