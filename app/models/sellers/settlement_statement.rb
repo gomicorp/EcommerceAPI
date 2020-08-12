@@ -104,7 +104,6 @@ module Sellers
 
     def capture_account(account_info = nil)
       account = account_info || seller_info.account_infos.first
-      ap account
       assign_attributes(
         captured_country: account.bank.country.name,
         captured_bank: account.bank.name,

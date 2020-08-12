@@ -2,13 +2,15 @@ module Sellers
   module Users
     class ItemSoldPapersController < BaseController
       before_action :authenticate_user!
-      before_action :set_seller_info, only: %i[index show]
+      before_action :set_seller_info, only: %i[index show sum]
 
       def index
         @item_sold_papers = @seller_info.item_sold_papers.ransack(params[:query]).result.paid
       end
 
-      def sum; end
+      def sum
+        @item_sold_papers = @seller_info.item_sold_papers.ransack(params[:query]).result.paid
+      end
 
       private
 
