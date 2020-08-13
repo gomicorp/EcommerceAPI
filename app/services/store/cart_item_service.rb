@@ -73,6 +73,16 @@ module Store
       true
     end
 
+    def minus_all_item
+      items = @cart.items
+      ActiveRecord::Base.transaction do
+        items.each do |item|
+          minus(item.product_option_id, item.option_count)
+        end
+      end
+      true
+    end
+
     def reload
       CartItemService.reload(cart)
     end

@@ -133,22 +133,27 @@ ship_info_samples = OrderInfo.last(5).map(&:ship_info).map do |ship_info|
 end
 
 # 주문이 가능한 유저데이터로, 스토어마다 주문을 5번 합니다.
-# 5개의 주문 중 3개의 주문을 결제완료처리합니다.
+# 5개의 주문 중 4개의 주문을 결제완료처리합니다.
 ApplicationRecord.transaction do
   sellers.each do |seller|
     seller_store = seller.seller_info.store_info
+    orderers = User.where(is_admin: nil, is_seller: nil, is_manager: nil).limit(100)
     5.times do
-      #셀러의 스토어에 존재하는 상품 한개
-      product = seller_store.selected_products.sample.product
+      #셀러의 스토어에 존재하는 상품 한개에서 세개
+      products = seller_store.selected_products.sample((rand * 3).to_i + 1).map(&:product)
       #current cart가 비어있어, 상품을 추가하고 주문 생성이 가능한 user 한명
-      orderer = User.where(is_admin: nil, is_seller: nil, is_manager: nil).limit(100).select do |user|
+      orderer = orderers.select do |user|
         user.current_cart.items.empty?
       end.sample
       #대상 카트
       cart = orderer.current_cart
-      #카트에 product option를 넣습니다.
       cart_item_service = Store::CartItemService.new(cart, seller.seller_info)
-      cart_item_service.add(product.default_option.id, 1)
+      # 카트에 혹시 담겨있을 아이템을 뺍니다.
+      cart_item_service.minus_all_item
+      #카트에 대표상품을 1~3개 넣습니다.
+      products.each do |product|
+        cart_item_service.add(product.default_option.id, (rand * 3).to_i + 1)
+      end
       order_param = {
         cart_id: cart.id,
         channel: Channel.default_channel
@@ -162,7 +167,7 @@ ApplicationRecord.transaction do
       ap 'order and paper created'
       ap order_create_service.order_info
     end
-    seller.seller_info.order_infos.sample(4).each do |order_info|
+    seller.seller_info.order_infos.where(cart: Cart.where(order_status: 2)).sample(4).each do |order_info|
       # 결제 완료
       paid_at = Time.zone.now
       order_info.payment.update!(paid: true, paid_at: paid_at)
@@ -175,7 +180,7 @@ ApplicationRecord.transaction do
       end
       ap 'order payments completed'
       ap order_info
-      # 한달 전의 주문을 만듭니다.
+      # 반반 확률로 생성시점을 한달 전으로 만듭니다.
       if (rand * 2) > 1
         time = 1.month.ago
         order_info.update!(ordered_at: time, created_at: time)
@@ -188,6 +193,14 @@ ApplicationRecord.transaction do
           item.item_sold_paper.update!(created_at: 1.month.ago, paid_at: (1.month.ago + 2.hours))
         end
         ap 'order is moved to past'
+        ap order_info
+      end
+      # 25퍼 확률로 취소시킵니다.
+      if (rand * 4) < 1
+        order_info.cart.update!(order_status: 7)
+        order_cancel_service = Store::OrderCancelService.new(order_info.cart, {}, order_info.order_status)
+        order_cancel_service.cancel!
+        ap 'order is cancelled'
         ap order_info
       end
     end
@@ -209,7 +222,6 @@ ApplicationRecord.transaction do
     settlement.write_initial_state
     settlement.save
     ap 'seller\'s settlement is requested'
-    ap seller_info
     ap settlement
   end
 end
