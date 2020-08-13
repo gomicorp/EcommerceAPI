@@ -6,7 +6,7 @@ module Sellers
       before_action :check_authorization!, only: %i[update]
 
       def show
-        render "show", locals: { store_info: @store_info }
+        render "show", locals: { store_info: @seller.seller_info.store_info }
       end
 
       def update
