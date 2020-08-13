@@ -1,10 +1,22 @@
-### Calculate ProductCollection
+# == Schema Information
 #
-## ===== source columns ======
+# Table name: product_collections
 #
-## ===== calculated columns ======
-# :cost_price
-# :selling_price
+#  id            :bigint           not null, primary key
+#  cost_price    :integer          default(0), not null
+#  name          :string(255)
+#  selling_price :integer          default(0), not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  country_id    :bigint
+#
+# Indexes
+#
+#  index_product_collections_on_country_id  (country_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (country_id => countries.id)
 #
 class ProductCollection < NationRecord
   has_many :elements, class_name: 'ProductCollectionElement'

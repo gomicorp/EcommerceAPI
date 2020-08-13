@@ -1,14 +1,31 @@
-### Calculate ProductOption
+# == Schema Information
 #
-## ===== source columns ======
-# :additional_price
-# :discount_type, :discount_amount
+# Table name: product_options
 #
-## ===== calculated columns ======
-# :base_price
-# :discount_price
-# :price_change
-# :retail_price (:price)
+#  id                      :bigint           not null, primary key
+#  additional_price        :integer          default(0), not null
+#  base_price              :integer          default(0), not null
+#  channel_code            :string(255)
+#  discount_amount         :float(24)        default(0.0), not null
+#  discount_price          :integer          default(0), not null
+#  discount_type           :integer          default("no"), not null
+#  is_active               :boolean          default(FALSE), not null
+#  name                    :string(255)
+#  price_change            :integer          default(0), not null
+#  retail_price            :integer          default(0), not null
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  channel_id              :bigint           not null
+#  product_option_group_id :bigint
+#
+# Indexes
+#
+#  index_product_options_on_channel_id               (channel_id)
+#  index_product_options_on_product_option_group_id  (product_option_group_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (product_option_group_id => product_option_groups.id)
 #
 class ProductOption < ApplicationRecord
   include ChannelRecordable

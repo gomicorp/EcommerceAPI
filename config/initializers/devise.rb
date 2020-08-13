@@ -12,7 +12,7 @@ Devise.setup do |config|
 
   # ==> Controller configuration
   # Configure the parent class to the devise controllers.
-  # config.parent_controller = 'DeviseController'
+  config.parent_controller = 'ApiController'
 
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
@@ -260,18 +260,24 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
-  case Rails.env.to_sym
-  when :production
-    fb_app_id = ENV['FACEBOOK_DEV_APP_ID'] || Rails.application.credentials.dig(:facebook, :app_id)
-    fb_app_secret = ENV['FACEBOOK_DEV_APP_SECRET'] || Rails.application.credentials.dig(:facebook, :app_secret)
-    config.omniauth :facebook, fb_app_id, fb_app_secret
-  when :staging
-    fb_app_id = ENV['FACEBOOK_DEV_APP_ID'] || Rails.application.credentials.dig(:facebook, :app_id)
-    fb_app_secret = ENV['FACEBOOK_DEV_APP_SECRET'] || Rails.application.credentials.dig(:facebook, :app_secret)
-    config.omniauth :facebook, fb_app_id, fb_app_secret
-  else
-    config.omniauth :facebook, ENV['FACEBOOK_DEV_APP_ID'], ENV['FACEBOOK_DEV_APP_SECRET']
+  fb_app_id = Rails.application.credentials.dig(:facebook, :app_id)
+  fb_app_secret = Rails.application.credentials.dig(:facebook, :app_secret)
+  config.omniauth :facebook, fb_app_id, fb_app_secret
+
+  # ==> JWT configuration
+  # JWT 를 생성할 때 사용하게 될 secret key 를 구성합니다
+  config.jwt do |jwt|
+    jwt.secret = Rails.application.credentials.dig(:devise_jwt_secret_key_base).to_s #ENV['DEVISE_JWT_SECRET_KEY']
+    jwt.dispatch_requests = [
+      ['POST', %r{^users/sign_in$}]
+    ]
+    jwt.revocation_requests = [
+      ['DELETE', %r{^users/sign_out$}]
+    ]
+    jwt.expiration_time = 365.day.to_i
   end
+
+  config.navigational_formats = []
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
