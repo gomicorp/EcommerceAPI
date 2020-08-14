@@ -94,6 +94,7 @@ module Sellers
 
       capture_account unless account_uncaptured?
       withdraw_request
+      true
     end
 
     def valid_before_create
@@ -108,7 +109,10 @@ module Sellers
     end
 
     def withdraw_request
-      seller_info.update!(withdrawable_profit: seller_info.withdrawable_profit - settlement_amount)
+      seller_info.update!(
+        withdrawable_profit: seller_info.withdrawable_profit - settlement_amount,
+        present_profit: seller_info.present_profit - settlement_amount
+      )
     end
 
     def capture_account(account_info = nil)

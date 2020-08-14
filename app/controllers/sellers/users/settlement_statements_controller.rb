@@ -20,7 +20,7 @@ module Sellers
           statement.capture_account(@account_info)
         end
         # 데이터 검증 후 저장을 해보고 실패시 에러
-        unless @settlement_statement.valid_before_create && @settlement_statement.save!
+        unless @settlement_statement.valid_before_create && @settlement_statement.save! && @settlement_statement.write_initial_state
           render json: {error: 'bad request'}, status: :bad_request
         end
       end
