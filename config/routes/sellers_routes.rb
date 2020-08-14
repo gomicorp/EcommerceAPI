@@ -1,4 +1,4 @@
-namespace :sellers, except: %i[new edit] do
+namespace :sellers, except: %i[new edit], defaults: { format: :json } do
   # === 유저 API
   #
   resources :users do
