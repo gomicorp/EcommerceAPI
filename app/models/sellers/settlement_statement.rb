@@ -92,11 +92,20 @@ module Sellers
     def write_initial_state
       return false if status.nil?
 
-      capture_account
+      capture_account unless account_uncaptured?
       withdraw_request
     end
 
-    private
+    def valid_before_create
+      valid_amount? && valid_account_info?
+    end
+
+    def account_uncaptured?
+      return true if captured_country.nil?
+      return true if captured_bank.nil?
+      return true if captured_owner_name.nil?
+      return true if captured_account_number.nil?
+    end
 
     def withdraw_request
       seller_info.update!(withdrawable_profit: seller_info.withdrawable_profit - settlement_amount)
@@ -112,5 +121,14 @@ module Sellers
       )
     end
 
+    private
+
+    def valid_amount?
+      settlement_amount <= seller_info.withdrawable_profit
+    end
+
+    def valid_account_info?
+      !Sellers::AccountInfo.find_by(account_number: captured_account_number, seller_info: seller_info).nil?
+    end
   end
 end
