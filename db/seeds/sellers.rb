@@ -21,6 +21,16 @@ ApplicationRecord.transaction do
   Bank.find_or_create_by(name: 'kb', country: Country.ko)
   Bank.find_or_create_by(name: 'shinhan', country: Country.ko)
   Bank.find_or_create_by(name: 'woori', country: Country.ko)
+
+  Bank.find_or_create_by(name: 'agri', country: Country.vn)
+  Bank.find_or_create_by(name: 'vietcom', country: Country.vn)
+  Bank.find_or_create_by(name: 'vp', country: Country.vn)
+  Bank.find_or_create_by(name: 'sacom', country: Country.vn)
+
+  Bank.find_or_create_by(name: 'bangkok', country: Country.th)
+  Bank.find_or_create_by(name: 'krung thai', country: Country.th)
+  Bank.find_or_create_by(name: 'kasikorn', country: Country.th)
+  Bank.find_or_create_by(name: 'siam commercial', country: Country.th)
 end
 
 #=== interest tag ===#
