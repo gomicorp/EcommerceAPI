@@ -25,6 +25,7 @@
 /config/credentials/development.key
 /config/credentials/test.key
 /config/credentials/staging.key
+/config/credentials/didimdol.key
 
 /public/packs
 /public/packs-test
@@ -63,3 +64,5 @@ docker/.envs
 
 # A U T O M I Z A T I O N
 .envrc
+
+/config/credentials/production.key

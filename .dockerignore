@@ -6,6 +6,7 @@
 /config/credentials/development.key
 /config/credentials/test.key
 /config/credentials/staging.key
+/config/credentials/didimdol.key
 
 # Ignore related Docker
 docker/.docker_password.txt

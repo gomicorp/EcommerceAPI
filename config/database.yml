@@ -62,3 +62,10 @@ staging:
   host: <%= Rails.application.credentials.dig(:database, :host) %>
   username: <%= Rails.application.credentials.dig(:database, :username) %>
   password: <%= Rails.application.credentials.dig(:database, :password) %>
+
+didimdol:
+  <<: *default
+  database: store_didimdol
+  host: <%= Rails.application.credentials.dig(:database, :host) %>
+  username: <%= Rails.application.credentials.dig(:database, :username) %>
+  password: <%= Rails.application.credentials.dig(:database, :password) %>

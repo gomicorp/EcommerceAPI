@@ -44,89 +44,89 @@ ApplicationRecord.transaction do
   InterestTag.find_or_create_by(name: 'electronics', created_by: 'gomi')
 end
 
-seller_tester_emails = %w[tobepygrammer titiwood@nate.com ywsis@daum.net dltmdcks702@naver.com]
-
-sellers = seller_tester_emails.map do |tester_mail|
-  tester = User.where('email like ?', "%#{tester_mail}%").first
-  next if tester.nil?
-
-  tester.update!(is_seller: true)
-  Seller.find(tester.id)
-end.compact
-
-#=== sellers seller info ===#
-#=== sellers store info ===#
-#=== sellers account info ===#
-def seller_info_seed_breeder(seller, store, account)
-  {
-    seller: seller,
-    store_info: store,
-    account_infos: [account],
-    grade: Sellers::Grade.beginner,
-    sns_id: seller.email.split('@').first
-  }
-end
-
-sellers.select { |s| s.seller_info.nil? }.each do |seller|
-  ApplicationRecord.transaction do
-    seller_info = Sellers::SellerInfo.create!(seller: seller, grade: Sellers::Grade.beginner, social_media_service: SocialMediaService.first)
-    store = Sellers::StoreInfo.create!(
-      seller_info: seller_info,
-      name: 'pop S2 up sotre for' << seller.name,
-      comment: 'Here is test store'
-    )
-    store.update!(
-      url: 'https://gomistore.in.th/popup_store/' << store.id.to_s,
-    )
-    ap 'store info is created'
-    ap store
-
-    account = Sellers::AccountInfo.create!(
-      seller_info: seller_info,
-      bank: Bank.all.sample,
-      account_number: Random.rand(1.0).to_s.slice(2..14),
-      owner_name: seller.name
-    )
-    ap 'account info is created'
-    ap account.save!
-
-    seller_info.update!(seller_info_seed_breeder(seller, store, account))
-    ap 'seller info is created'
-    ap seller_info
-  end
-end
-
-ApplicationRecord.transaction do
-  #=== permit_change_list ===#
-  sellers.each do |seller|
-    seller_info = seller.seller_info
-    next if seller_info.permit_change_lists.any?
-
-    seller_info.permit_change_lists << Sellers::PermitChangeList.create(
-      permit_status: Sellers::PermitStatus.permitted
-    )
-    ap 'permitted'
-  end
-end
-
-#=== selected_product ===#
-#live_products => 판매중이고, 디폴트 옵션이 잔여 수량이 있는 상품
-live_products = Product.running.select do |product|
-  product.default_option && !product.default_option.available_quantity.zero?
-end
-# live_products중 두개를 셀러의 스토어에 연결
-ApplicationRecord.transaction do
-  sellers.map(&:seller_info).map(&:store_info).each do |seller_store|
-    next if seller_store.products.any?
-
-    linkable_products = live_products.sample(2)
-
-    Sellers::SelectedProduct.create!(store_info: seller_store, product: linkable_products.first)
-    Sellers::SelectedProduct.create!(store_info: seller_store, product: linkable_products.last)
-    ap 'product linked'
-    ap({store: seller_store.name, product: linkable_products})
-  end
-end
+# seller_tester_emails = %w[tobepygrammer titiwood@nate.com ywsis@daum.net dltmdcks702@naver.com]
+#
+# sellers = seller_tester_emails.map do |tester_mail|
+#   tester = User.where('email like ?', "%#{tester_mail}%").first
+#   next if tester.nil?
+#
+#   tester.update!(is_seller: true)
+#   Seller.find(tester.id)
+# end.compact
+#
+# #=== sellers seller info ===#
+# #=== sellers store info ===#
+# #=== sellers account info ===#
+# def seller_info_seed_breeder(seller, store, account)
+#   {
+#     seller: seller,
+#     store_info: store,
+#     account_infos: [account],
+#     grade: Sellers::Grade.beginner,
+#     sns_id: seller.email.split('@').first
+#   }
+# end
+#
+# sellers.select { |s| s.seller_info.nil? }.each do |seller|
+#   ApplicationRecord.transaction do
+#     seller_info = Sellers::SellerInfo.create!(seller: seller, grade: Sellers::Grade.beginner, social_media_service: SocialMediaService.first)
+#     store = Sellers::StoreInfo.create!(
+#       seller_info: seller_info,
+#       name: 'pop S2 up sotre for' << seller.name,
+#       comment: 'Here is test store'
+#     )
+#     store.update!(
+#       url: 'https://gomistore.in.th/popup_store/' << store.id.to_s,
+#     )
+#     ap 'store info is created'
+#     ap store
+#
+#     account = Sellers::AccountInfo.create!(
+#       seller_info: seller_info,
+#       bank: Bank.all.sample,
+#       account_number: Random.rand(1.0).to_s.slice(2..14),
+#       owner_name: seller.name
+#     )
+#     ap 'account info is created'
+#     ap account.save!
+#
+#     seller_info.update!(seller_info_seed_breeder(seller, store, account))
+#     ap 'seller info is created'
+#     ap seller_info
+#   end
+# end
+#
+# ApplicationRecord.transaction do
+#   #=== permit_change_list ===#
+#   sellers.each do |seller|
+#     seller_info = seller.seller_info
+#     next if seller_info.permit_change_lists.any?
+#
+#     seller_info.permit_change_lists << Sellers::PermitChangeList.create(
+#       permit_status: Sellers::PermitStatus.permitted
+#     )
+#     ap 'permitted'
+#   end
+# end
+#
+# #=== selected_product ===#
+# #live_products => 판매중이고, 디폴트 옵션이 잔여 수량이 있는 상품
+# live_products = Product.running.select do |product|
+#   product.default_option && !product.default_option.available_quantity.zero?
+# end
+# # live_products중 두개를 셀러의 스토어에 연결
+# ApplicationRecord.transaction do
+#   sellers.map(&:seller_info).map(&:store_info).each do |seller_store|
+#     next if seller_store.products.any?
+#
+#     linkable_products = live_products.sample(2)
+#
+#     Sellers::SelectedProduct.create!(store_info: seller_store, product: linkable_products.first)
+#     Sellers::SelectedProduct.create!(store_info: seller_store, product: linkable_products.last)
+#     ap 'product linked'
+#     ap({store: seller_store.name, product: linkable_products})
+#   end
+# end
 
 #=== order by seller store ===#
 #=== item sold paper ===#
@@ -145,7 +145,7 @@ end
 # 주문이 가능한 유저데이터로, 스토어마다 주문을 5번 합니다.
 # 5개의 주문 중 4개의 주문을 결제완료처리합니다.
 ApplicationRecord.transaction do
-  sellers.each do |seller|
+  Seller.all.each do |seller|
     seller_store = seller.seller_info.store_info
     orderers = User.where(is_admin: nil, is_seller: nil, is_manager: nil).limit(100)
     5.times do
@@ -177,7 +177,7 @@ ApplicationRecord.transaction do
       ap 'order and paper created'
       ap order_create_service.order_info
     end
-    seller.seller_info.order_infos.where(cart: Cart.where(order_status: 2)).sample(4).each do |order_info|
+    seller.seller_info.order_infos.where(cart: Cart.where(order_status: 2)).all.each do |order_info|
       # 결제 완료
       paid_at = Time.zone.now
       order_info.payment.update!(paid: true, paid_at: paid_at)
@@ -188,50 +188,56 @@ ApplicationRecord.transaction do
         paper.apply_seller_profit
         paper.pay!
       end
-      ap 'order payments completed'
-      ap order_info
-      # 반반 확률로 생성시점을 한달 전으로 만듭니다.
-      if (rand * 2) > 1
-        time = 1.month.ago
-        order_info.update!(ordered_at: time, created_at: time)
-        order_info.cart.update!(created_at: time)
-        order_info.payment.update!(created_at: time, paid_at: (time + 2.hours))
-        order_info.ship_info.update!(created_at: time)
-        items = order_info.items.where.not(item_sold_paper: nil)
-        items.each do |item|
-          item.update!(created_at: time)
-          item.item_sold_paper.update!(created_at: 1.month.ago, paid_at: (1.month.ago + 2.hours))
-        end
-        ap 'order is moved to past'
-        ap order_info
+
+      # ap 'order payments completed'
+      # ap order_info
+
+      date_from = (Time.now - 5.month).to_f
+      date_to = Time.now.to_f
+      time = Time.at(rand * (date_to - date_from) + date_from)
+
+      ap time
+
+      order_info.update!(ordered_at: time, created_at: time)
+      order_info.cart.update!(created_at: time)
+      order_info.payment.update!(created_at: time, paid_at: (time + 2.hours))
+      order_info.ship_info.update!(created_at: time)
+      items = order_info.items.where.not(item_sold_paper: nil)
+      items.each do |item|
+        item.update!(created_at: time)
+        item.item_sold_paper.update!(created_at: time, paid_at: (time + 2.hours))
       end
+
+      # ap 'order is moved to past'
+      # ap order_info
+
       # 25퍼 확률로 취소시킵니다.
       if (rand * 4) < 1
         order_info.cart.update!(order_status: 7)
         order_cancel_service = Store::OrderCancelService.new(order_info.cart, {}, order_info.order_status)
         order_cancel_service.cancel!
-        ap 'order is cancelled'
-        ap order_info
+        # ap 'order is cancelled'
+        # ap order_info
       end
     end
   end
 end
 
-# 출금신청을 합니다. 돈이 없으면 못합니다.
-ApplicationRecord.transaction do
-  sellers.each do |seller|
-    seller_info = seller.seller_info
-    next if seller_info.withdrawable_profit.zero?
-
-    settlement = Sellers::SettlementStatement.new(
-      seller_info: seller_info,
-      settlement_amount: seller_info.withdrawable_profit,
-      status: 'requested',
-      requested_at: Time.now
-    )
-    settlement.write_initial_state
-    settlement.save
-    ap 'seller\'s settlement is requested'
-    ap settlement
-  end
-end
+# # 출금신청을 합니다. 돈이 없으면 못합니다.
+# ApplicationRecord.transaction do
+#   sellers.each do |seller|
+#     seller_info = seller.seller_info
+#     next if seller_info.withdrawable_profit.zero?
+#
+#     settlement = Sellers::SettlementStatement.new(
+#       seller_info: seller_info,
+#       settlement_amount: seller_info.withdrawable_profit,
+#       status: 'requested',
+#       requested_at: Time.now
+#     )
+#     settlement.write_initial_state
+#     settlement.save
+#     ap 'seller\'s settlement is requested'
+#     ap settlement
+#   end
+# end

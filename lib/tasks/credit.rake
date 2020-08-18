@@ -3,7 +3,7 @@
 require_relative 'helper'
 
 namespace :credit do
-  %i[development staging production].each do |env_name|
+  %i[development staging production didimdol].each do |env_name|
     desc "EDITOR=vi rails credentials:edit " + (env_name == :production ? '' : "-e #{env_name}")
     task env_name => :environment do
       argv = if env_name == :production
