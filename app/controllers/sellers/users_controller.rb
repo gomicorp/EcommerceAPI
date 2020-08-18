@@ -1,7 +1,7 @@
 module Sellers
   class UsersController < BaseController
     before_action :authenticate_user!
-    before_action :set_seller, only: %i[show update]
+    before_action :set_seller, only: %i[show update destroy]
     before_action :check_authorization!, only: %i[update destroy]
 
     # = GET /sellers/users
@@ -31,7 +31,11 @@ module Sellers
     end
 
     # = DELETE /sellers/users/:id
-    def destroy; end
+    def destroy
+      @seller.seller_info.destroy
+      @seller.carts.delete_all
+      @seller.destroy
+    end
 
     private
 
