@@ -15,12 +15,12 @@ module Sellers
       begin
         ApplicationRecord.transaction do
           # 1. update seller
-          @seller.update!(@seller_params)
+          @seller.update!(@seller_params) if @seller_params.present?
 
-          @seller.seller_info.update(@seller_email_params)
+          @seller.seller_info.update(@seller_email_params) if @seller_email_params.present?
 
           # 2. create user_interest_tags
-          @seller.interest_tags = InterestTag.where(name: interest_tag_params_names)
+          @seller.interest_tags = InterestTag.where(name: interest_tag_params_names) if interest_tag_params_names.present?
         end
       end
 
