@@ -35,7 +35,7 @@ module Sellers
 
         # 3. save store_info
         @store_info.save!
-        @store_info.update!(url: 'https://gomistore.in.th/popup_store/' + @store_info.id.to_s)
+        @store_info.update!(url: 'https://sellers.gomistore.com/popup_store/' + @store_info.id.to_s)
 
         # 4. update seller
         @seller.update!(@seller_params)
