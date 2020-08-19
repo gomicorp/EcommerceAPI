@@ -92,7 +92,7 @@ module Sellers
     def write_initial_state
       return false if status.nil?
 
-      capture_account unless account_uncaptured?
+      capture_account if account_uncaptured?
       withdraw_request
       true
     end
@@ -106,6 +106,7 @@ module Sellers
       return true if captured_bank.nil?
       return true if captured_owner_name.nil?
       return true if captured_account_number.nil?
+      false
     end
 
     def withdraw_request
