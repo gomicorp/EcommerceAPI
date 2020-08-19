@@ -15,6 +15,7 @@ end
 # 주문이 가능한 유저데이터로, 스토어마다 주문을 5번 합니다.
 # 5개의 주문 중 4개의 주문을 결제완료처리합니다.
 ApplicationRecord.transaction do
+  standard_time = Time.at(rand * 5.month.to_f + (Time.now - 5.month).to_f)
   Seller.all.each do |seller|
     seller_store = seller.seller_info.store_info
     orderers = User.where(is_admin: nil, is_seller: nil, is_manager: nil).limit(100)
@@ -56,9 +57,8 @@ ApplicationRecord.transaction do
         paper.pay!
       end
 
-      date_from = (Time.now - 1.month).to_f
-      date_to = Time.now.to_f
-      time = Time.at(rand * (date_to - date_from) + date_from)
+      date_from = (standard_time - 1.month).to_f
+      time = Time.at(rand * 1.month.to_f + date_from)
 
       order_info.update!(ordered_at: time, created_at: time)
       order_info.cart.update!(created_at: time)
@@ -78,10 +78,8 @@ ApplicationRecord.transaction do
       end
     end
   end
-end
 
-# 출금신청을 합니다. 돈이 없으면 못합니다.
-ApplicationRecord.transaction do
+  # 출금신청을 합니다. 돈이 없으면 못합니다.
   Seller.all.each do |seller|
     seller_info = seller.seller_info
     next if seller_info.withdrawable_profit.zero?
@@ -95,10 +93,6 @@ ApplicationRecord.transaction do
     settlement.write_initial_state
     settlement.save
 
-    date_from = (Time.now - 5.month).to_f
-    date_to = Time.now.to_f
-    time = Time.at(rand * (date_to - date_from) + date_from)
-
-    settlement.update!(created_at: time, requested_at: time)
+    settlement.update!(created_at: standard_time, requested_at: standard_time)
   end
 end
