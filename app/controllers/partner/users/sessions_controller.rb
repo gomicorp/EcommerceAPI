@@ -22,9 +22,11 @@ module Partner
       end
 
       # DELETE /users/sign_out
-      # def destroy
-      #   super
-      # end
+      def destroy
+        authenticate_request!
+        @current_user.update!(token: nil)
+        head :no_content
+      end
 
       protected
 
