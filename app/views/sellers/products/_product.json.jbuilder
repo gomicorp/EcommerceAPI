@@ -9,5 +9,6 @@ else
 end
 
 json.default_option_title product.default_option.name
+json.default_option_price product.default_option.retail_price
 json.category_ids product.categories&.ids
 json.is_selected Sellers::SelectedProduct.find_by(store_info: store_info, product: product).present? || false
