@@ -26,6 +26,8 @@ module Sellers
         @seller_info.grade = Grade.first
         @seller_info.social_media_service = SocialMediaService.find_by(name: @social_media_params[:sns_name])
         @store_info.seller_info = @seller_info
+        # 최초 가입 시 바로 허가 상태
+        @seller_info.permit_change_lists << Sellers::PermitChangeList.create(seller_info: @seller_info, permit_status: Sellers::PermitStatus.permitted )
 
         # 1. save seller_info
         @seller_info.save!
