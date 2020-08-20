@@ -20,6 +20,8 @@ json.seller_info do
           json.thumbnail_url product.thumbnail.service_url
         end
 
+        json.default_option_title product.default_option.name
+        json.default_option_price product.default_option.retail_price
         json.is_selected Sellers::SelectedProduct.find_by(store_info: store_info, product: product).present?
       end 
     end
