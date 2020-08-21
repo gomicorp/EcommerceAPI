@@ -20,7 +20,7 @@ ApplicationRecord.transaction do
 
     product.option_groups << ProductOptionGroup.new(product: product, options: cur_options)
 
-    category = Category.all.sample
+    category = Category.all.where(is_active: true).sample
     product.categories << category
 
     download_image = open(Faker::Avatar.image)
