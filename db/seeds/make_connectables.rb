@@ -11,5 +11,12 @@ ApplicationRecord.transaction do
     end
 
     option.connect_with connectable
+
+    ProductOptionBridge.all.each do |bridge|
+      if bridge.product_option.product
+        bridge.calculate_price_columns
+        bridge.save!
+      end
+    end
   end
 end
