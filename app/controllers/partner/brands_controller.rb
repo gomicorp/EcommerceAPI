@@ -6,7 +6,7 @@ module Partner
     # GET /partner/brands
     # GET /partner/brands.json
     def index
-      @brands = @current_user.brands.global.includes(include_tables).where(query_param)
+      @brands = @current_user.brands.includes(include_tables).where(query_param)
     end
 
     # GET /partner/brands/1.json
