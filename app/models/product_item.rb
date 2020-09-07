@@ -46,6 +46,11 @@ class ProductItem < NationRecord
 
   has_one :zohomap, as: :zohoable
 
+  validates :name, presence: true
+  validates :serial_number, presence: true, uniqueness: true
+  validates :selling_price, presence: true
+  validates :cost_price, presence: true
+
   scope :activated, -> { where(active: true) }
 
   scope :product_option_with, lambda { |product_options|
