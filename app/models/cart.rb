@@ -1,3 +1,26 @@
+# == Schema Information
+#
+# Table name: carts
+#
+#  id           :bigint           not null, primary key
+#  active       :boolean          default(TRUE), not null
+#  current      :boolean          default(FALSE), not null
+#  order_status :integer
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  country_id   :bigint
+#  user_id      :bigint
+#
+# Indexes
+#
+#  index_carts_on_country_id  (country_id)
+#  index_carts_on_user_id     (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (country_id => countries.id)
+#  fk_rails_...  (user_id => users.id)
+#
 class CartCalculator
   attr_reader :cart, :items
 

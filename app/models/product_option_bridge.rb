@@ -1,9 +1,18 @@
-### Calculate ProductOptionBridge
+# == Schema Information
 #
-## ===== source columns ======
+# Table name: product_option_bridges
 #
-## ===== calculated columns ======
-# :selling_price
+#  id                :bigint           not null, primary key
+#  connectable_type  :string(255)
+#  selling_price     :integer          default(0), not null
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  connectable_id    :bigint
+#  product_option_id :bigint
+#
+# Indexes
+#
+#  index_product_option_bridges_on_product_option_id  (product_option_id)
 #
 class ProductOptionBridge < ApplicationRecord
   belongs_to :connectable, polymorphic: true

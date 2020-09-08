@@ -1,3 +1,30 @@
+# == Schema Information
+#
+# Table name: products
+#
+#  id                :bigint           not null, primary key
+#  barcode_count     :integer          default(0), not null
+#  price             :integer          default(0), not null
+#  running_status    :integer          default("pending"), not null
+#  title             :text(65535)
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  brand_id          :bigint
+#  country_id        :bigint
+#  default_option_id :bigint
+#
+# Indexes
+#
+#  index_products_on_brand_id           (brand_id)
+#  index_products_on_country_id         (country_id)
+#  index_products_on_default_option_id  (default_option_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (brand_id => brands.id)
+#  fk_rails_...  (country_id => countries.id)
+#  fk_rails_...  (default_option_id => product_options.id)
+#
 class Product < NationRecord
   include Translatable
   extend_has_one_attached :thumbnail

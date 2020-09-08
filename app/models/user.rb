@@ -1,8 +1,44 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id                        :bigint           not null, primary key
+#  birth_day                 :date
+#  email                     :string(255)      default(""), not null
+#  encrypted_password        :string(255)      default(""), not null
+#  gender                    :string(255)
+#  invite_confirmation_token :string(255)
+#  is_admin                  :boolean
+#  is_manager                :boolean
+#  is_seller                 :boolean
+#  name                      :string(255)
+#  phone_number              :string(255)
+#  profile_image             :string(255)
+#  remember_created_at       :datetime
+#  reset_password_sent_at    :datetime
+#  reset_password_token      :string(255)
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  default_address_id        :bigint
+#  default_receiver_id       :bigint
+#
+# Indexes
+#
+#  index_users_on_default_address_id    (default_address_id)
+#  index_users_on_default_receiver_id   (default_receiver_id)
+#  index_users_on_email                 (email) UNIQUE
+#  index_users_on_reset_password_token  (reset_password_token) UNIQUE
+#
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :omniauthable, omniauth_providers: [:facebook]
+         :recoverable, :rememberable, :validatable,
+         :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
+  devise :omniauthable, omniauth_providers: [:facebook]
+
+  # SNS 로그인 등 각종 로그인 정보
+  has_many :authentications, dependent: :destroy
 
   # 역할과 관련된 스코프
   scope :admins, -> { where(is_admin: true) }
@@ -33,7 +69,7 @@ class User < ApplicationRecord
   end
 
   def self.find_for_oauth(auth, signed_in_resource = nil)
-    user = signed_in_resource || find_by(provider: auth.provider, uid: auth.uid)
+    user = signed_in_resource || Authentication.find_by(provider: auth.provider, uid: auth.uid)&.user
 
     # Directly return user if already exists or signed_in.
     return user if user
@@ -47,8 +83,7 @@ class User < ApplicationRecord
       # if nobody have this email, create new user.
 
       # Common Auth has.
-      user.provider = auth.provider
-      user.uid = auth.uid
+      new_auth = user.authentications.build(provider: auth.provider, uid: auth.uid)
       user.password = Devise.friendly_token[0, 20]
 
       # It's a little difference for each provider's auth hash.
@@ -57,9 +92,6 @@ class User < ApplicationRecord
       when 'facebook'
         user.email = auth.info.email || "#{auth.uid}@#{auth.provider}.gomicorp.com"
         user.name = auth.info.name
-        user.profile_image = auth.info.image
-
-      when 'kakao' # Note. Kakao doesn't support email field.
         user.profile_image = auth.info.image
       end
 

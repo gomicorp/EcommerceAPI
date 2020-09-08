@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: companies
+#
+#  id          :bigint           not null, primary key
+#  name        :string(255)
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  description :text(65535)
+#
 class Company < ApplicationRecord
   include Approvable
   has_many :brands, dependent: :destroy
