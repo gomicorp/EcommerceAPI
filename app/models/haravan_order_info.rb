@@ -1,0 +1,2 @@
+class HaravanOrderInfo < ApplicationRecord
+end
