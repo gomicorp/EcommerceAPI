@@ -4,18 +4,11 @@ module HaravanApiHelper
 
   @api_key = Rails.application.credentials.dig(:haravan, :api, :key)
   @api_password = Rails.application.credentials.dig(:haravan, :api, :password)
+  @base_url = 'https://gomicorp.myharavan.com/admin'
 
   # == UTC 를 베트남 시간으로 계산하기 위한 메소드입니다.
   def parse_vietnam_datetime(date)
     DateTime.parse(date) + (7/24.0)
-  end
-
-  def compare(left, right)
-    left < right
-  end
-
-  def set_url(type, from, to, page)
-    "https://gomicorp.myharavan.com/admin/#{type}.json?created_at_min=#{from}&created_at_max=#{to}&page=#{page}"
   end
 
   # == type : 원하는 모델 / 'products' or 'orders'
@@ -32,32 +25,55 @@ module HaravanApiHelper
     data[type]
   end
 
-  def get_records_by_period(from, to, type)
-    records = []
-    page = 1
-    url = "https://gomicorp.myharavan.com/admin/#{type}.json?created_at_min=#{from}&created_at_max=#{to}&page=#{page}"
+  # == type : 원하는 모델 / 'products' or 'orders'
+  # == query_hash: 원하는 query option을 property로 담고 있는 hash
+  def generate_query_url(type, query_hash)
+    return '' unless query_hash.is_a?(Hash)
 
-    data = get_records(type, url)
+    query_element =[]
+    query_hash.each_pair do |key, value|
+      query_element << "#{key}=#{value}"
+    end
+
+    "#{@base_url}/#{type}.json?#{query_element.join('&')}"
+  end
+
+  # == query_hash: 원하는 query option을 property로 담고 있는 hash
+  # == type : 원하는 모델 / 'products' or 'orders'
+  def get_records_with_query(query_hash, type)
+    records = []
+
+    query_hash[:page] = 1
+    data = get_records(type, generate_query_url(type, query_hash))
+
     while data.length > 0
       records << data
 
-      page += 1
-      data = get_records(type, url)
+      query_hash[:page] += 1
+      data = get_records(type, generate_query_url(type, query_hash))
     end
+
     records.flatten
   end
 
   module Product
-
     def get_product_by_period(from, to)
-      get_records_by_period(from, to, 'products')
+      query_hash = {
+        :created_at_min => from,
+        :created_at_max => to,
+        :published_status => 'published'
+      }
+      get_records_with_query(query_hash, 'products')
     end
   end
 
   module Order
-
     def get_order_by_period(from, to)
-      get_records_by_period(from, to, 'orders')
+      query_hash ={
+        :created_at_min => from,
+        :created_at_max => to
+      }
+      get_records_with_query(query_hash, 'orders')
     end
   end
 end
