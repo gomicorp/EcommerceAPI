@@ -46,7 +46,7 @@ class Product < NationRecord
   belongs_to :country
   has_many :option_groups, class_name: 'ProductOptionGroup'
   has_many :options, through: :option_groups
-  belongs_to :default_option, class_name: 'ProductOption'
+  belongs_to :default_option, class_name: 'ProductOption', optional: true
 
   has_many :barcodes
   has_many :product_categories, class_name: 'ProductCategory'

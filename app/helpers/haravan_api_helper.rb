@@ -58,7 +58,7 @@ module HaravanApiHelper
     records.flatten
   end
 
-  module Product
+  module HaravanProduct
     def get_product_by_period(from, to)
       query_hash = {
         :created_at_min => from,
