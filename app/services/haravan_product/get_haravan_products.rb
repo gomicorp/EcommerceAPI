@@ -11,13 +11,21 @@ module HaravanProduct
     end
 
     def save_haravan_products(from, to)
-      haravan_products = get_product_by_period(from, to)
-      haravan_products.each do |haravan_product|
-        _parse_data(haravan_product)
-        _save_product_page
-        _save_product_options
-        true
+      ActiveRecord::Base.transaction do
+        begin
+          haravan_products = get_product_by_period(from, to)
+          haravan_products.each do |haravan_product|
+            _parse_data(haravan_product)
+            _save_product_page
+            _save_product_options
+            true
+          end
+        rescue => e
+          ap e
+          ActiveRecord::Rollback
+        end
       end
+
     end
 
 
@@ -40,7 +48,7 @@ module HaravanProduct
       product_data = _make_product_data
       @product = Product.where('title LIKE ?', "%#{@title}%").first_or_initialize
       @product.assign_attributes(product_data)
-      @product.assign_attributes(title: product_data[:title].to_h)
+      @product.assign_attributes(title: product_data["title"].to_h)
       @product.save!
     end
 
