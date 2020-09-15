@@ -74,6 +74,7 @@ module Haravan
         rescue ActiveRecord::ActiveRecordError => e
           # 이곳은 깨졌을 때만 실행되는 에러 핸들링 구역입니다.
           @errors = e
+          ap @errors
           return false
         end
 
@@ -81,7 +82,7 @@ module Haravan
 
       private
 
-      @id
+      @product_id
       @title
       @variants
       @brand
@@ -99,22 +100,20 @@ module Haravan
       # == 데이터 추출
       # parse haravan raw data to make the products and product options
       def extract_data(haravan_product)
-        @id = haravan_product["id"]
+        @product_id = haravan_product["id"]
         @title = haravan_product["title"]
         @variants = haravan_product["variants"]
         @brand = ::Brand.where("JSON_EXTRACT(name, '$.vi') LIKE ?", "\"#{haravan_product["vendor"]}\"").first
-
-        puts "\"#{haravan_product["vendor"]}\""
-        ap @brand
       end
 
       # == 상품페이지를 저장
       # Product page saver
       def save_product
-        @product = Product.find_or_initialize_by(haravan_id: @id)
+        @product = ::Product.find_or_initialize_by(haravan_id: @product_id)
         @product.assign_attributes(brand_id: @brand.id,
                                    running_status: 'pending',
-                                   title: {'vn': @title, 'en': @title, 'ko': @title})
+                                   title: {'vn': @title, 'en': @title, 'ko': @title},
+                                   country: Country.vn)
         # @product.assign_attributes(title: product_data["title"].to_h)
         @product.save!
       end
@@ -123,15 +122,17 @@ module Haravan
       # Save Product Options that reveal on product page.
       def save_product_options
         product_option_group = @product.option_groups.first_or_create
-        channel_id = Channel.find_by_name('haravan').id
+        channel = Channel.find_by_name('Haravan')
+
         @variants.each do |option|
-          product_option = ProductOption.find_by(channel_code: option[:id])
+          product_option = ProductOption.find_by(channel_code: option['id'])
           if product_option
-            product_option.update!(name: product_option[:title])
+            product_option.update!(name: option['title'])
           else
-            product_option_group.options.build(name: product_option[:title],
-                                               channel_id: channel_id,
-                                               channel_code: option[:id])
+            product_option_group.options << ProductOption.new(name: option['title'],
+                                                              channel: channel,
+                                                              channel_id: channel.id,
+                                                              channel_code: option['id'])
           end
         end
       end
