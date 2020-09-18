@@ -103,7 +103,8 @@ module Haravan
         @product_id = haravan_product["id"]
         @title = haravan_product["title"]
         @variants = haravan_product["variants"]
-        @brand = ::Brand.where("JSON_EXTRACT(name, '$.vi') LIKE ?", "\"#{haravan_product["vendor"]}\"").first
+        vendor_name = haravan_product["vendor"].gsub('&amp;', '&').to_json.gsub('&amp;', '&').gsub(/[\\\*\+\?\()\|]/, '\\\\')
+        @brand = ::Brand.where("JSON_EXTRACT(name, '$.vi') LIKE ?", "#{vendor_name}").first
       end
 
       # == 상품페이지를 저장
