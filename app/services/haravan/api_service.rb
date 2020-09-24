@@ -60,15 +60,13 @@ module Haravan
 
     module HaravanProduct
 
-      # == 상품 불러오기 및 저장
-      def save_haravan_products(from, to)
+      # == haravan api를 통해 상품 불러오기 및 저장
+      def save_haravan_products_with_api(from, to)
         ActiveRecord::Base.transaction do
           begin
             haravan_products = get_product_by_period(from, to)
             haravan_products.each do |haravan_product|
-              extract_data(haravan_product)
-              save_product
-              save_product_options
+              save_haravan_products(haravan_product)
             end
           end
         rescue ActiveRecord::ActiveRecordError => e
@@ -77,7 +75,13 @@ module Haravan
           ap @errors
           return false
         end
+      end
 
+      # == haravan 상품 데이터를 저장
+      def save_haravan_products(haravan_product)
+        extract_data(haravan_product)
+        save_product
+        save_product_options
       end
 
       private
