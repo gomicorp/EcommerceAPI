@@ -49,11 +49,11 @@ class Product < NationRecord
   has_many :options, through: :option_groups
   belongs_to :default_option, class_name: 'ProductOption', optional: true
 
-  has_many :barcodes
-  has_many :product_categories, class_name: 'ProductCategory'
+  has_many :barcodes, dependent: :destroy
+  has_many :product_categories, class_name: 'ProductCategory', dependent: :destroy
   has_many :categories, through: :product_categories
 
-  has_many :product_permits
+  has_many :product_permits, dependent: :destroy
 
   scope :running, -> { where.not(running_status: %w[pending paused stopped]) }
 

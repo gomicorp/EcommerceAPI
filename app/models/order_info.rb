@@ -36,7 +36,7 @@ class OrderInfo < NationRecord
   has_many :adjustments, class_name: 'Adjustment'
 
   # ===============================================
-  has_many :order_info_brands, class_name: 'OrderInfoBrand', dependent: :delete_all
+  has_many :order_info_brands, class_name: 'OrderInfoBrand', dependent: :destroy
   has_many :brands, through: :order_info_brands
   # ===============================================
 
