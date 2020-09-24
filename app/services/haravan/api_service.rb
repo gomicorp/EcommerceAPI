@@ -137,7 +137,8 @@ module Haravan
             product_option_group.options << ProductOption.new(name: option['title'],
                                                               channel: channel,
                                                               channel_id: channel.id,
-                                                              channel_code: option['id'])
+                                                              channel_code: option['id'],
+                                                              additional_price: option['price'].to_i)
           end
         end
       end
