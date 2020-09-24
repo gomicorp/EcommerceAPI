@@ -103,7 +103,7 @@ module Haravan
         @product_id = haravan_product["id"]
         @title = haravan_product["title"]
         @variants = haravan_product["variants"]
-        vendor_name = haravan_product["vendor"].gsub('&amp;', '&').to_json.gsub('&amp;', '&').gsub(/[\\\*\+\?\()\|]/, '\\\\')
+        vendor_name = haravan_product["vendor"].gsub('&amp;', '&').to_json.gsub('&amp;', '&').gsub(/[\\\*\+\?\()\|]/, '\\\\\\')
         @brand = ::Brand.where("JSON_EXTRACT(name, '$.vi') LIKE ?", "#{vendor_name}").first
       end
 
