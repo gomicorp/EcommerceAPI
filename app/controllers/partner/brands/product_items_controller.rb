@@ -20,7 +20,7 @@ module Partner
         @product_item = @brand.items.new(product_item_params)
 
         if @product_item.save
-          render :show, status: :created, location: @product_item
+          render :show, status: :created, location: [:partner, @brand, @product_item]
         else
           render json: @product_item.errors, status: :unprocessable_entity
         end
@@ -30,7 +30,7 @@ module Partner
       # PATCH/PUT /partner/brands/1/product_items/1.json
       def update
         if @product_item.update(product_item_params)
-          render :show, status: :ok, location: @product_item
+          render :show, status: :ok, location: [:partner, @brand, @product_item]
         else
           render json: @product_item.errors, status: :unprocessable_entity
         end
