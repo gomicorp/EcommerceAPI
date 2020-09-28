@@ -52,7 +52,15 @@ module Partner
 
       # Only allow a list of trusted parameters through.
       def product_item_group_params
-        params.require(:product_item_group).permit(:name, items_attributes: [*ProductItem.attribute_names, :_destroy, images: []])
+        params.require(:product_item_group).permit(:name, items_attributes: [
+            *ProductItem.attribute_names,
+            :_destroy,
+            :cfs,
+            :msds,
+            :ingredient_table,
+            box_images: [],
+            images: [],
+        ])
       end
     end
   end

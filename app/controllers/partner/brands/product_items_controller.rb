@@ -50,9 +50,34 @@ module Partner
         @product_item = @brand.items.find(params[:id])
       end
 
-      # Only allow a list of trusted parameters through.
+      # Example
+      # ===
+      #
+      # <input name="product_item[array][][name]" value="">
+      # {
+      #     product_item: {
+      #         array: [
+      #             { name: '' }
+      #         ]
+      #     }
+      # }
       def product_item_params
-        params.fetch(:product_item, {})
+        params.require(:product_item).permit(
+            :country_id,    # required
+            :item_group_id,       # required
+            :active,
+            :name,                # required
+            :serial_number,
+            :cost_price,
+            :selling_price,
+
+            # === File fields
+            :cfs,                 # CFS
+            :msds,                # MSDS
+            :ingredient_table,    # 전성분표
+            box_images: [],       # 단상자 디자인
+            images: [],           # 품목 이미지
+        )
       end
     end
   end
