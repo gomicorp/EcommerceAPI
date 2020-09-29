@@ -6,14 +6,11 @@
 #  cumulative_amount   :integer          default(0)
 #  cumulative_profit   :integer          default(0)
 #  present_profit      :integer          default(0)
-#  purpose             :text(65535)
-#  sns_name            :string(255)
 #  withdrawable_profit :integer          default(0)
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  grade_id            :bigint           not null
 #  seller_id           :bigint           not null
-#  sns_id              :string(255)
 #
 # Indexes
 #
