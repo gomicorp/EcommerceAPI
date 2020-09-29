@@ -10,12 +10,19 @@ ApplicationRecord.transaction do
       ship_fee += line['price']
     end
 
+    paid_at = nil
+    if record['gateway'] == "Thanh toán khi giao hàng (COD)"
+      paid_at = record['fulfillments'][0]['cod_paid_date'] if record['fulfillments'].any?
+    else
+      paid_at = record['created_at']
+    end
+
     order_info = HaravanOrderInfo.find_or_create_by(haravan_order_id: record['id'])
     order_info.update(total_price: record['total_price'],
                       ordered_at: record['created_at'],
                       pay_method: record['gateway'],
                       channel: record['source'],
-                      paid_at: record['gateway'] == "Thanh toán khi giao hàng (COD)" ? record['fulfillments'][0]['cod_paid_date'] : record['created_at'],
+                      paid_at: paid_at,
                       order_status: record['financial_status'],
                       ship_fee: ship_fee)
   end
