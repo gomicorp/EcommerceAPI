@@ -15,6 +15,9 @@
 #  haravan_order_id :integer
 #
 class HaravanOrderInfo < ApplicationRecord
+  ORDER_STATUSES = %w[pending authorized partially_paid paid partially_refunded refunded voided]
+  enum order_status: ORDER_STATUSES
+
   has_many :haravan_order_info_brands, class_name: 'HaravanOrderInfoBrand', dependent: :destroy
   has_many :brands, class_name: 'Brand', through: :haravan_order_info_brands
   has_many :haravan_order_info_options, class_name: 'HaravanOrderInfoOption', dependent: :destroy
