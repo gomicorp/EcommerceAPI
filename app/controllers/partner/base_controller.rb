@@ -35,7 +35,7 @@ module Partner
     def authenticate_request!
       return render json: { errors: ['Not Authenticated'] }, status: :unauthorized unless user_id_in_token?
 
-      @current_user = User.find(user_id_in_token)
+      @current_user = Manager.find(user_id_in_token)
     rescue JWT::VerificationError, JWT::DecodeError
       render json: { errors: ['Not Authenticated'] }, status: :unauthorized
     end

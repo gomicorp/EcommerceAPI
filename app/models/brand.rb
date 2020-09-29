@@ -30,7 +30,7 @@ class Brand < NationRecord
   belongs_to :company
   has_many :products
   has_many :product_item_groups
-  has_many :items, through: :product_item_groups, class_name: :ProductItem
+  has_many :items, through: :product_item_groups, class_name: 'ProductItem'
   has_many :managers, through: :company
 
   # ===============================================

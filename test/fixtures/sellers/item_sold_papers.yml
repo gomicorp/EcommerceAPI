@@ -22,6 +22,7 @@
 #  fk_rails_...  (item_id => cart_items.id)
 #  fk_rails_...  (seller_info_id => sellers_seller_infos.id)
 #
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 one:
   item_info: one
   seller_info: one
