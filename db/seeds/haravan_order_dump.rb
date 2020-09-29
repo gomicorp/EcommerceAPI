@@ -1,5 +1,5 @@
-include HaravanApiHelper
-include HaravanApiHelper::Order
+extend Haravan::ApiService::HaravanOrder
+extend Haravan::ApiService
 
 ApplicationRecord.transaction do
   records = self.get_order_by_period('2020-08-13T07:00:00.000Z', '2020-08-20T06:59:59.999Z')
