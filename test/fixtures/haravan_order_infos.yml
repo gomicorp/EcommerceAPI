@@ -3,7 +3,9 @@
 # Table name: haravan_order_infos
 #
 #  id               :bigint           not null, primary key
+#  cancelled_status :string(255)
 #  channel          :string(255)
+#  order_number     :string(255)
 #  order_status     :integer
 #  ordered_at       :datetime
 #  paid_at          :datetime
