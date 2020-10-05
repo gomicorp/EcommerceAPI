@@ -24,6 +24,8 @@ ApplicationRecord.transaction do
                       channel: record['source'],
                       paid_at: paid_at,
                       order_status: record['financial_status'],
-                      ship_fee: ship_fee)
+                      ship_fee: ship_fee,
+                      order_number: record['name'],
+                      cancelled_status: record['cancelled_status'])
   end
 end
