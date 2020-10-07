@@ -18,6 +18,14 @@ Rails.application.routes.draw do
     namespace :settlement do
       resources :brands, only: %i[index show]
     end
+    resources :webhook, controller: 'webhook', only: '%i[webhooking regist logged_in]' do
+      collection do
+        get 'webhooking', action: 'regist'
+        post 'webhooking'
+        post 'logged_in'
+        post 'installed'
+      end
+    end
   end
   
   devise_for :pandals
