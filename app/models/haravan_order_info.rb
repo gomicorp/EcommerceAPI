@@ -25,4 +25,6 @@ class HaravanOrderInfo < ApplicationRecord
   has_many :haravan_order_info_options, class_name: 'HaravanOrderInfoOption', dependent: :destroy
   has_many :product_options, class_name: 'ProductOption', through: :haravan_order_info_options
   has_many :product_pages, through: :product_options
+
+  zombie :product_options
 end
