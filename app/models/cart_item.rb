@@ -137,6 +137,7 @@ class CartItem < ApplicationRecord
     product_item_barcodes.each { |barcode| barcode_items << barcode.product_item }
     bridge_items = product_option.bridges.map(&:items) * option_count
     return true if barcode_items.flatten.pluck(:id).sort != bridge_items.flatten.pluck(:id).sort
+    return true if ProductOption.where(id: product_option_id).empty?
     return true unless product_option.is_active?
     return true if updated_at < 3.days.ago
 
