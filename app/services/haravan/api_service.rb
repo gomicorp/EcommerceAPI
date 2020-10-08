@@ -79,9 +79,13 @@ module Haravan
 
       # == haravan 상품 데이터를 저장
       def save_haravan_products(haravan_product)
-        extract_data(haravan_product)
-        save_product
-        save_product_options
+        if extract_data(haravan_product) && save_product
+          save_product_options
+
+          true
+        else
+          false
+        end
       end
 
       private
@@ -109,6 +113,8 @@ module Haravan
         @variants = haravan_product["variants"]
         vendor_name = haravan_product["vendor"].gsub('&amp;', '&').to_json.gsub('&amp;', '&').gsub(/[\\\*\+\?\()\|]/, '\\\\\\')
         @brand = ::Brand.where("JSON_EXTRACT(name, '$.vi') LIKE ?", "#{vendor_name}").first
+
+        [@product_id, @title, @variants, @brand].all?
       end
 
       # == 상품페이지를 저장
@@ -129,8 +135,11 @@ module Haravan
         product_option_group = @product.option_groups.first_or_create
         channel = Channel.find_by_name('Haravan')
 
+        option_ids = @variants.pluck(:id)
+        @product.options.where.not(id: option_ids).each { |option| option.destroy }
+
         @variants.each do |option|
-          product_option = ProductOption.find_by(channel_code: option['id'])
+          product_option = @product.options.find_by(channel_code: option['id'])
           if product_option
             product_option.update!(name: option['title'])
           else

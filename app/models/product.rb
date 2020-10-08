@@ -45,7 +45,7 @@ class Product < NationRecord
   belongs_to :brand
 
   belongs_to :country
-  has_many :option_groups, class_name: 'ProductOptionGroup'
+  has_many :option_groups, class_name: 'ProductOptionGroup', dependent: :destroy
   has_many :options, through: :option_groups
   belongs_to :default_option, class_name: 'ProductOption', optional: true
 
@@ -54,6 +54,8 @@ class Product < NationRecord
   has_many :categories, through: :product_categories
 
   has_many :product_permits, dependent: :destroy
+
+  has_one :seo_application, as: :page, optional: true, dependent: :destroy
 
   scope :running, -> { where.not(running_status: %w[pending paused stopped]) }
 

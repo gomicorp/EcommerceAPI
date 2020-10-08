@@ -1,15 +1,18 @@
 # == Schema Information
 #
-# Table name: interest_tags
+# Table name: haravan_webhooks
 #
 #  id         :bigint           not null, primary key
-#  name       :text(4294967295)
+#  event_name :string(255)
+#  is_applied :boolean
+#  table_name :string(255)
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  haravan_id :string(255)
 #
 require 'test_helper'
 
-class InterestTagTest < ActiveSupport::TestCase
+class HaravanWebhookTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
