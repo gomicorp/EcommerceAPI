@@ -55,6 +55,8 @@ class Product < NationRecord
 
   has_many :product_permits, dependent: :destroy
 
+  has_one :seo_application, as: :page, optional: true, dependent: :destroy
+
   scope :running, -> { where.not(running_status: %w[pending paused stopped]) }
 
   def say_running_status
