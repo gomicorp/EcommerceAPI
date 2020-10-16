@@ -6,11 +6,14 @@
 #  cumulative_amount   :integer          default(0)
 #  cumulative_profit   :integer          default(0)
 #  present_profit      :integer          default(0)
+#  purpose             :text(65535)
+#  sns_name            :string(255)
 #  withdrawable_profit :integer          default(0)
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  grade_id            :bigint           not null
 #  seller_id           :bigint           not null
+#  sns_id              :string(255)
 #
 # Indexes
 #
@@ -27,6 +30,8 @@ module Sellers
     belongs_to :seller
     has_one :store_info, class_name: 'Sellers::StoreInfo', dependent: :destroy
     has_one :account_info, class_name: 'Sellers::AccountInfo', dependent: :destroy
+    has_many :user_interest_tags, class_name: 'UserInterestTag', dependent: :destroy
+    has_many :interest_tags, through: :user_interest_tags
     belongs_to :grade, class_name: 'Sellers::Grade'
 
     has_many :permit_change_lists, class_name: 'Sellers::PermitChangeList', dependent: :destroy
@@ -34,12 +39,12 @@ module Sellers
     has_one :permit_status, through: :permission, class_name: 'Sellers::PermitStatus'
 
     has_many :settlement_statements, class_name: 'Sellers::SettlementStatement', dependent: :destroy
-    has_many :order_sold_papers, class_name: 'Sellers::OrderSoldPaper', dependent: :destroy
+    has_many :item_sold_papers, class_name: 'Sellers::ItemSoldPaper', dependent: :destroy
+    has_many :items, through: :item_sold_papers
+    has_many :order_infos, -> { distinct }, class_name: 'OrderInfo', through: :items
 
-    has_many :order_infos, through: :order_sold_papers
-
-    scope :permitted, -> { where(permission: PermitChangeList.where(permit_status: PermitStatus.permitted)) }
-    scope :applied, -> { where(permission: PermitChangeList.where(permit_status: PermitStatus.applied)) }
+    scope :permitted, -> { where(permission: Sellers::PermitChangeList.where(permit_status: Sellers::PermitStatus.permitted)) }
+    scope :applied, -> { where(permission: Sellers::PermitChangeList.where(permit_status: Sellers::PermitStatus.applied)) }
 
     delegate :name, to: :seller
     delegate :email, to: :seller
@@ -48,43 +53,43 @@ module Sellers
 
     def permitted?
       update_status_cache
-      permit_status == PermitStatus.permitted
+      permit_status == Sellers::PermitStatus.permitted
     end
 
     def play_permit!(reason = nil)
-      permit_change_lists << PermitChangeList.new(
-        permit_status: PermitStatus.permitted,
+      permit_change_lists << Sellers::PermitChangeList.new(
+        permit_status: Sellers::PermitStatus.permitted,
         reason: reason
       )
       update_status_cache
     end
 
     def play_stop!(reason)
-      permit_change_lists << PermitChangeList.new(
-        permit_status: PermitStatus.stopped,
+      permit_change_lists << Sellers::PermitChangeList.new(
+        permit_status: Sellers::PermitStatus.stopped,
         reason: reason
       )
       update_status_cache
     end
 
     def init_permit_status!
-      permit_change_lists << PermitChangeList.new(
-        permit_status: PermitStatus.applied
+      permit_change_lists << Sellers::PermitChangeList.new(
+        permit_status: Sellers::PermitStatus.applied
       )
       update_status_cache
     end
 
-    def update_counter_cache(order_sold_paper = nil)
-      if order_sold_paper.nil?
+    def update_counter_cache(item_sold_paper = nil)
+      if item_sold_paper.nil?
         update_columns(
-          cumulative_amount: order_infos.map(&:payment).sum(&:total_price_sum),
-          cumulative_profit: order_sold_papers.sum(&:adjusted_profit)
+          cumulative_amount: items.sum(&:captured_retail_price),
+          cumulative_profit: item_sold_papers.sum(&:adjusted_profit)
         )
       else
-        order_info = order_sold_paper.order_info
+        cart_item = item_sold_paper.cart_item
         update_columns(
-          cumulative_amount: cumulative_amount + order_info.payment.total_price_sum,
-          cumulative_profit: cumulative_profit + order_sold_paper.adjusted_profit
+          cumulative_amount: cumulative_amount + cart_item.captured_retail_price,
+          cumulative_profit: cumulative_profit + item_sold_paper.adjusted_profit
         )
       end
     end

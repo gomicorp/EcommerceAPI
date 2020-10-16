@@ -1,4 +1,7 @@
 namespace :sellers, except: %i[new edit] do
+  # get 'user', controller: 'users'
+  resource :user, only: :show, controller: :sessions
+
   # === 유저 API
   #
   resources :users do
