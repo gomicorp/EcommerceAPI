@@ -3,6 +3,8 @@ class AddMenuItemSeeds < ActiveRecord::Migration[6.0]
     Store::Gnb::MenuItem.create(
         country: Country.th,
         name: { ko: '브랜드관', en: 'Brands', th: 'Brands', vi: 'Brands' },
+        active: true,
+        published_at: Time.zone.now
     )
   end
 

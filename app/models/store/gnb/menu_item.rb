@@ -31,6 +31,18 @@ module Store
       translate_column :name
 
       validates_presence_of :name, :href, :view_port, :sort_key
+
+      scope :ordered, -> { order(sort_key: :asc) }
+      scope :active, -> { where(active: true) }
+      scope :view_ports, ->(view_port = nil) { where(view_port: view_port || :desktop) }
+
+      def new_badge
+        published_at && (published_at >= 1.month.ago)
+      end
+
+      def publish!
+        update(published_at: Time.zone.now, active: true)
+      end
     end
   end
 end
