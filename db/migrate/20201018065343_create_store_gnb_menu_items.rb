@@ -1,6 +1,7 @@
 class CreateStoreGnbMenuItems < ActiveRecord::Migration[6.0]
   def change
     create_table :store_gnb_menu_items do |t|
+      t.references :country, foreign_key: true, null: false
       t.text :name
       t.string :href, null: false, default: '#'
       t.integer :view_port, null: false, default: 0

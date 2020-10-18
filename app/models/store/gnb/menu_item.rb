@@ -11,12 +11,22 @@
 #  view_port    :integer          default("desktop"), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  country_id   :bigint           not null
+#
+# Indexes
+#
+#  index_store_gnb_menu_items_on_country_id  (country_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (country_id => countries.id)
 #
 module Store
   module Gnb
-    class MenuItem < ApplicationRecord
+    class MenuItem < NationRecord
       include Translatable
-      enum view_port: %i[desktop mobile]
+      VIEW_PORTS = %i[desktop mobile].freeze
+      enum view_port: VIEW_PORTS
 
       translate_column :name
 
