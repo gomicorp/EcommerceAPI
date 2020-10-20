@@ -41,6 +41,13 @@ class Brand < NationRecord
   has_many :order_infos, through: :order_info_brands
   # ===============================================
 
+
+  # ===============================================
+  # 전시 전용 모델 관계
+  has_many :side_menu_items, class_name: 'Store::SideMenuItem', as: :connectable
+  # ===============================================
+
+
   def official_site_url
     '#'
   end
