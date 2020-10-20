@@ -14,11 +14,17 @@ Rails.application.routes.draw do
   draw :common_routes
   draw :sellers_routes
 
+  resource :batch, controller: 'batch', only: '%i[execute]' do
+    collection do
+      post 'execute'
+    end
+  end
+
   namespace :haravan do
     namespace :settlement do
       resources :brands, only: %i[index show]
     end
-    resources :webhook, controller: 'webhook', only: '%i[webhooking regist logged_in]' do
+    resource :webhook, controller: 'webhook', only: '%i[webhooking regist logged_in]' do
       collection do
         get 'webhooking', action: 'regist'
         post 'webhooking'
