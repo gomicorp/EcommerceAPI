@@ -2,12 +2,19 @@ class HaravanAdapter < ExternalChannelAdapter
   attr_reader :query
 
   # = 사용 가능한 query property (공식 API 문서 기준입니다.)
-  # == ids
-  # == limit
-  # == page
-  # == since_id
-  # == vendor
-  #
+  # == ids : 상품 id, comma 를 사용해 동시에 여러 상품을 검색할 수 있습니다
+  # == limit : 검색 결과로 전달 받는 데이터 갯수 제한
+  # == page : 검색할 페이지 number
+  # == since_id :
+  # == vendor : vendor 명으로 검색, vendor 는 고미의 Brand 개념과 같습니다
+  # == handle
+  # == product_type : product_type 으로 검색, product_type 은 고미의 Category 개념과 유사합니다.
+  # == collection_id
+  # == created_at_min/max
+  # == updated_at_min/max
+  # == published_at_min/max
+  # == pubished_status
+  # == fields
   def initialize(query_params)
     @query = query_params
   end
@@ -41,29 +48,21 @@ class HaravanAdapter < ExternalChannelAdapter
     product_property = []
 
     records.each do |record|
-      # == Brand 가 없을 경우를 대비한 에러 핸들링 필요
-      vendor_name = record["vendor"].gsub('&amp;', '&').to_json.gsub('&amp;', '&').gsub(/[\\\*\+\?\()\|]/, '\\\\\\')
-      @brand = Brand.where("JSON_EXTRACT(name, '$.vi') LIKE ?", "#{vendor_name}").first
-
-      product_property << { haravan_id: record['id'],
-                            brand_id: @brand.id,
-                            running_status: 'pending',
+      product_property << { id: record['id'],
                             title: { 'vn': record['title'], 'en': record['title'], 'ko': record['title'] },
-                            country: Country.vn,
+                            channel_name: 'Haravan',
+                            brand_name: record['vendor'],
                             variants: refine_product_options(record['variants']) }
     end
   end
 
   def refine_product_options(variants)
     option_property = []
-    channel = Channel.find_by_name('Haravan')
 
     variants.each do |variant|
-      option_property << { name: variant['title'],
-                           channel: channel,
-                           channel_id: channel.id,
-                           channel_code: variant['id'],
-                           additional_price: variant['price'].to_i }
+      option_property << { id: variant['id'],
+                           price: variant['price'].to_i,
+                           name: variant['title'] }
     end
 
     option_property
