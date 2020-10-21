@@ -1,14 +1,14 @@
 class ExternalChannelAdapter
 
-  def initialize(query_params); end
+  def initialize; end
 
   protected
   def login; end
 
   public
   # == 적절하게 정제된 데이터를 리턴합니다.
-  def products; end
-  def orders; end
+  def products(query = {}); end
+  def orders(query = {}); end
 
   protected
   # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
