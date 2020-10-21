@@ -55,7 +55,7 @@ module ExternalChannel
       refine_orders(call_orders(query_hash))
     end
 
-    public
+    protected
     def login; end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
@@ -139,7 +139,7 @@ module ExternalChannel
                             order_number: record['name'],
                             order_status: record['financial_status'],
                             pay_method: record['gateway'],
-                            channel: record['resource'],
+                            channel: record['source'],
                             ordered_at: record['created_at'].to_time,
                             paid_at: paid_at,
                             billing_amount: record['total_price'],
