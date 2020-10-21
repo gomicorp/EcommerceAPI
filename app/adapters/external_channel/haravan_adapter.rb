@@ -55,19 +55,18 @@ module ExternalChannel
       refine_orders(call_orders(query_hash))
     end
 
-    protected
+    public
     def login; end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash)
       base_url = 'https://gomicorp.myharavan.com/admin/products.json'
-      query_element =[]
+      query_element = []
       query_hash.each_pair do |key, value|
         query_element << "#{key}=#{value}"
       end
 
       fetch_url = URI("#{base_url}?#{query_element.join('&')}")
-      ap fetch_url
       request = Net::HTTP::Get.new(fetch_url)
       request.basic_auth(api_key, api_password)
       http = Net::HTTP.new(fetch_url.host, fetch_url.port).tap do |o|
@@ -81,7 +80,7 @@ module ExternalChannel
 
     def call_orders(query_hash)
       base_url = 'https://gomicorp.myharavan.com/admin/orders.json'
-      query_element =[]
+      query_element = []
       query_hash.each_pair do |key, value|
         query_element << "#{key}=#{value}"
       end
@@ -95,7 +94,7 @@ module ExternalChannel
       response = http.request(request)
       data = JSON.parse response.body
 
-      data['products']
+      data['orders']
     end
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
@@ -109,9 +108,11 @@ module ExternalChannel
                               brand_name: record['vendor'],
                               options: refine_product_options(record['variants']) }
       end
+
+      product_property
     end
 
-    def refine_product_options(variants)
+    def refine_product_options(variants = [])
       option_property = []
 
       variants.each do |variant|
@@ -127,19 +128,28 @@ module ExternalChannel
       order_property = []
 
       records.each do |record|
+        paid_at = nil
+        if record['gateway'] == "Thanh toán khi giao hàng (COD)"
+          paid_at = record['fulfillments'][0]['cod_paid_date']&.to_time if record['fulfillments'].any?
+        else
+          paid_at = record['created_at'].to_time
+        end
+
         order_property << { id: record['id'],
                             order_number: record['name'],
                             order_status: record['financial_status'],
                             pay_method: record['gateway'],
                             channel: record['resource'],
                             ordered_at: record['created_at'].to_time,
-                            paid_at: record['fulfillments'].any? ? record['fulfillments'][0]['cod_paid_date'].to_time : record['created_at'].to_time,
-                            billing_amount: record['total_price'].to_i,
-                            ship_fee: record['shipping_lines'].inject(0){ |sum, line| sum + line['price'].to_i },
+                            paid_at: paid_at,
+                            billing_amount: record['total_price'],
+                            ship_fee: record['shipping_lines'].inject(0){ |sum, line| sum + (line['price']) },
                             variant_ids: record['line_items'].map{ |variant| variant['id'] },
                             cancelled_status: record['cancelled_status'],
-                            shipping_status: record['fulfillments']['status'] }
+                            shipping_status: record['fulfillments_status'] }
       end
+
+      order_property
     end
   end
 end
