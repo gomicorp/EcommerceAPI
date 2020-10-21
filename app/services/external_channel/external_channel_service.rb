@@ -23,7 +23,7 @@ module ExternalChannel
     end
 
     def is_valid_products?
-      ExternalChannel.validate_products(products)
+      ExternalChannel::Product.validate(products)
     end
   end
 end
