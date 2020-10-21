@@ -1,5 +1,4 @@
 class ExternalChannelAdapter
-  self.abstract_class = true
 
   def initialize(query_params); end
 
