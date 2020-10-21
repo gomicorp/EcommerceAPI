@@ -90,8 +90,8 @@ class HaravanAdapter < ExternalChannelAdapter
                           billing_amount: record['total_price'].to_i,
                           ship_fee: record['shipping_lines'].inject(0){ |sum, line| sum + line['price'].to_i },
                           variant_ids: record['line_items'].map{ |variant| variant['id'] },
-                          cancelleded_status: record['cancelled_status'],
-                          shippinh_status: record['fulfillments']['status'] }
+                          cancelled_status: record['cancelled_status'],
+                          shipping_status: record['fulfillments']['status'] }
     end
   end
 end
