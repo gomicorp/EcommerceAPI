@@ -2,16 +2,10 @@ module ExternalChannel
   class ExternalDataValidator
     include ActiveModel::Validations
 
-    attr_reader :data
+    attr_accessor :validator, :data
 
-    def set_data(data = {})
-      @data = data
-    end
-
-    protected
-
-    def read_attr_from_data(key)
-      data[key]
+    def validate(data)
+      raise NotImplementedError.new('External Channel Validator Must Have Validate Function')
     end
   end
 end

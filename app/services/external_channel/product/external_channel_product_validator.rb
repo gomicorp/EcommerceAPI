@@ -1,16 +1,25 @@
 module ExternalChannel
   module Product
     class ExternalProductsValidator < ExternalChannel::ExternalDataValidator
-      def validate(products)
-        variants_validator = ExternalVariantsValidator.new
-        product_validator = ExternalProductValidator.new(variants_validator)
+      attr_reader :product_validator
 
+      def initialize
+        variants_validator = ExternalVariantsValidator.new
+        @product_validator = ExternalProductValidator.new(variants_validator)
+      end
+
+      def validate_all(products)
         products.all? do |product|
           product_validator.set_data(product)
           return product_validator.valid?
         end
       end
-    end
+
+      def validate(product)
+        product_validator.set_data(product)
+        product_validator.valid?
+      end
+   end
 
     class ExternalProductValidator < ExternalChannel::ExternalDataValidator
       validates_presence_of :id, :title, :channel_name, :brand_name, :variants
