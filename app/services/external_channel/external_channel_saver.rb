@@ -18,7 +18,7 @@ module ExternalChannel
       # 이것이 DB에 들어갈 때, mysql은 \문자를 보고 또 escape를 한다.
       # & => \u0026 => \\u0026 => \\\\u0026
       brand_name = brand_name.gsub('&amp;', '&').to_json.gsub('&amp;', '&').gsub(/[\\\*\+\?\()\|]/, '\\\\\\')
-      Brand.where("JSON_EXTRACT(name, '$.#{country_code}) LIKE ?", "\"#{brand_name}\"").first
+      Brand.where("JSON_EXTRACT(name, '$.#{country_code}') LIKE ?", "#{brand_name}").first
     end
   end
 end
