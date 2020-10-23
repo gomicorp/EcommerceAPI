@@ -1,49 +1,44 @@
 module ExternalChannel
   module Product
-    class ExternalProductsValidator < ExternalChannel::ExternalDataValidator
-      attr_reader :product_validator
+    class ExternalChannelProductValidator < ExternalChannelValidator
+
+      attr_reader :variant_validator
 
       def initialize
-        variants_validator = ExternalVariantsValidator.new
-        @product_validator = ExternalProductValidator.new(variants_validator)
+        @keys = [:id, :title, :channel_name, :brand_name, :variants]
+        @variant_validator = ExternalChannelVariantValidator.new
       end
 
-      def validate_all(products)
+      def valid_all?(products)
         products.all? do |product|
-          product_validator.set_data(product)
-          return product_validator.valid?
+          valid? product
         end
       end
 
-      def validate(product)
-        product_validator.set_data(product)
-        product_validator.valid?
-      end
-   end
-
-    class ExternalProductValidator < ExternalChannel::ExternalDataValidator
-      validates_presence_of :id, :title, :channel_name, :brand_name, :variants
-      validate :validate_variants
-
-      attr_reader :variants_validator
-
-      def initialize(variants_validator)
-        return if variants_validator.instance_of? ExternalChannel::ExternalDataValidator
-        @variants_validator = variants_validator
+      def valid?(product)
+        validate_presence_of(product)
+        has_only_allowed(product)
+        variant_validator.valid_all?(product[:variants])
       end
 
-      def validate_variants
-        variants = data[:variants]
+      private
 
-        variants.all? do |variant|
-          variants_validator.set_data(variant)
-          return if variants_validator.valid?
+      class ExternalChannelVariantValidator < ExternalChannel::ExternalChannelValidator
+        def initialize
+          @keys = [:id, :price, :name]
+        end
+
+        def valid_all?(variants)
+          variants.all? do |variant|
+            valid? variant
+          end
+        end
+
+        def valid?(variant)
+          validate_presence_of(variant)
+          has_only_allowed(variant)
         end
       end
-    end
-
-    class ExternalVariantsValidator < ExternalChannel::ExternalDataValidator
-      validates_presence_of :id, :price, :name
     end
   end
 end

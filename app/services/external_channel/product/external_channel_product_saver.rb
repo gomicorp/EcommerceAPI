@@ -1,10 +1,10 @@
 module ExternalChannel
   module Product
     # TODO: 방어 로직 추가
-    class ExternalChannelProductSaver < ExternalChannel::ExternalChannelSaver
+    class ExternalChannelProductSaver < ExternalChannelSaver
       attr_accessor :brand, :channel, :product
 
-      def save_batch(products)
+      def save_all(products)
         products.all? {|product| save(product)}
       end
 
@@ -44,7 +44,7 @@ module ExternalChannel
 
 
       def make_valid_title(title)
-        unless product.title.nil?
+        if product.title.nil? == false
           parsed_product = JSON.parse(product.title)
           parsed_product[country_code] = title
           parsed_product
