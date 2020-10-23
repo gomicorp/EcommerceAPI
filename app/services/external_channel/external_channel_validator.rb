@@ -18,7 +18,7 @@ module ExternalChannel
     protected
 
     def has_only_allowed(data)
-      data.keys == keys
+      data.keys.sort == keys.sort
     end
 
     def validate_presence_of(data)

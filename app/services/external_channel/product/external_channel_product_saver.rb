@@ -30,6 +30,7 @@ module ExternalChannel
 
       def save_option(option, option_group)
         product_option_data = parse_product_option(option)
+        # TODO: 모델 구조 변경시 코드 변경 필요
         product_option = product.options.find_by(channel_code: option[:id])
         if product_option.nil?
           option_group.options << ProductOption.new(product_option_data)

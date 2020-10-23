@@ -6,9 +6,9 @@ module ExternalChannel
       country_code=(caller_country_code)
     end
 
-    def save(data)
-      raise NotImplementedError.new('External Channel Saver Must Have Save Function')
-    end
+    def save_all(data); end
+
+    def save(data); end
 
     protected
 
