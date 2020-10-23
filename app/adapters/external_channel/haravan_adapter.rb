@@ -1,6 +1,6 @@
 module ExternalChannel
   class HaravanAdapter < ExternalChannelAdapter
-    attr_reader :query, :api_key, :api_password
+    attr_reader :api_key, :api_password
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # https://docs.haravan.com/blogs/api-reference/1000018172-product
