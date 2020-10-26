@@ -15,13 +15,13 @@ module ExternalChannel
         save_product(data) && save_options(data[:variants])
       end
 
+      private
+
       def save_product(product_data)
         @product = ::Product.find_or_initialize_by(haravan_id: product_data[:id].to_i)
         product.assign_attributes(parse_product(product_data))
         product.save!
       end
-
-      private
 
       def save_options(options)
         option_group = product.option_groups.first_or_create

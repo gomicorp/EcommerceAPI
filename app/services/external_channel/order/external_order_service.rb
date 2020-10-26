@@ -1,7 +1,8 @@
 module ExternalChannel
   module Order
-    class ExternalChannelOrderCommander < ExternalChannelDataCommander
-      def initialize
+    class ExternalOrderService < ExternalDataService
+      def initialize(channel_adapter)
+        super(channel_adapter)
         set_saver!(ExternalChannelOrderSaver.new)
         set_validator!(ExternalChannelOrderValidator.new)
       end
