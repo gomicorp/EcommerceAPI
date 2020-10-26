@@ -14,6 +14,12 @@ class ExternalChannelAdapter
   def call_products(query); end
   def call_orders(query); end
 
+  # == url에 query를 부착해 줍니다.
+  def url_with_query_hash(base_url, query_hash)
+    query_element = query_hash.map {|key, value| "#{key}=#{value}"}
+    "#{base_url}?#{query_element.join('&')}"
+  end
+
   # == call_XXX 로 가져온 레코드를 정제합니다.
   def refine_products(records); end
   def refine_orders(records); end

@@ -1,15 +1,8 @@
 class BatchController < ApplicationController
 
   def execute
-    adapter = HaravanAdapter.new
-    external_channel_service = ExternalChannelService.new(adapter)
-
-    if external_channel_service.batch_products(query_params)
-
-    else
-
-    end
-
+    adapter = SendoAdapter.new
+    ap adapter
   end
 
   private
