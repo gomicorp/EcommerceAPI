@@ -14,4 +14,8 @@
 #  order_info_index  (external_channel_order_info_id)
 #
 class ExternalChannelOrderInfoBrand < ApplicationRecord
+  belongs_to :external_channel_order_info, dependent: :destroy
+  belongs_to :brand, dependent: :destroy
+
+  validates_uniqueness_of :brand_id, scope: %i[external_channel_order_info_id]
 end
