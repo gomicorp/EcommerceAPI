@@ -5,9 +5,9 @@
 #  id          :bigint           not null, primary key
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  channel_id  :bigint
-#  external_id :string(255)
-#  product_id  :bigint
+#  channel_id  :bigint           not null
+#  external_id :string(255)      not null
+#  product_id  :bigint           not null
 #
 # Indexes
 #
