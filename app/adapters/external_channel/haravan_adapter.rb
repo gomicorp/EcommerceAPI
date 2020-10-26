@@ -102,11 +102,13 @@ module ExternalChannel
       product_property = []
 
       records.each do |record|
-        product_property << { id: record['id'],
-                              title: { 'vn': record['title'], 'en': record['title'], 'ko': record['title'] },
-                              channel_name: 'Haravan',
-                              brand_name: record['vendor'],
-                              options: refine_product_options(record['variants']) }
+        product_property << {
+          id: record['id'],
+          title: record['title'],
+          channel_name: 'Haravan',
+          brand_name: record['vendor'],
+          options: refine_product_options(record['variants'])
+        }
       end
 
       product_property
@@ -116,9 +118,11 @@ module ExternalChannel
       option_property = []
 
       variants.each do |variant|
-        option_property << { id: variant['id'],
-                             price: variant['price'].to_i,
-                             name: variant['title'] }
+        option_property << {
+          id: variant['id'],
+          price: variant['price'].to_i,
+          name: variant['title']
+        }
       end
 
       option_property
@@ -135,18 +139,20 @@ module ExternalChannel
           paid_at = record['created_at'].to_time
         end
 
-        order_property << { id: record['id'],
-                            order_number: record['name'],
-                            order_status: record['financial_status'],
-                            pay_method: record['gateway'],
-                            channel: record['source'],
-                            ordered_at: record['created_at'].to_time,
-                            paid_at: paid_at,
-                            billing_amount: record['total_price'],
-                            ship_fee: record['shipping_lines'].inject(0){ |sum, line| sum + (line['price']) },
-                            variant_ids: record['line_items'].map{ |variant| variant['id'] },
-                            cancelled_status: record['cancelled_status'],
-                            shipping_status: record['fulfillments_status'] }
+        order_property << {
+          id: record['id'],
+          order_number: record['name'],
+          order_status: record['financial_status'],
+          pay_method: record['gateway'],
+          channel: record['source'],
+          ordered_at: record['created_at'].to_time,
+          paid_at: paid_at,
+          billing_amount: record['total_price'],
+          ship_fee: record['shipping_lines'].inject(0){ |sum, line| sum + (line['price']) },
+          variant_ids: record['line_items'].map{ |variant| [variant['id'], variant['quantity'].to_i] },
+          cancelled_status: record['cancelled_status'],
+          shipping_status: record['fulfillments_status']
+        }
       end
 
       order_property

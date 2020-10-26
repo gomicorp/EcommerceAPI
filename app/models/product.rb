@@ -12,7 +12,6 @@
 #  brand_id          :bigint
 #  country_id        :bigint
 #  default_option_id :bigint
-#  haravan_id        :string(255)
 #
 # Indexes
 #
@@ -41,6 +40,8 @@ class Product < NationRecord
     stopped: '판매종료'
   }.freeze
   enum running_status: RUNNING_STATUSES.keys
+
+  has_many :external_channel_product_ids, class_name: 'ExternalChannelProductId'
 
   belongs_to :brand
 
