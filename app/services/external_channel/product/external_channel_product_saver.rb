@@ -18,9 +18,17 @@ module ExternalChannel
       private
 
       def save_product(product_data)
-        @product = ::Product.find_or_initialize_by(haravan_id: product_data[:id].to_i)
+        this_product_connection = ExternalChannelProductId.find_or_initialize_by(channel_id: channel.id, external_id: product_data[:id])
+        product_id = this_product_connection.product ? this_product_connection.product_id : nil
+        @product = ::Product.find_or_initialize_by(id: product_id)
         product.assign_attributes(parse_product(product_data))
-        product.save!
+        result = product.save!
+
+        if product_id.nil? && result
+          this_product_connection.update({ channel:channel, product: product, external_id: product_data[:id] })
+        end
+
+        result
       end
 
       def save_options(options)
