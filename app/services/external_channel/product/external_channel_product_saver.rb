@@ -25,7 +25,7 @@ module ExternalChannel
         result = product.save!
 
         if product_id.nil? && result
-          this_product_connection.update({ channel:channel, product: product, external_id: product_data[:id] })
+          this_product_connection.update({channel:channel, product: product, external_id: product_data[:id]})
         end
 
         result
