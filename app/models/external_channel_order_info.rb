@@ -22,8 +22,7 @@ class ExternalChannelOrderInfo < ApplicationRecord
 
   has_many :external_channel_order_info_brands, class_name: 'ExternalChannelOrderInfoBrand', dependent: :destroy
   has_many :brands, class_name: 'Brand', through: :external_channel_order_info_brands
-  has_many :external_channel_order_info_product_options, class_name: 'ExternalChannelOrderInfoProductOption', dependent: :destroy
-  has_many :product_options, class_name: 'ProductOption', through: :external_channel_order_info_product_options
+  has_many :cart_items, class_name: 'CartItem'
   has_many :products, through: :product_options
 
   zombie :product_options
