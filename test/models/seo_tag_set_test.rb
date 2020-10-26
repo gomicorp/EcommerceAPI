@@ -1,15 +1,16 @@
 # == Schema Information
 #
-# Table name: interest_tags
+# Table name: seo_tag_sets
 #
 #  id         :bigint           not null, primary key
-#  name       :text(4294967295)
+#  name       :string(255)
+#  page_type  :string(255)
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
 require 'test_helper'
 
-class InterestTagTest < ActiveSupport::TestCase
+class SeoTagSetTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
