@@ -1,0 +1,20 @@
+# == Schema Information
+#
+# Table name: external_channel_cart_items
+#
+#  id                 :bigint           not null, primary key
+#  option_count       :integer          not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  external_option_id :string(255)      not null
+#
+
+# This model initially had no columns defined. If you add columns to the
+# model remove the '{}' from the fixture names and add the columns immediately
+# below each fixture, per the syntax in the comments below
+#
+one: {}
+# column: value
+#
+two: {}
+# column: value
