@@ -21,7 +21,7 @@ module ExternalChannel
     def save_all
       begin
         # TODO: Adatpter에서 파라미터에 데이터타입으로 해당 데이터를 가져올 수 있도록 해야
-        # data = adapter.getList(data_type)
+        data = adapter.getList(data_type)
         saver.save_all data if validator.valid_all? data
       rescue Error => e
         ap e
@@ -33,7 +33,7 @@ module ExternalChannel
     # do not set saver directly!
     # Use this function when you want to set saver class
     def set_saver!(saver)
-      if is_valid_saver?
+      if is_valid_saver? saver
         @saver = saver
         true
       else
@@ -44,7 +44,7 @@ module ExternalChannel
     # do not set validator directly!
     # Use this function when you want ot set validator class
     def set_validator!(validator)
-      if is_valid_validator?
+      if is_valid_validator? validator
         @validator = validator
         true
       else
@@ -55,15 +55,15 @@ module ExternalChannel
     private
 
     def is_valid_adapter?(channel_adapter)
-      channel_adapter.instance_of? ExternalChannelAdapter
+      channel_adapter.is_a? ExternalChannelAdapter
     end
 
     def is_valid_saver?(saver)
-      saver.instance_of? ExternalChannelSaver
+      saver.is_a? ExternalChannelSaver
     end
 
     def is_valid_validator?(validator)
-      validator.instance_of? ExternalChannelValidator
+      validator.is_a? ExternalChannelValidator
     end
   end
 end

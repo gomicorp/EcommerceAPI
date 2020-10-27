@@ -22,7 +22,7 @@ module ExternalChannel
     end
 
     def validate_presence_of(data)
-      keys.all? {|key| !data[key].blank?}
+      keys.all? { |key| !data[key].blank? }
     end
 
   end

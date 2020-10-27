@@ -2,8 +2,8 @@ module ExternalChannel
   class ExternalChannelSaver
     include ParseCountryCode
 
-    def initialize(caller_country_code = country_code)
-      country_code=(caller_country_code)
+    def initialize(caller_country_code = nil)
+      country_code=(caller_country_code || default_country_code)
     end
 
     def save_all(data); end
