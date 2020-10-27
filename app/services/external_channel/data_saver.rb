@@ -1,5 +1,5 @@
 module ExternalChannel
-  class ExternalChannelSaver
+  class DataSaver
     include ParseCountryCode
 
     def initialize(caller_country_code = nil)

@@ -1,17 +1,6 @@
 module ExternalChannel
-  def self.select_service_by_data_type(data_type)
-    case data_type
-    when 'product'
-      ExternalChannel::Product::ExternalProductService
-    when 'order'
-      ExternalChannel::Order::ExternalOrderService
-    else
-      nil
-    end
-  end
-
-  class ExternalDataService
-    attr_reader :adapter, :saver, :validator
+  class DataService
+    attr_reader :adapter, :saver, :validator, :data_type
 
     def initialize(channel_adapter)
       return false unless is_valid_adapter?(channel_adapter)
@@ -20,8 +9,7 @@ module ExternalChannel
 
     def save_all
       begin
-        # TODO: Adatpter에서 파라미터에 데이터타입으로 해당 데이터를 가져올 수 있도록 해야
-        data = adapter.getList(data_type)
+        data = adapter.get_list(data_type)
         saver.save_all data if validator.valid_all? data
       rescue Error => e
         ap e
@@ -29,7 +17,6 @@ module ExternalChannel
     end
 
     protected
-
     # do not set saver directly!
     # Use this function when you want to set saver class
     def set_saver!(saver)
@@ -42,7 +29,7 @@ module ExternalChannel
     end
 
     # do not set validator directly!
-    # Use this function when you want ot set validator class
+    # Use this function when you want to set validator class
     def set_validator!(validator)
       if is_valid_validator? validator
         @validator = validator
@@ -52,6 +39,12 @@ module ExternalChannel
       end
     end
 
+    # do not set data_type directly!
+    # Use this function when you want to set validator class
+    def set_data_type!(data_type)
+      @data_type = data_type
+    end
+
     private
 
     def is_valid_adapter?(channel_adapter)
@@ -59,11 +52,11 @@ module ExternalChannel
     end
 
     def is_valid_saver?(saver)
-      saver.is_a? ExternalChannelSaver
+      saver.is_a? DataSaver
     end
 
     def is_valid_validator?(validator)
-      validator.is_a? ExternalChannelValidator
+      validator.is_a? DataValidator
     end
   end
 end

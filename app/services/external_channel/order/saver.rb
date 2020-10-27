@@ -1,7 +1,7 @@
 module ExternalChannel
   module Order
     # TODO: 방어 로직 추가
-    class ExternalChannelOrderSaver < ExternalChannel::ExternalChannelSaver
+    class Saver < DataSaver
       def save_all(orders)
         orders.all? {|order| save(order)}
       end

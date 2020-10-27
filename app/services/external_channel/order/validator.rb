@@ -1,6 +1,6 @@
 module ExternalChannel
   module Order
-    class ExternalChannelOrderValidator < ExternalChannel::ExternalChannelValidator
+    class Validator < DataValidator
 
       def initialize
         @keys = [:id, :order_number, :paid_at, :order_status, :pay_method, :channel, :ordered_at, :billing_amount, :ship_fee, :variant_ids, :cancelled_status, :shipping_status, ]

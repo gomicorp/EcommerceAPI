@@ -1,7 +1,7 @@
 module ExternalChannel
   module Product
     # TODO: 방어 로직 추가
-    class ExternalChannelProductSaver < ExternalChannelSaver
+    class Saver < DataSaver
       attr_accessor :brand, :channel, :product
 
       def save_all(products)

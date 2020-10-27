@@ -1,6 +1,6 @@
 module ExternalChannel
   module Product
-    class ExternalChannelProductValidator < ExternalChannelValidator
+    class Validator < DataValidator
 
       attr_reader :variant_validator
 
@@ -23,7 +23,7 @@ module ExternalChannel
 
       private
 
-      class ExternalChannelVariantValidator < ExternalChannel::ExternalChannelValidator
+      class ExternalChannelVariantValidator < DataValidator
         def initialize
           @keys = [:id, :price, :name]
         end
