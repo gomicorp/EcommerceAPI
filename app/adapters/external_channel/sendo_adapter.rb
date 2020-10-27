@@ -20,7 +20,7 @@ module ExternalChannel
       refine_orders(call_orders(query_hash))
     end
 
-    # protected
+    protected
 
     def login
       api_key = Rails.application.credentials.dig(:sendo, :api,  :key)
@@ -46,7 +46,17 @@ module ExternalChannel
     def call_orders(query); end
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
-    def refine_products(records); end
+    def refine_products(records)
+      product = record["result"]
+      {
+        id: product["id"],
+        title: product["name"],
+        channel_name: 'sendo',
+        brand_name: product["brand_name"] || 'not brand',
+        variants: form_variants product["variants"]
+      }
+    end
+
     def refine_orders(records); end
 
     # == json으로 Post요청을 날립니다.
@@ -80,6 +90,15 @@ module ExternalChannel
     end
 
     private
+    def form_variants(variants)
+      variants.map do |variant|
+        {
+          id: variant["variant_sku"],
+          name: variant["variant_sku"],
+          price: variant["variant_price"]
+        }
+      end
+    end
 
     def get_all_by_ids(ids, url, query_hash = {})
       data = []
