@@ -20,7 +20,7 @@ module ExternalChannel
       refine_orders(call_orders(query_hash))
     end
 
-    protected
+    # protected
 
     def login
       api_key = Rails.application.credentials.dig(:sendo, :api,  :key)
@@ -37,9 +37,10 @@ module ExternalChannel
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash = {})
       products_url = URI(url_with_query_hash("#{base_url}/api/partner/product/search", query_hash))
-      call_all_post(products_url) do |data|
+      product_ids = request_lists(products_url) do |data|
         data["result"]["data"].pluck("id")
       end
+      get_all_by_ids(product_ids, "#{base_url}/api/partner/product", query_hash)
     end
 
     def call_orders(query); end
@@ -64,13 +65,13 @@ module ExternalChannel
     end
 
     # == json으로 Get요청을 날립니다.
-    def req_get_json(url, body={}, headers={})
+    def req_get_json(url, headers={})
       request = Net::HTTP::Get.new(url)
-      request.body = body.to_json
-
       headers.each_pair do |key, value|
         request[key] = value
       end
+      ap url
+      ap url.host
 
       http = Net::HTTP.new(url.host, url.port).tap do |o|
         o.use_ssl = true
@@ -80,12 +81,28 @@ module ExternalChannel
 
     private
 
+    def get_all_by_ids(ids, url, query_hash = {})
+      data = []
+      header = {
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer #{@@token}"
+      }
+
+      ids.each do |id|
+        query_hash[:id] = id
+        req_uri = URI(url_with_query_hash(url, query_hash))
+        data << JSON.parse(req_get_json(req_uri, header).body)
+      end
+
+      data
+    end
+
     # == list 에서 모든 데이터를 요청합니다.
-    def call_all_post(url)
+    def request_lists(url)
       next_token = ""
       data = []
       while next_token.nil? == false
-        each_data = call_each(url, next_token)
+        each_data = request_list(url, next_token)
         next_token = each_data["result"]["next_token"]
         ap next_token
         data << if block_given?
@@ -98,17 +115,13 @@ module ExternalChannel
     end
 
     # == 하나의 post요청 혹은 원하는 요청을 보냅니다.
-    def call_each(url, next_token)
+    def request_list(url, next_token)
       body = {token: next_token, page_size: 50}
       header = {
         'Content-Type': 'application/json',
         'Authorization': "Bearer #{@@token}"
       }
-      response = if block_given?
-                   yield (url, body, header)
-                 else
-                   req_post_json(url, body, header)
-                 end
+      response = req_post_json(url, body, header)
       JSON.parse response.body
     end
   end
