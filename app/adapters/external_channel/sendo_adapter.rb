@@ -93,7 +93,23 @@ module ExternalChannel
       end
     end
 
-    def refine_orders(records); end
+    def refine_orders(orders)
+      orders.map do |order|
+        sales_data = order["sales_order"]
+        sales_details = order["sku_details"]
+        {
+          id: sales_data["order_number"],
+          order_number: sales_data["order_number"],
+          billing_amount: sales_data["total_amount_buyer"],
+          variants_ids: sales_details.map {|option| [option["product_variant_id"], option["quantity"]]},
+          order_status: map_order_status(sales_data["order_status"]),
+          cancel_status: canceled(sales_data["order_status"]),
+          shipping_status: shipping_status(sales_data["order_status"]),
+          pay_method: map_pay_method(sales_data["payment_method"])
+        }
+      end
+    end
+
 
     # == json으로 Post요청을 날립니다.
     def req_post_json(url, body={}, headers={})
@@ -123,7 +139,8 @@ module ExternalChannel
       http.request(request)
     end
 
-    # private
+    private
+
     def form_variants(product)
       variants = product["variants"]
 
@@ -181,6 +198,63 @@ module ExternalChannel
         ap data.length
       end
       data.flatten
+    end
+
+    def canceled(order_status)
+      if order_status == 13
+        map_order_status(order_status)
+      else
+        nil
+      end
+    end
+
+    def shipping_status(order_status)
+      if [6,7,8].include? order_status
+        map_order_status(order_status)
+      else
+        nil
+      end
+    end
+
+    def map_pay_method(sendo_pay_method)
+      allowed_pay_method = {
+        'COD': [1],
+        'Senpay': [2],
+        'Combine': [4],
+        'PayLater': [5]
+      }
+      pay_method = allowed_pay_method.select {|key, value| value.include?(sendo_pay_method)}
+      if pay_method.empty?
+        nil
+      else
+        pay_method.keys[0].to_s
+      end
+    end
+
+    def map_order_status(sendo_order_status)
+      allowed_order_status = {
+        'New': [2],
+        'Proccessing': [3],
+        'Shipping': [6],
+        'POD': [7],
+        'Completed': [8],
+        'Closed': [10],
+        'Delaying': [11],
+        'Delay': [12],
+        'Cancelled': [13],
+        'Splitting': [14],
+        'Splitted': [15],
+        'Merging': [19],
+        'Returning': [21],
+        'Returned': [22],
+        'WaitingSendo': [23]
+      }
+      order_status = allowed_order_status.select {|key, value| value.include?(sendo_order_status)}
+      if order_status.empty?
+        nil
+      else
+        order_status.keys[0].to_s
+      end
     end
   end
 end
