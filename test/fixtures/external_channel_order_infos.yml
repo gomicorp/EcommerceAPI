@@ -11,6 +11,7 @@
 #  paid_at                   :datetime
 #  pay_method                :string(255)
 #  ship_fee                  :integer
+#  shipping_status           :string(255)      not null
 #  total_price               :integer
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
