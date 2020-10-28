@@ -1,5 +1,5 @@
 module ExternalChannel
-  class SendoAdapter < ExternalChannelAdapter
+  class SendoAdapter < BaseAdapter
     # Product 요청 파라미터
     # {
     #   date_form: yyyy/mm/dd string,
