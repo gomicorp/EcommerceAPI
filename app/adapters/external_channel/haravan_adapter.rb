@@ -1,5 +1,5 @@
 module ExternalChannel
-  class HaravanAdapter < ExternalChannelAdapter
+  class HaravanAdapter < BaseAdapter
     attr_reader :api_key, :api_password
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
@@ -45,7 +45,8 @@ module ExternalChannel
       @api_password = Rails.application.credentials.dig(:haravan, :api, :password)
     end
 
-    public
+    protected
+
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
       refine_products(call_products(query_hash))
@@ -55,7 +56,6 @@ module ExternalChannel
       refine_orders(call_orders(query_hash))
     end
 
-    protected
     def login; end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
@@ -132,6 +132,8 @@ module ExternalChannel
       order_property = []
 
       records.each do |record|
+        next if ['shopee', 'tiki', 'lazada', 'sendo'].include? record['source']
+
         paid_at = nil
         if record['gateway'] == "Thanh toán khi giao hàng (COD)"
           paid_at = record['fulfillments'][0]['cod_paid_date']&.to_time if record['fulfillments'].any?
@@ -144,7 +146,7 @@ module ExternalChannel
           order_number: record['name'],
           order_status: record['financial_status'],
           pay_method: record['gateway'],
-          channel: record['source'],
+          channel: 'haravan',
           ordered_at: record['created_at'].to_time,
           paid_at: paid_at,
           billing_amount: record['total_price'],
