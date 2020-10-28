@@ -1,12 +1,26 @@
 module ExternalChannel
   class SendoAdapter < ExternalChannelAdapter
-    {
+    # Product 요청 파라미터
+    # {
+    #   date_form: yyyy/mm/dd string,
+    #   date_to: yyyy/mm/dd string,
+    #   product_name: string,
+    # }
+    #
+    # Order 요청 파라미터
+    # {
+    #   order_date_from: yyyy/mm/dd string
+    #   order_date_to: yyyy/mm/dd string
+    #   order_status_date_from: yyyy/mm/dd string (주문 변경 일자)
+    #   order_status_date_to: yyyy/mm/dd string (주문 변경 일자)
+    #   order_status: 주문 상태
+    # }
 
-    }
     attr_reader :base_url
 
     def initialize
       @base_url = "https://open.sendo.vn"
+      login
     end
 
     public
@@ -20,7 +34,7 @@ module ExternalChannel
       refine_orders(call_orders(query_hash))
     end
 
-    protected
+    # protected
 
     def login
       api_key = Rails.application.credentials.dig(:sendo, :api,  :key)
@@ -36,25 +50,47 @@ module ExternalChannel
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash = {})
-      products_url = URI(url_with_query_hash("#{base_url}/api/partner/product/search", query_hash))
-      product_ids = request_lists(products_url) do |data|
-        data["result"]["data"].pluck("id")
+      products_url = URI("#{base_url}/api/partner/product/search")
+      products_body = {
+        token: '',
+        page_size: 50
+      }.merge(query_hash)
+      products_header = {
+        'Authorization': "bearer #{@@token}",
+        'Content-Type': 'application/json',
+      }
+      product_ids = request_lists(products_url, products_body, products_header) do |products|
+        products["result"]["data"].pluck("id")
       end
-      get_all_by_ids(product_ids, "#{base_url}/api/partner/product", query_hash)
+      get_all_by_ids(product_ids, "#{base_url}/api/partner/product")
     end
 
-    def call_orders(query); end
+    def call_orders(query_hash = {})
+      orders_url = URI("#{base_url}/api/partner/salesorder/search")
+      orders_body = {
+        token: ''
+      }.merge(query_hash)
+      orders_header = {
+        'Authorization': "bearer #{@@token}",
+        'Content-Type': 'application/json',
+        'cache-control': 'no-cache'
+      }
+      request_lists(orders_url, orders_body, orders_header) do |orders|
+        orders["result"]["data"]
+      end
+    end
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
-    def refine_products(records)
-      product = record["result"]
-      {
-        id: product["id"],
-        title: product["name"],
-        channel_name: 'sendo',
-        brand_name: product["brand_name"] || 'not brand',
-        variants: form_variants product["variants"]
-      }
+    def refine_products(products)
+      products.map do |product|
+        {
+          id: product["id"],
+          title: product["name"],
+          channel_name: 'sendo',
+          brand_name: product["brand_name"] || 'not brand',
+          variants: form_variants(product)
+        }
+      end
     end
 
     def refine_orders(records); end
@@ -80,8 +116,6 @@ module ExternalChannel
       headers.each_pair do |key, value|
         request[key] = value
       end
-      ap url
-      ap url.host
 
       http = Net::HTTP.new(url.host, url.port).tap do |o|
         o.use_ssl = true
@@ -89,8 +123,20 @@ module ExternalChannel
       http.request(request)
     end
 
-    private
-    def form_variants(variants)
+    # private
+    def form_variants(product)
+      variants = product["variants"]
+
+      # variants 가 빈배열인 데이터가 있다.
+      # 이 경우, default 옵션 데이터를 만들어 줄 필요가 있다.
+      return [
+        {
+          id: product["id"],
+          name: 'default',
+          price: product["price"]
+        }
+      ] if variants.empty?
+
       variants.map do |variant|
         {
           id: variant["variant_sku"],
@@ -101,47 +147,40 @@ module ExternalChannel
     end
 
     def get_all_by_ids(ids, url, query_hash = {})
-      data = []
       header = {
         'Content-Type': 'application/json',
         'Authorization': "Bearer #{@@token}"
       }
 
-      ids.each do |id|
+      ids.map do |id|
+        ap id
         query_hash[:id] = id
         req_uri = URI(url_with_query_hash(url, query_hash))
-        data << JSON.parse(req_get_json(req_uri, header).body)
+        record = JSON.parse(req_get_json(req_uri, header).body)
+        if block_given?
+          yield record
+        else
+          record["result"]
+        end
       end
-
-      data
     end
 
     # == list 에서 모든 데이터를 요청합니다.
-    def request_lists(url)
-      next_token = ""
+    def request_lists(url, body, header)
+      body[:token] = ""
       data = []
-      while next_token.nil? == false
-        each_data = request_list(url, next_token)
-        next_token = each_data["result"]["next_token"]
-        ap next_token
+      while body[:token].nil? == false
+        response = req_post_json(url, body, header)
+        each_data = JSON.parse response.body
+        body[:token] = each_data["result"]["next_token"]
         data << if block_given?
                   yield each_data
                 else
                   each_data
                 end
+        ap data.length
       end
       data.flatten
-    end
-
-    # == 하나의 post요청 혹은 원하는 요청을 보냅니다.
-    def request_list(url, next_token)
-      body = {token: next_token, page_size: 50}
-      header = {
-        'Content-Type': 'application/json',
-        'Authorization': "Bearer #{@@token}"
-      }
-      response = req_post_json(url, body, header)
-      JSON.parse response.body
     end
   end
 end
