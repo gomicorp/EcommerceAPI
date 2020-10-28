@@ -1,5 +1,5 @@
 module ExternalChannel
-  class DataValidator
+  class BaseValidator
 
     attr_reader :keys
 

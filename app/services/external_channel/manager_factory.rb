@@ -1,6 +1,5 @@
 module ExternalChannel
-
-  class Service
+  class ManagerFactory
     def initialize(data_type, adapter)
       case data_type
       when 'product'

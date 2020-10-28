@@ -1,6 +1,6 @@
 module ExternalChannel
   module Product
-    class Validator < DataValidator
+    class Validator < BaseValidator
 
       attr_reader :variant_validator
 

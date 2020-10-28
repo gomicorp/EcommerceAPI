@@ -1,5 +1,5 @@
 module ExternalChannel
-  class TikiAdapter < ExternalChannelAdapter
+  class TikiAdapter < BaseAdapter
     attr_reader :connection_parameters
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)

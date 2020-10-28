@@ -1,6 +1,6 @@
 module ExternalChannel
   module Order
-    class Service < DataService
+    class Manager < BaseManager
       def initialize(channel_adapter)
         super(channel_adapter)
         set_saver!(ExternalChannel::Order::Saver.new)

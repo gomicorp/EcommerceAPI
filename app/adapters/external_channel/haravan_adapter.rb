@@ -1,5 +1,5 @@
 module ExternalChannel
-  class HaravanAdapter < ExternalChannelAdapter
+  class HaravanAdapter < BaseAdapter
     attr_reader :api_key, :api_password
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)

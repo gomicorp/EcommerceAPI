@@ -1,5 +1,5 @@
 module ExternalChannel
-  class DataService
+  class BaseManager
     attr_reader :adapter, :saver, :validator, :data_type
 
     def initialize(channel_adapter)
