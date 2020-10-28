@@ -32,5 +32,10 @@ module ExternalChannel
     # == call_XXX 로 가져온 레코드를 정제합니다.
     def refine_products(records); end
     def refine_orders(records); end
+
+    # == url 뒤에 query를 붙여 줍니다.
+    def url_with_query_hash(url, query_hash)
+      "#{url}?#{query_hash.join('&')}"
+    end
   end
 end

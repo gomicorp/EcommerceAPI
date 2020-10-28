@@ -23,19 +23,20 @@ module ExternalChannel
       login
     end
 
-    public
+    protected
 
     # == 적절하게 정제된 데이터를 리턴합니다.
+    @override
     def products(query_hash = {})
       refine_products(call_products(query_hash))
     end
 
+    @override
     def orders(query_hash = {})
       refine_orders(call_orders(query_hash))
     end
 
-    # protected
-
+    @override
     def login
       api_key = Rails.application.credentials.dig(:sendo, :api,  :key)
       api_password = Rails.application.credentials.dig(:sendo, :api, :password)
@@ -49,6 +50,7 @@ module ExternalChannel
     end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
+    @override
     def call_products(query_hash = {})
       products_url = URI("#{base_url}/api/partner/product/search")
       products_body = {
@@ -65,6 +67,7 @@ module ExternalChannel
       get_all_by_ids(product_ids, "#{base_url}/api/partner/product")
     end
 
+    @override
     def call_orders(query_hash = {})
       orders_url = URI("#{base_url}/api/partner/salesorder/search")
       orders_body = {
@@ -81,6 +84,7 @@ module ExternalChannel
     end
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
+    @override
     def refine_products(products)
       products.map do |product|
         {
@@ -93,6 +97,7 @@ module ExternalChannel
       end
     end
 
+    @override
     def refine_orders(orders)
       orders.map do |order|
         sales_data = order["sales_order"]
@@ -103,13 +108,14 @@ module ExternalChannel
           billing_amount: sales_data["total_amount_buyer"],
           variants_ids: sales_details.map {|option| [option["product_variant_id"], option["quantity"]]},
           order_status: map_order_status(sales_data["order_status"]),
-          cancel_status: canceled(sales_data["order_status"]),
+          cancel_status: cancelled_status(sales_data["order_status"]),
           shipping_status: shipping_status(sales_data["order_status"]),
           pay_method: map_pay_method(sales_data["payment_method"])
         }
       end
     end
 
+    private
 
     # == json으로 Post요청을 날립니다.
     def req_post_json(url, body={}, headers={})
@@ -138,8 +144,6 @@ module ExternalChannel
       end
       http.request(request)
     end
-
-    private
 
     def form_variants(product)
       variants = product["variants"]
@@ -200,7 +204,9 @@ module ExternalChannel
       data.flatten
     end
 
-    def canceled(order_status)
+    # 여기부터 아래는 sendo의 order status를 변환하는 함수입니다.
+
+    def cancelled_status(order_status)
       if order_status == 13
         map_order_status(order_status)
       else
@@ -216,21 +222,27 @@ module ExternalChannel
       end
     end
 
+    # == 센도의 결제 방법(숫자) 글자로 바꿔주는 함수입니다.
+    # == TODO: 주문 상태 리펙토링 후 아래 로직을 수정해야 합니다.
+    # == 우리의 판매 방법의 수가 센도의 판매 방법의 수 보다 같거나 많을 것이라고 판단하여 아래와 같이 case 구문으로 구현하였습니다.
     def map_pay_method(sendo_pay_method)
-      allowed_pay_method = {
-        'COD': [1],
-        'Senpay': [2],
-        'Combine': [4],
-        'PayLater': [5]
-      }
-      pay_method = allowed_pay_method.select {|key, value| value.include?(sendo_pay_method)}
-      if pay_method.empty?
-        nil
+      case sendo_pay_method
+      when 1
+        'COD'
+      when 2
+        'Senpay'
+      when 4
+        'Combine'
+      when 5
+        'PayLater'
       else
-        pay_method.keys[0].to_s
+        nil
       end
     end
 
+    # == 센도의 주문상태(숫)를 글자로 바꿔주는 함수입니다.
+    # == TODO: 주문 상태 리펙토링 후 아래 로직을 수정해야 합니다.
+    # == 우리의 주문 상태가 센도의 주문 상태보다 수가 적을 것이라고 판단하여 아래와 같이 array로 구현하였습니다.
     def map_order_status(sendo_order_status)
       allowed_order_status = {
         'New': [2],
