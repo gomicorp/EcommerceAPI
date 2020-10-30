@@ -15,7 +15,16 @@
 #  total_price               :integer
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
+#  country_id                :bigint
 #  external_channel_order_id :integer
+#
+# Indexes
+#
+#  index_external_channel_order_infos_on_country_id  (country_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (country_id => countries.id)
 #
 require 'test_helper'
 
