@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class BatchControllerTest < ActionDispatch::IntegrationTest
+class ExternalChannelsControllerTest < ActionDispatch::IntegrationTest
   # test "the truth" do
   #   assert true
   # end
