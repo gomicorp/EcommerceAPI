@@ -46,6 +46,13 @@ module ExternalChannel
       data['data']
     end
 
+    def call_product(product_id)
+      base_url = "https://api.tiki.vn/integration/v1/products/#{product_id}"
+      response = Faraday.get(base_url, {}, { 'tiki-api': connection_parameters })
+
+      JSON.parse response.body
+    end
+
     def call_orders(query_hash)
       base_url = 'https://api.tiki.vn/integration/v2/orders'
       response = Faraday.get(base_url, query_hash, { 'tiki-api': connection_parameters })
@@ -64,7 +71,7 @@ module ExternalChannel
           id: record['super_id'],
           title: record['name'],
           channel_name: 'Tiki',
-          brand_name: refine_brand(record['product_id']),
+          brand_name: call_product(record['product_id'])['attributes']['brand']['value'],
           options: [
             {
               id: record['product_id'],
@@ -76,15 +83,6 @@ module ExternalChannel
       end
 
       product_property
-    end
-
-    def refine_brand(product_id)
-      base_url = "https://api.tiki.vn/integration/v1/products/#{product_id}"
-      response = Faraday.get(base_url, {}, { 'tiki-api': connection_parameters })
-
-      data = JSON.parse response.body
-
-      data['attributes']['brand']['value']
     end
 
     def refine_orders(records)
