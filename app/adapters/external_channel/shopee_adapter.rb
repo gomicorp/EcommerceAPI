@@ -180,14 +180,8 @@ module ExternalChannel
 
     def request_post(url, body, header)
       ap "reqeust start #{body.to_json}"
-      fetch_url = URI(url)
-      request = Net::HTTP::Post.new(fetch_url, header)
-      request.body = body.to_json
-      http = Net::HTTP.new(fetch_url.host, fetch_url.port).tap do |o|
-        o.use_ssl = true
-      end
+      response = Faraday.post(url, body, header)
       ap "request end #{body.to_json}"
-      response = http.request(request)
       JSON.parse response.body
     end
 
