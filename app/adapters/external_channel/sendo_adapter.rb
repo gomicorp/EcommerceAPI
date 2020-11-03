@@ -43,7 +43,7 @@ module ExternalChannel
       login_url = URI("#{base_url}/login")
       login_body = {shop_key: api_key, secret_key: api_password}
       login_header = {'Content-Type': 'application/json'}
-      response = req_post_json(login_url, login_body, login_header)
+      response = Faraday.post(login_url, login_body.to_json, login_header)
       data = JSON.parse response.body
       # 새로 발급받은 토큰만 유효하므로 기존 토큰을 대체함.
       @@token = data["result"]["token"]
@@ -117,33 +117,47 @@ module ExternalChannel
 
     private
 
-    # == json으로 Post요청을 날립니다.
-    def req_post_json(url, body={}, headers={})
-      request = Net::HTTP::Post.new(url)
-      request.body = body.to_json
+    ### === 데이터를 불러오는 로직입니다.
 
-      headers.each_pair do |key, value|
-        request[key] = value
-      end
+    def get_all_by_ids(ids, url, query_hash = {})
+      header = {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer #{@@token}"
+      }
 
-      http = Net::HTTP.new(url.host, url.port).tap do |o|
-        o.use_ssl = true
+      ids.map do |id|
+        query_hash[:id] = id
+        record = JSON.parse(Faraday.get(url, query_hash, header).body)
+        if block_given?
+          yield record
+        else
+          record["result"]
+        end
       end
-      http.request(request)
     end
 
-    # == json으로 Get요청을 날립니다.
-    def req_get_json(url, headers={})
-      request = Net::HTTP::Get.new(url)
-      headers.each_pair do |key, value|
-        request[key] = value
+    # == list 에서 모든 데이터를 요청합니다.
+    def request_lists(url, body, header)
+      body[:token] = ""
+      data = []
+      while body[:token].nil? == false
+        response = Faraday.post(url, body.to_json, header)
+        each_data = JSON.parse response.body
+        body[:token] = each_data["result"]["next_token"]
+        data << if block_given?
+                  yield each_data
+                else
+                  each_data
+                end
       end
-
-      http = Net::HTTP.new(url.host, url.port).tap do |o|
-        o.use_ssl = true
-      end
-      http.request(request)
+      data.flatten
     end
+
+
+    ### === 데이터를 정제하는 로직입니다.
+
+
+    ## === product 데이터를 정제합니다.
 
     def form_variants(product)
       variants = product["variants"]
@@ -167,44 +181,7 @@ module ExternalChannel
       end
     end
 
-    def get_all_by_ids(ids, url, query_hash = {})
-      header = {
-        'Content-Type': 'application/json',
-        'Authorization': "Bearer #{@@token}"
-      }
-
-      ids.map do |id|
-        ap id
-        query_hash[:id] = id
-        req_uri = URI(url_with_query_hash(url, query_hash))
-        record = JSON.parse(req_get_json(req_uri, header).body)
-        if block_given?
-          yield record
-        else
-          record["result"]
-        end
-      end
-    end
-
-    # == list 에서 모든 데이터를 요청합니다.
-    def request_lists(url, body, header)
-      body[:token] = ""
-      data = []
-      while body[:token].nil? == false
-        response = req_post_json(url, body, header)
-        each_data = JSON.parse response.body
-        body[:token] = each_data["result"]["next_token"]
-        data << if block_given?
-                  yield each_data
-                else
-                  each_data
-                end
-        ap data.length
-      end
-      data.flatten
-    end
-
-    # 여기부터 아래는 sendo의 order status를 변환하는 함수입니다.
+    ## === order 데이를 정제합니다.
 
     def cancelled_status(order_status)
       if order_status == 13
