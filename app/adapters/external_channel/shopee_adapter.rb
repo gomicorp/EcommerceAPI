@@ -13,7 +13,6 @@ module ExternalChannel
 
 
     # === 사용 가능한 Order query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
-    # https://open.tiki.vn/#order-api-v2
     #{
     #  order_status: ALL/UNPAID/READY_TO_SHIP/COMPLETED/IN_CANCEL/CANCELLED/TO_RETURN, default: ALL
     #  create_time_from
