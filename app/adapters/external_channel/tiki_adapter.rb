@@ -16,7 +16,23 @@ module ExternalChannel
     # === 사용 가능한 Order query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # https://open.tiki.vn/#order-api-v2
     {
-      # = page :
+      # = page : 페이지로 검색, page > 0, default = 1
+      # = limit : 페이지당 주문 건수, limit > 0
+      # = code : order code 로 검색, comma 로 구분
+      # = sku : sku 로 검색, comma 로 구분
+      # = item_confirmation_status : 수락 상태로 검색
+      # = item_inventory_type : 해당 inventory_type 에 속하는 주문 상품을 최소 1개 이상 포함하는 주문 검색
+      # = fulfillment_type : fulfillment_type 으로 검색
+      # = status : 주문 상태로 검색
+      # = include : 기본 주문 정보에 스키마 추가
+      # = is_rma : rma 된 주문을 검색
+      #   => Search RMA orders - The replacement order for returned products
+      # = filter_date_by : 주문 생성일을 전달한 기준을 이용하여 검색
+      # = created_from_date : 주문 생성 시간 >= date
+      # = created_to_date : 주문 생성 시간 <= date
+      # = updated_from_date : 주문 업데이트 시간 >= date
+      # = updated_to_date : 주문 업데이트 시간 <= date
+      # = order_by : 데이터 정렬
     }
 
     def initialize
@@ -46,6 +62,13 @@ module ExternalChannel
       data['data']
     end
 
+    def call_product(product_id)
+      base_url = "https://api.tiki.vn/integration/v1/products/#{product_id}"
+      response = Faraday.get(base_url, {}, { 'tiki-api': connection_parameters })
+
+      JSON.parse response.body
+    end
+
     def call_orders(query_hash)
       base_url = 'https://api.tiki.vn/integration/v2/orders'
       response = Faraday.get(base_url, query_hash, { 'tiki-api': connection_parameters })
@@ -64,7 +87,7 @@ module ExternalChannel
           id: record['super_id'],
           title: record['name'],
           channel_name: 'Tiki',
-          brand_name: refine_brand(record['product_id']),
+          brand_name: call_product(record['product_id'])['attributes']['brand']['value'],
           options: [
             {
               id: record['product_id'],
@@ -76,15 +99,6 @@ module ExternalChannel
       end
 
       product_property
-    end
-
-    def refine_brand(product_id)
-      base_url = "https://api.tiki.vn/integration/v1/products/#{product_id}"
-      response = Faraday.get(base_url, {}, { 'tiki-api': connection_parameters })
-
-      data = JSON.parse response.body
-
-      data['attributes']['brand']['value']
     end
 
     def refine_orders(records)

@@ -21,9 +21,11 @@ module ExternalChannel
       data.keys.sort == keys.sort
     end
 
-    def validate_presence_of(data)
-      keys.all? { |key| !data[key].blank? }
+    def validate_presence_of(data, exception = [])
+      keys.all? do |key|
+        next if exception.include? key
+        !data[key].blank?
+      end
     end
-
   end
 end

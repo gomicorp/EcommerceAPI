@@ -14,9 +14,10 @@ Rails.application.routes.draw do
   draw :common_routes
   draw :sellers_routes
 
-  resource :batch, controller: 'batch', only: '%i[execute]' do
+  resource :external_channels, controller: 'external_channels', only: '%i[batch]' do
     collection do
-      post 'execute'
+      get 'code'
+      post 'batch'
     end
   end
 

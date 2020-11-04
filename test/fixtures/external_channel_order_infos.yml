@@ -11,11 +11,20 @@
 #  paid_at                   :datetime
 #  pay_method                :string(255)
 #  ship_fee                  :integer
-#  shipping_status           :string(255)      not null
+#  shipping_status           :string(255)
 #  total_price               :integer
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
+#  country_id                :bigint
 #  external_channel_order_id :integer
+#
+# Indexes
+#
+#  index_external_channel_order_infos_on_country_id  (country_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (country_id => countries.id)
 #
 
 # This model initially had no columns defined. If you add columns to the

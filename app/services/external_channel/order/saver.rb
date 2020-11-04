@@ -49,6 +49,7 @@ module ExternalChannel
           order_number: order[:order_number],
           cancelled_status: order[:cancelled_status],
           external_channel_order_id: order[:id],
+          shipping_status: order[:shipping_status]
         }
       end
 

@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.6.3'
 
 # gem 'haravan_api', git: 'https://github.com/Haravan/haravan_api.git'
-
+gem 'lazop_api_client', git: 'https://github.com/kfit-dev/lazop-api-client'
 
 gem 'yajl-ruby', require: 'yajl'
 gem 'data_migrate'
@@ -73,6 +73,10 @@ gem 'bcrypt', '~> 3.1.7'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
 
+# = 배치 프로세스 진행 시, 웹 인증 과정 자동화를 위한 젬
+gem 'selenium-webdriver'
+gem 'chromedriver-helper'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -92,7 +96,6 @@ end
 group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
-  gem 'selenium-webdriver'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
 end

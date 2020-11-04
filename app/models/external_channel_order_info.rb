@@ -11,13 +11,22 @@
 #  paid_at                   :datetime
 #  pay_method                :string(255)
 #  ship_fee                  :integer
-#  shipping_status           :string(255)      not null
+#  shipping_status           :string(255)
 #  total_price               :integer
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
+#  country_id                :bigint
 #  external_channel_order_id :integer
 #
-class ExternalChannelOrderInfo < ApplicationRecord
+# Indexes
+#
+#  index_external_channel_order_infos_on_country_id  (country_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (country_id => countries.id)
+#
+class ExternalChannelOrderInfo < NationRecord
   ORDER_STATUSES = %w[pending authorized partiallypaid paid partiallyrefunded refunded voided]
   enum order_status: ORDER_STATUSES
 
