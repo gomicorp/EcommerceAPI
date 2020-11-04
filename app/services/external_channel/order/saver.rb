@@ -7,10 +7,21 @@ module ExternalChannel
       end
 
       def save(order)
-        order_info = ::ExternalChannelOrderInfo.find_by(external_channel_order_id: order[:id])
-        order_info = ::ExternalChannelOrderInfo.new if order_info.nil?
-        order_info.update!(parse_order(order, order_info.attributes))
-        set_order_related_info(order_info, order[:variant_ids]) if order_info.products.nil?
+        retry_num = 0
+        ActiveRecord::Base.transaction do
+          begin
+            retry_num += 1
+            order_info = ::ExternalChannelOrderInfo.find_by(external_channel_order_id: order[:id])
+            order_info = ::ExternalChannelOrderInfo.new if order_info.nil?
+            order_info.update!(parse_order(order))
+            set_order_related_info(order_info, order[:variant_ids]) if order_info.products.nil?
+          rescue Exception => e
+            # === TODO: 어떤 에러를 처리해야 하는지, 어떻게 할지를 결정 해야 함.
+            ap e.inspect
+            ActiveRecord::Rollback
+            retry if  e.instance_of? IOError && retry_num <= 5
+          end
+        end
       end
 
       private

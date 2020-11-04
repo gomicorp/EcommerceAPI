@@ -1,13 +1,18 @@
 module ExternalChannel
   class BaseSaver
     include ParseCountryCode
+    attr_reader :retry_num
 
     def initialize(caller_country_code = nil)
       country_code=(caller_country_code || default_country_code)
+      @retry_num = 0
     end
 
     def save_all(data); end
 
+    # === 무조건 이 메소드를 begin/rescue로 감싸라.
+    # === 재시도는 retry 구문을 통해 이루어 진다.
+    # === retry_num 매번 save가 불릴 때 begin/rescue 밖에서 0으로 초기화 된다.
     def save(data); end
 
     protected
