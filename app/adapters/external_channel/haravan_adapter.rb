@@ -45,8 +45,7 @@ module ExternalChannel
       @api_password = Rails.application.credentials.dig(:haravan, :api, :password)
     end
 
-    protected
-
+    public
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
       refine_products(call_products(query_hash))
@@ -56,23 +55,15 @@ module ExternalChannel
       refine_orders(call_orders(query_hash))
     end
 
+    protected
     def login; end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash)
       base_url = 'https://gomicorp.myharavan.com/admin/products.json'
-      query_element = []
-      query_hash.each_pair do |key, value|
-        query_element << "#{key}=#{value}"
-      end
+      headers = { 'authorization': 'Basic ' + ["#{api_key}:#{api_password}"].pack('m0') }
+      response = Faraday.get(base_url, query_hash, headers)
 
-      fetch_url = URI("#{base_url}?#{query_element.join('&')}")
-      request = Net::HTTP::Get.new(fetch_url)
-      request.basic_auth(api_key, api_password)
-      http = Net::HTTP.new(fetch_url.host, fetch_url.port).tap do |o|
-        o.use_ssl = true
-      end
-      response = http.request(request)
       data = JSON.parse response.body
 
       data['products']
@@ -80,18 +71,9 @@ module ExternalChannel
 
     def call_orders(query_hash)
       base_url = 'https://gomicorp.myharavan.com/admin/orders.json'
-      query_element = []
-      query_hash.each_pair do |key, value|
-        query_element << "#{key}=#{value}"
-      end
+      headers = { 'authorization': 'Basic ' + ["#{api_key}:#{api_password}"].pack('m0') }
+      response = Faraday.get(base_url, query_hash, headers)
 
-      fetch_url = URI("#{base_url}?#{query_element.join('&')}")
-      request = Net::HTTP::Get.new(fetch_url)
-      request.basic_auth(api_key, api_password)
-      http = Net::HTTP.new(fetch_url.host, fetch_url.port).tap do |o|
-        o.use_ssl = true
-      end
-      response = http.request(request)
       data = JSON.parse response.body
 
       data['orders']
