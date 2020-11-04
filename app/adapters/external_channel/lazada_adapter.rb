@@ -5,6 +5,36 @@ module ExternalChannel
 
     attr_reader :code, :token, :app_key, :app_secret
 
+    # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
+    # https://open.lazada.com/doc/api.htm?spm=a2o9m.11193494.0.0.c55f266b3DH77F#/api?cid=5&path=/products/get
+    {
+        # = search : 상품 이름 혹은 Seller SKU 를 string 으로 검색
+        # = offset : 지정한 갯수의 데이터를 skip
+        # = limit : 응답 받을 데이터의 갯수
+        # = options : 추가적인 재고 정보를 얻을 수 있음
+        #   => This value can be used to get more stock information.
+        #   => e.g., Options=1 means contain ReservedStock, RtsStock, PendingStock, RealTimeStock, FulfillmentBySellable.
+        # = sku_seller_list : Seller SKU 의 list 로 검색
+        # = create_before : 상품 생성 시간 <= date (ISO 8601)
+        # = create_after : 상품 생성 시간 >= date (ISO 8601)
+        # = update_before : 상품 업데이트 시간 <= date (ISO 8601)
+        # = update_after : 상품 업데이트 시간 >= date (ISO 8601)
+    }
+
+    # === 사용 가능한 Order query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
+    # https://open.lazada.com/doc/api.htm?spm=a2o9m.11193494.0.0.c55f266b3DH77F#/api?cid=8&path=/orders/get
+    {
+        # = status : 주문 상태로 검색
+        # = sort_by : 생성 시간과 업데이트 시간을 기준으로 정렬
+        # = sort_direction : 오름차순과 내림차순을 결정
+        # = offset : 지정한 갯수의 데이터를 skip
+        # = limit : 응답 받을 데이터의 갯수
+        # = create_before : 주문 생성 시간 <= date (ISO 8601)
+        # = create_after : 주문 생성 시간 >= date (ISO 8601)
+        # = update_before : 주문 업데이트 시간 <= date (ISO 8601)
+        # = update_after : 주문 업데이트 시간 >= date (ISO 8601)
+    }
+
     def initialize
       @token = ExternalChannelToken.find_or_create_by(country: Country.vn,
                                                      channel: Channel.find_by(name: 'Lazada'))
