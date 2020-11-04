@@ -65,6 +65,9 @@ end
 
 
 class Cart < NationRecord
+  # TODO: Status List 를 넣어야 합니다.
+  act_as_status_loggable status_list: {}
+
   # 신규(desk) 입금대기(pay) 결제완료(paid) 배송준비(ship_ready) 배송중(ship_ing) 취소요청(cancel-request) 반품요청(refund-request) 환불실패 보관함(complete)
 
   # 요청 -> 접수(처리중) -> { 반려 -> 요청 -> ... } -> 완료

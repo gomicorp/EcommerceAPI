@@ -27,6 +27,9 @@
 #  fk_rails_...  (order_info_id => order_infos.id)
 #
 class Payment < ApplicationRecord
+  # TODO: Status List 를 넣어야 합니다.
+  act_as_status_loggable status_list: {}
+
   extend_has_many_attached :pay_slips
   belongs_to :order_info
   has_one :user, through: :order_info

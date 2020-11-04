@@ -3,6 +3,7 @@ class ApplicationRecord < ActiveRecord::Base
   extend AutoIncrement
   extend ParseCountryCode
   include TimeMachine::Concern
+  include StatusLoggable
 
   def cls
     self.class

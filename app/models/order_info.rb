@@ -26,6 +26,9 @@
 #
 class OrderInfo < NationRecord
   include ChannelRecordable
+  # TODO: Status List 를 넣어야 합니다.
+  act_as_status_loggable status_list: {}
+
   belongs_to :cart
   belongs_to :channel
   has_one :ship_info, dependent: :destroy

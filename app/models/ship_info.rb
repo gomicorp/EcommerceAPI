@@ -3,22 +3,25 @@
 # Table name: ship_infos
 #
 #  id             :bigint           not null, primary key
-#  order_info_id  :integer
+#  loc_city       :string(255)
+#  loc_detail     :text(65535)
+#  loc_district   :string(255)
+#  loc_state      :string(255)
+#  postal_code    :string(255)
+#  receiver_email :string(255)
 #  receiver_name  :string(255)
 #  receiver_tel   :string(255)
-#  receiver_email :string(255)
-#  loc_state      :string(255)
-#  loc_city       :string(255)
-#  loc_district   :string(255)
-#  loc_detail     :text(65535)
-#  ship_type      :integer          default("normal"), not null
 #  ship_amount    :integer          default(0), not null
+#  ship_type      :integer          default(0), not null
 #  user_memo      :text(65535)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  postal_code    :string(255)
+#  order_info_id  :integer
 #
 class ShipInfo < ApplicationRecord
+  # TODO: Status List 를 넣어야 합니다.
+  act_as_status_loggable status_list: {}
+
   enum ship_type: %i[normal express]
 
   FEE_TABLE = {
