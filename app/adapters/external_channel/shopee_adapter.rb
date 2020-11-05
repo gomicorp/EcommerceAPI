@@ -31,7 +31,7 @@ module ExternalChannel
     public
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
-      ap refine_products(call_products(query_hash))
+      refine_products(call_products(query_hash))
     end
 
     def orders(query_hash = {})
@@ -44,27 +44,23 @@ module ExternalChannel
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash = {})
-      products_url = "#{base_url}/items/get"
+      endpoint = "#{base_url}/items/get"
       products_body = set_shopee_body(query_hash)
 
-      product_ids = []
-      call_list(products_url, products_body) do |response|
-        product_ids << response['items'].pluck('item_id')
-      end
-      call_product_by_ids(product_ids.flatten)
+      call_list(endpoint, products_body)
+        .map{ |data| call_product_by_ids(data['items'].pluck('item_id')) }
+        .flatten
     end
 
     def call_orders(query_hash = {})
       query_hash[:order_status] ||= 'ALL'
 
-      orders_url = "#{base_url}/orders/get"
+      endpoint = "#{base_url}/orders/get"
       orders_body = set_shopee_body(query_hash)
 
-      orders_sn = []
-      call_list(orders_url, orders_body) do |response|
-        orders_sn<< response['orders'].pluck('ordersn')
-      end
-      call_order_by_sn(orders_sn.flatten)
+      call_list(endpoint, orders_body)
+        .map{ |data| call_product_by_ids(data['orders'].pluck('ordersn')) }
+        .flatten
     end
     # == call_XXX 로 가져온 레코드를 정제합니다.
     def refine_products(products)
@@ -105,35 +101,30 @@ module ExternalChannel
     ### === Shoppe에서 데이터를 가져오는 부분
 
     def call_product_by_ids(ids)
-      url = "#{base_url}/item/get"
-      call_each_by_ids(ids, url, 'item') do |id|
+      endpoint = "#{base_url}/item/get"
+      call_each_by_ids(ids, endpoint, 'item') do |id|
         {item_id: id}
       end
     end
 
     def call_order_by_sn(sn)
-      orders = []
-      url = "#{base_url}/orders/detail"
+      endpoint = "#{base_url}/orders/detail"
       # === shopee 에서 받을 수 있는 order의 개수를 50개로 제한함.
-      sn.each_slice(50).map do |each_sn|
-        body = set_shopee_body({ordersn_list: each_sn})
-        header = get_shopee_header(url, body)
-        response = request_post(url, body, header)
-        orders << response['orders']
+      call_each_by_ids(sn.each_slice(50), endpoint, 'orders') do |order_sns|
+        { ordersn_list: order_sns }
       end
-      orders.flatten
     end
 
     # body를 의미하는 block을 받아, 모든 id에 대해 post요청을 보내고 타겟에 대한 묶음을 전달하는 함수.
-    def call_each_by_ids(ids, url, target)
+    def call_each_by_ids(ids, endpoint, target)
       ids.map do |id|
         body = {}
         if block_given?
           body = yield id
         end
         body = set_shopee_body(body)
-        header = get_shopee_header(url, body)
-        response = request_post(url, body, header)
+        header = get_shopee_header(endpoint, body)
+        response = request_post(endpoint, body, header)
         response[target]
       end
     end
@@ -141,27 +132,27 @@ module ExternalChannel
     # === 쇼피의 데이터 중 more 이라는 데이터가 있는 것들은 pagination을 따로 하지 않고, more로만 붙여 준다.
     # === order와 product의 list요청에는 모두 more이라는 데이터가 확인되어, 앞으로 user등의 데이터가 추가되어도 사용될 것이라 기대하고 설정함.
     # === 암것도 모드고 while 문 내에서 more이 false가 될 때까지 부름.
-    def call_list(url, body)
+    def call_list(endpoint, body)
       more = true
       body[:pagination_offset] ||= 0
       body[:pagination_entries_per_page] ||= 100
+
+      response_data = []
       while more do
-        header = get_shopee_header(url, body)
-        response = request_post(url, body, header)
+        header = get_shopee_header(endpoint, body)
+        response = request_post(endpoint, body, header)
         more = response['more']
-        ap response['more']
-        body[:pagination_offset] += 100
-        if block_given?
-          yield response
-        else
-          throw NotImplementedError('call all need block to run')
-        end
+        body[:pagination_offset] += body[:pagination_entries_per_page]
+
+        response_data << response
       end
+
+      response_data
     end
 
-    def get_shopee_header(url, body)
+    def get_shopee_header(endpoint, body)
       {
-          'Authorization': make_shopee_signature(url, body),
+          'Authorization': make_shopee_signature(endpoint, body),
           'Content-Type': 'application/json'
       }
     end
@@ -170,19 +161,18 @@ module ExternalChannel
       hash.merge!({
         partner_id: partner_id,
         shopid: shop_id,
-        timestamp: Time.now.to_i
+        timestamp: (Time.now - 59.minutes).to_i
       })
     end
 
-    def request_post(url, body, header)
-      ap "reqeust start #{body.to_json}"
-      response = Faraday.post(url, body.to_json, header)
-      ap "request end #{body.to_json}"
+    def request_post(endpoint, body, header)
+      response = Faraday.post(endpoint, body.to_json, header)
+
       JSON.parse response.body
     end
 
-    def make_shopee_signature(url, body)
-      signature_base = url + '|' + body.to_json
+    def make_shopee_signature(endpoint, body)
+      signature_base = endpoint + '|' + body.to_json
       OpenSSL::HMAC.hexdigest('sha256', key, signature_base)
     end
 
@@ -201,7 +191,7 @@ module ExternalChannel
     def refine_variants(product)
       variants = product['variations']
 
-      # === variants가 없으면 product를 참조 해야 한다.
+      # === variants 가 없으면 product 를 참조 해야 한다.
       return [{
                   id: product['item_id'],
                   price: product['price'],
