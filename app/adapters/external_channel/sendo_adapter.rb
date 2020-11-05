@@ -16,23 +16,38 @@ module ExternalChannel
     #   order_status: 주문 상태
     # }
 
-    attr_reader :base_url
+    attr_reader :base_url, :default_headers, :token
 
     def initialize
       @base_url = "https://open.sendo.vn"
-      login
+      @token = ExternalChannelToken.find_or_create_by(country: Country.vn,
+                                                      channel: Channel.find_by(name: 'Sendo'))
+
+      @default_headers = {
+        'Content-Type': 'application/json'
+      }
     end
 
-    protected
+    def check_token_validation
+      if @token.auth_token_expired?
+        login
+      end
+    end
+
+    public
 
     # == 적절하게 정제된 데이터를 리턴합니다.
     @override
     def products(query_hash = {})
+      check_token_validation
+
       refine_products(call_products(query_hash))
     end
 
     @override
     def orders(query_hash = {})
+      check_token_validation
+
       refine_orders(call_orders(query_hash))
     end
 
@@ -42,11 +57,12 @@ module ExternalChannel
       api_password = Rails.application.credentials.dig(:sendo, :api, :password)
       login_url = URI("#{base_url}/login")
       login_body = {shop_key: api_key, secret_key: api_password}
-      login_header = {'Content-Type': 'application/json'}
-      response = Faraday.post(login_url, login_body.to_json, login_header)
+
+      response = Faraday.post(login_url, login_body.to_json, default_headers)
       data = JSON.parse response.body
-      # 새로 발급받은 토큰만 유효하므로 기존 토큰을 대체함.
-      @@token = data["result"]["token"]
+
+      token.update(auth_token: data['result']['token'],
+                   auth_token_expire_time: data['result']['expires'].to_datetime)
     end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
@@ -58,7 +74,7 @@ module ExternalChannel
         page_size: 50
       }.merge(query_hash)
       products_header = {
-        'Authorization': "bearer #{@@token}",
+        'Authorization': "bearer #{token.auth_token}",
         'Content-Type': 'application/json',
       }
       product_ids = request_lists(products_url, products_body, products_header) do |products|
@@ -74,7 +90,7 @@ module ExternalChannel
         token: ''
       }.merge(query_hash)
       orders_header = {
-        'Authorization': "bearer #{@@token}",
+        'Authorization': "bearer #{token.auth_token}",
         'Content-Type': 'application/json',
         'cache-control': 'no-cache'
       }
@@ -122,7 +138,7 @@ module ExternalChannel
     def get_all_by_ids(ids, url, query_hash = {})
       header = {
           'Content-Type': 'application/json',
-          'Authorization': "Bearer #{@@token}"
+          'Authorization': "Bearer #{token.auth_token}"
       }
 
       ids.map do |id|
