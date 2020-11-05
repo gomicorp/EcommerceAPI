@@ -44,9 +44,6 @@ module ExternalChannel
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash = {})
-      query_hash[:pagination_offset] ||= 0
-      query_hash[:pagination_entries_per_page] ||= 100
-
       products_url = "#{base_url}/items/get"
       products_body = set_shopee_body(query_hash)
 
@@ -58,8 +55,6 @@ module ExternalChannel
     end
 
     def call_orders(query_hash = {})
-      query_hash[:pagination_offset] ||= 0
-      query_hash[:pagination_entries_per_page] ||= 100
       query_hash[:order_status] ||= 'ALL'
 
       orders_url = "#{base_url}/orders/get"
@@ -149,11 +144,13 @@ module ExternalChannel
     def call_list(url, body)
       more = true
       body[:pagination_offset] ||= 0
+      body[:pagination_entries_per_page] ||= 100
       while more do
         header = get_shopee_header(url, body)
         response = request_post(url, body, header)
         more = response['more']
-        body[:pagination_offset] += 1
+        ap response['more']
+        body[:pagination_offset] += 100
         if block_given?
           yield response
         else
@@ -179,7 +176,7 @@ module ExternalChannel
 
     def request_post(url, body, header)
       ap "reqeust start #{body.to_json}"
-      response = Faraday.post(url, body, header)
+      response = Faraday.post(url, body.to_json, header)
       ap "request end #{body.to_json}"
       JSON.parse response.body
     end
