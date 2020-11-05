@@ -2,14 +2,17 @@
 #
 # Table name: brands
 #
-#  id         :bigint           not null, primary key
-#  eng_name   :string(255)
-#  name       :string(255)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  company_id :bigint
-#  country_id :bigint
-#  pixel_id   :bigint
+#  id          :bigint           not null, primary key
+#  description :text(65535)
+#  name        :string(255)
+#  slogan      :string(255)
+#  subtitle    :string(255)
+#  theme_color :string(255)
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  company_id  :bigint
+#  country_id  :bigint
+#  pixel_id    :bigint
 #
 # Indexes
 #

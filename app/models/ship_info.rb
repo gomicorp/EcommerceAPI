@@ -12,7 +12,7 @@
 #  receiver_name  :string(255)
 #  receiver_tel   :string(255)
 #  ship_amount    :integer          default(0), not null
-#  ship_type      :integer          default(0), not null
+#  ship_type      :integer          default("normal"), not null
 #  user_memo      :text(65535)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null

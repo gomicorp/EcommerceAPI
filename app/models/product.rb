@@ -12,7 +12,6 @@
 #  brand_id          :bigint
 #  country_id        :bigint
 #  default_option_id :bigint
-#  haravan_id        :string(255)
 #
 # Indexes
 #
