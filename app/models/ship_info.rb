@@ -19,8 +19,15 @@
 #  order_info_id  :integer
 #
 class ShipInfo < ApplicationRecord
-  # TODO: Status List 를 넣어야 합니다.
-  act_as_status_loggable status_list: {}
+  STATUS = [
+    :ship_prepare,
+    :ship_ing,
+    :ship_complete,
+    :return_request,
+    :return_processing,
+    :return_complete
+  ]
+  act_as_status_loggable status_list: STATUS.to_echo
 
   enum ship_type: %i[normal express]
 
