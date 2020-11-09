@@ -9,7 +9,7 @@ module ExternalChannel
 
     def save_all
       list = adapter.get_list(data_type)
-      saver.save_all(list) if validator.valid_all?(data)
+      saver.save_all(list) if validator.valid_all?(list)
     end
 
     protected
@@ -44,15 +44,15 @@ module ExternalChannel
     private
 
     def is_valid_adapter?(channel_adapter)
-      channel_adapter.is_a? BaseAdapter
+      channel_adapter.is_a? ExternalChannel::BaseAdapter
     end
 
     def is_valid_saver?(saver)
-      saver.is_a? BaseSaver
+      saver.is_a? ExternalChannel::BaseSaver
     end
 
     def is_valid_validator?(validator)
-      validator.is_a? BaseValidator
+      validator.is_a? ExternalChannel::BaseValidator
     end
   end
 end

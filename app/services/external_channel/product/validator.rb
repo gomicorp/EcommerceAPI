@@ -10,9 +10,7 @@ module ExternalChannel
       end
 
       def valid_all?(products)
-        products.all? do |product|
-          valid? product
-        end
+        products.all? {|product| valid? product }
       end
 
       def valid?(product)
