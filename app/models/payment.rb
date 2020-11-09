@@ -27,13 +27,14 @@
 #  fk_rails_...  (order_info_id => order_infos.id)
 #
 class Payment < ApplicationRecord
-  STATUS = [
-    :pay_wait,
-    :paid,
-    :refund_request,
-    :refund_complete,
-    :refund_reject
-  ]
+
+  STATUS = %w[
+    pay_wait
+    paid
+    refund_request
+    refund_complete
+    refund_reject
+  ].freeze
   act_as_status_loggable status_list: STATUS.to_echo
 
   extend_has_many_attached :pay_slips
@@ -55,6 +56,10 @@ class Payment < ApplicationRecord
   }
   # scope :pay_slips_attached, -> { left_joins(:pay_slips_attachments).where('active_storage_attachments.id is NOT NULL') }
   # scope :pay_slips_unattached, -> { left_joins(:pay_slips_attachments).where('active_storage_attachments.id is NULL') }
+
+  def self.available_status
+    STATUS
+  end
 
   # Decorate method
   def expire_warning_message

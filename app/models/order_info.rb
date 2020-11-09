@@ -81,4 +81,15 @@ class OrderInfo < NationRecord
   def quantity
     cart.items.sum(:barcode_count)
   end
+
+  def update_status(status=nil)
+    transaction do
+      payment_status = payment.current_status
+      shipping_status = ship_info.current_status
+
+      update(shipping_status: shipping_status, payment_status: payment_status)
+      update(status: status) unless status.nil?
+    end
+
+  end
 end

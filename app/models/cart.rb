@@ -65,11 +65,12 @@ end
 
 
 class Cart < NationRecord
-  STATUS = [
-    :hand,
-    :ordered,
-    :archived
-  ]
+
+  STATUS = %w[
+    hand
+    ordered
+    archived
+  ].freeze
   act_as_status_loggable status_list: STATUS.to_echo
 
   # 신규(desk) 입금대기(pay) 결제완료(paid) 배송준비(ship_ready) 배송중(ship_ing) 취소요청(cancel-request) 반품요청(refund-request) 환불실패 보관함(complete)
@@ -94,6 +95,10 @@ class Cart < NationRecord
 
   scope :active, -> { where(active: true) }
   scope :sold, -> { where(order_status: SOLD_STATUSES) }
+
+  def self.available_status
+    STATUS
+  end
 
   def self.current
     @_current = find_or_create_by(order_status: 0, current: true)
