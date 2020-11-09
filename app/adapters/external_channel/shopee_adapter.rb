@@ -1,10 +1,10 @@
 module ExternalChannel
   class ShopeeAdapter < BaseAdapter
     public
-    attr_reader :base_url
+    attr_accessor :base_url
 
     private
-    attr_reader :key, :default_body, :default_headers
+    attr_accessor :key, :default_body, :default_headers
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # === from 과 to 사이 최대 기간은 15일임. 받으려면 15일 간격으로 잘라서 받아야 함.
