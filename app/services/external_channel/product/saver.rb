@@ -2,27 +2,13 @@ module ExternalChannel
   module Product
     # TODO: 방어 로직 추가
     class Saver < BaseSaver
+      protected
 
-      def save_all(products)
-        products.all? {|product| save(product)}
-      end
-
-      def save(data)
-        retry_num = 0
-        ActiveRecord::Base.transaction do
-          begin
-            retry_num += 1
-            refresh_data
-            @channel = Channel.find_by_name(data[:channel_name])
-            @brand = find_brand(data[:brand_name])
-            save_product(data) && save_options(data[:variants])
-          rescue Exception => e
-            # === TODO: 어떤 에러를 처리해야 하는지, 어떻게 할지를 결정 해야 함.
-            ap e.inspect
-            ActiveRecord::Rollback
-            retry if e.instance_of? IOError && retry_num <= 5
-          end
-        end
+      def save_data(data)
+        refresh_data
+        @channel = Channel.find_by_name(data[:channel_name])
+        @brand = find_brand(data[:brand_name])
+        save_product(data) && save_options(data[:variants])
       end
 
       private

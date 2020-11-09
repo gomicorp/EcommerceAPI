@@ -23,7 +23,7 @@ module ExternalChannel
 
       private
 
-      class ExternalChannelVariantValidator < DataValidator
+      class ExternalChannelVariantValidator < BaseValidator
         def initialize
           @keys = [:id, :price, :name]
         end
