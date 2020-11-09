@@ -2,7 +2,7 @@ module ExternalChannel
   class BaseSaver
     include ParseCountryCode
 
-    def initialize(caller_country_code = nil, retry_limit = 5)
+    def initialize(caller_country_code = nil)
       country_code=(caller_country_code || default_country_code)
     end
 
