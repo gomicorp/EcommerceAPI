@@ -39,15 +39,6 @@ module ExternalChannel
         partner_id: partner_id,
         shopid: shop_id,
       }
-      @faraday_options = {
-        request: {
-          timeout: 5,
-          retry: {
-            max: 3,
-            interval: 1
-          }
-        }
-      }
     end
 
     # protected
@@ -169,9 +160,16 @@ module ExternalChannel
     end
 
     def request_post(endpoint, body, header)
-      response = Faraday.post(endpoint, body.to_json, header)
+      Faraday.new(endpoint) do |conn|
+        conn.request(:retry, max: 5, interval: 1, exceptions: ['Timeout::Error'])
 
-      JSON.parse response.body
+        response = conn.post do |req|
+          req.headers.merge!(header)
+          req.body = body.to_json
+        end
+
+        return JSON.parse(response.body)
+      end
     end
 
     def make_shopee_signature(endpoint, body)
