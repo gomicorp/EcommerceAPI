@@ -45,15 +45,6 @@ module ExternalChannel
       api_password = Rails.application.credentials.dig(:haravan, :api, :password)
 
       @default_headers = { 'authorization': 'Basic ' + ["#{api_key}:#{api_password}"].pack('m0') }
-      @faraday_options = {
-        request: {
-          timeout: 5,
-          retry: {
-            max: 3,
-            interval: 1
-          }
-        }
-      }
     end
 
     public
@@ -72,7 +63,7 @@ module ExternalChannel
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash)
       endpoint = 'https://gomicorp.myharavan.com/admin/products.json'
-      response = Faraday.get(endpoint, faraday_options.merge(query_hash), default_headers)
+      response = request_get(endpoint, query_hash, default_headers)
 
       data = JSON.parse response.body
       data['products']
@@ -80,7 +71,7 @@ module ExternalChannel
 
     def call_orders(query_hash)
       endpoint = 'https://gomicorp.myharavan.com/admin/orders.json'
-      response = Faraday.get(endpoint, faraday_options.merge(query_hash), default_headers)
+      response = request_get(endpoint, query_hash, default_headers)
 
       data = JSON.parse response.body
       data['orders']
@@ -96,15 +87,26 @@ module ExternalChannel
           title: record['title'],
           channel_name: 'Haravan',
           brand_name: record['vendor'],
-          options: refine_product_options(record['variants'])
+          options: refine_product_options(record)
         }
       end
 
       product_property
     end
 
-    def refine_product_options(variants = [])
+    def refine_product_options(record)
+      variants = record['variants'] || []
       option_property = []
+
+      if variants.empty?
+        return [
+            {
+                id: record['id'],
+                price: record['price'].to_i,
+                name: 'default title'
+            }
+        ]
+      end
 
       variants.each do |variant|
         option_property << {
@@ -147,6 +149,14 @@ module ExternalChannel
       end
 
       order_property
+    end
+
+    def request_get(endpoint, params, headers)
+      Faraday.new(endpoint, params) do |conn|
+        conn.request :retry, max: 5, interval: 1
+
+        return conn.get { |req| req.headers.merge!(headers) }
+      end
     end
   end
 end
