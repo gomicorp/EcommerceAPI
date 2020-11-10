@@ -23,8 +23,26 @@ module ExternalChannel
     def check_token_validation; end
 
     # == 리퀘스트를 던지는 caller 메소드입니다.
-    def request_get(endpoint, params, headers); end
-    def request_post(endpoint, body, headers); end
+    def request_get(endpoint, params, headers)
+      Faraday.new(endpoint, params) do |conn|
+        conn.request(:retry, max: 5, interval: 1, exceptions: ['Timeout::Error'])
+
+        return conn.get { |req| req.headers.merge!(headers) }
+      end
+    end
+
+    def request_post(endpoint, body, headers)
+      Faraday.new(endpoint) do |conn|
+        conn.request(:retry, max: 5, interval: 1, exceptions: ['Timeout::Error'])
+
+        response = conn.post do |req|
+          req.headers.merge!(headers)
+          req.body = body.to_json
+        end
+
+        return JSON.parse(response.body)
+      end
+    end
 
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query = {}); end
