@@ -22,6 +22,7 @@ module ExternalChannel
     # == 토큰이 필요하며, 유효성을 검사해야하는 어댑터가 사용합니다.
     def check_token_validation; end
 
+    # == 리퀘스트를 던지는 caller 메소드입니다.
     def request_get(endpoint, params, headers); end
     def request_post(endpoint, body, headers); end
 
