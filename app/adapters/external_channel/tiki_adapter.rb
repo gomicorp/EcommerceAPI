@@ -1,6 +1,6 @@
 module ExternalChannel
   class TikiAdapter < BaseAdapter
-    attr_reader :default_headers, :faraday_options
+    attr_accessor :default_headers
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # https://open.tiki.vn/#manage-product
@@ -36,15 +36,9 @@ module ExternalChannel
     }
 
     def initialize
-      @default_headers = { 'tiki-api': Rails.application.credentials.dig(:tiki, :connection_parameters) }
-      @faraday_options = {
-          request: {
-              timeout: 5,
-              retry: {
-                  max: 3,
-                  interval: 1
-              }
-          }
+      @default_headers = {
+        'tiki-api': Rails.application.credentials.dig(:tiki, :connection_parameters),
+        'User-Agent': 'Faraday v1.0.1'
       }
     end
 
@@ -64,7 +58,8 @@ module ExternalChannel
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash)
       endpoint = 'https://api.tiki.vn/integration/v1/products'
-      response = Faraday.get(endpoint, faraday_options.merge(query_hash), default_headers)
+
+      response = request_get(endpoint, query_hash, default_headers)
 
       data = JSON.parse response.body
       data['data']
@@ -72,17 +67,25 @@ module ExternalChannel
 
     def call_product(product_id)
       endpoint = "https://api.tiki.vn/integration/v1/products/#{product_id}"
-      response = Faraday.get(endpoint, faraday_options, default_headers)
+      response = request_get(endpoint, {}, default_headers)
 
       JSON.parse response.body
     end
 
     def call_orders(query_hash)
       endpoint = 'https://api.tiki.vn/integration/v2/orders'
-      response = Faraday.get(endpoint, faraday_options.merge(query_hash), default_headers)
+      response = request_get(endpoint, query_hash, default_headers)
 
       data = JSON.parse response.body
       data['data']
+    end
+
+    def request_get(endpoint, params, headers)
+      Faraday.new(endpoint, params) do |conn|
+        conn.request :retry, max: 5, interval: 1
+
+        return conn.get { |req| req.headers.merge!(headers) }
+      end
     end
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
