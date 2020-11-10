@@ -19,8 +19,12 @@ module ExternalChannel
 
     protected
 
-    # == 토큰이 필요하며, 유효성을 검사해야하는 어댑터
+    # == 토큰이 필요하며, 유효성을 검사해야하는 어댑터가 사용합니다.
     def check_token_validation; end
+
+    # == 리퀘스트를 던지는 caller 메소드입니다.
+    def request_get(endpoint, params, headers); end
+    def request_post(endpoint, body, headers); end
 
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query = {}); end
