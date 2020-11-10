@@ -52,7 +52,7 @@ module ExternalChannel
       refine_orders(call_orders(query_hash))
     end
 
-    # protected
+    protected
     def login; end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
