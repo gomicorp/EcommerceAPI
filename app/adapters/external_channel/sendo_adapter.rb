@@ -142,7 +142,8 @@ module ExternalChannel
 
       ids.map do |id|
         query_hash[:id] = id
-        record = request_get(url, query_hash, header)
+        response = request_get(url, query_hash, header)
+        record = JSON.parse response.body
         if block_given?
           yield record
         else
