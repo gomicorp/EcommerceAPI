@@ -150,13 +150,5 @@ module ExternalChannel
 
       order_property
     end
-
-    def request_get(endpoint, params, headers)
-      Faraday.new(endpoint, params) do |conn|
-        conn.request :retry, max: 5, interval: 1
-
-        return conn.get { |req| req.headers.merge!(headers) }
-      end
-    end
   end
 end

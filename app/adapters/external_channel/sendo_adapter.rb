@@ -167,26 +167,7 @@ module ExternalChannel
       data.flatten
     end
 
-    def request_get(endpoint, params, headers)
-      Faraday.new(endpoint, params) do |conn|
-        conn.request :retry, max: 5, interval: 1
 
-        return conn.get { |req| req.headers.merge!(headers) }
-      end
-    end
-
-    def request_post(endpoint, body, header)
-      Faraday.new(endpoint) do |conn|
-        conn.request(:retry, max: 5, interval: 1, exceptions: ['Timeout::Error'])
-
-        response = conn.post do |req|
-          req.headers.merge!(header)
-          req.body = body.to_json
-        end
-
-        return JSON.parse(response.body)
-      end
-    end
 
     ### === 데이터를 정제하는 로직입니다.
 
