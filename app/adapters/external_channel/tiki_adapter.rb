@@ -80,14 +80,6 @@ module ExternalChannel
       data['data']
     end
 
-    def request_get(endpoint, params, headers)
-      Faraday.new(endpoint, params) do |conn|
-        conn.request :retry, max: 5, interval: 1
-
-        return conn.get { |req| req.headers.merge!(headers) }
-      end
-    end
-
     # == call_XXX 로 가져온 레코드를 정제합니다.
     def refine_products(records)
       product_property = []

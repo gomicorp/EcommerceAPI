@@ -159,19 +159,6 @@ module ExternalChannel
       response_data
     end
 
-    def request_post(endpoint, body, header)
-      Faraday.new(endpoint) do |conn|
-        conn.request(:retry, max: 5, interval: 1, exceptions: ['Timeout::Error'])
-
-        response = conn.post do |req|
-          req.headers.merge!(header)
-          req.body = body.to_json
-        end
-
-        return JSON.parse(response.body)
-      end
-    end
-
     def make_shopee_signature(endpoint, body)
       signature_base = endpoint + '|' + body.to_json
       OpenSSL::HMAC.hexdigest('sha256', key, signature_base)
