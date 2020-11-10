@@ -10,9 +10,7 @@ module ExternalChannel
       end
 
       def valid_all?(products)
-        products.all? do |product|
-          valid? product
-        end
+        products.all? {|product| valid? product }
       end
 
       def valid?(product)
@@ -23,7 +21,7 @@ module ExternalChannel
 
       private
 
-      class ExternalChannelVariantValidator < DataValidator
+      class ExternalChannelVariantValidator < BaseValidator
         def initialize
           @keys = [:id, :price, :name]
         end

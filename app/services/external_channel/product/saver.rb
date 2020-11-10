@@ -2,13 +2,9 @@ module ExternalChannel
   module Product
     # TODO: 방어 로직 추가
     class Saver < BaseSaver
-      attr_accessor :brand, :channel, :product
+      protected
 
-      def save_all(products)
-        products.all? {|product| save(product)}
-      end
-
-      def save(data)
+      def save_data(data)
         refresh_data
         @channel = Channel.find_by_name(data[:channel_name])
         @brand = find_brand(data[:brand_name])
@@ -17,11 +13,17 @@ module ExternalChannel
 
       private
 
+      attr_reader :brand, :channel, :product
+
+      def refresh_data
+        @channel = @product = nil
+      end
+
       def save_product(product_data)
         this_product_connection = ExternalChannelProductId.find_or_initialize_by(channel_id: channel.id, external_id: product_data[:id])
         product_id = this_product_connection.product ? this_product_connection.product_id : nil
         @product = ::Product.find_or_initialize_by(id: product_id)
-        product.assign_attributes(parse_product(product_data))
+        product.assign_attributes(parse_product(product_data, product.attributes))
         result = product.save!
 
         if product_id.nil? && result
@@ -47,27 +49,11 @@ module ExternalChannel
         end
       end
 
-      def refresh_data
-        @channel = @product = nil
-      end
-
-
-      def make_valid_title(title)
-        if product.title.nil? == false
-          parsed_product = JSON.parse(product.title)
-          parsed_product[country_code] = title
-          parsed_product
-        else
-          # TODO: 나중에는 국가별로 키값을 가지고 돌면서 title을 주입할 수 있도록 처리해야 함.
-          {'vn': title, 'en': "(not translated)#{title}", 'ko': "(미번역)#{title}"}
-        end
-      end
-
       # TODO: 채널 어소시에이션을 걸어야 함.
-      def parse_product(product)
+      def parse_product(product, default_product={})
         {
           brand_id: brand.id,
-          running_status: 'pending',
+          running_status: default_product["running_status"] || 'pending',
           title: make_valid_title(product[:title]),
           country: Country.at(country_code)
         }
@@ -83,6 +69,16 @@ module ExternalChannel
         }
       end
 
+      def make_valid_title(title)
+        if product.title.nil? == false
+          parsed_product = JSON.parse(product.title)
+          parsed_product[country_code] = title
+          parsed_product
+        else
+          # TODO: 나중에는 국가별로 키값을 가지고 돌면서 title을 주입할 수 있도록 처리해야 함.
+          {'vn': title, 'en': "(not translated)#{title}", 'ko': "(미번역)#{title}"}
+        end
+      end
     end
   end
 end
