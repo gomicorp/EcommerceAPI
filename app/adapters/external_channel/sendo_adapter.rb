@@ -29,7 +29,7 @@ module ExternalChannel
     end
 
     def check_token_validation
-      if @token.auth_token_expired?
+      if !token.auth_token || @token.auth_token_expired?
         login
       end
     end
@@ -58,8 +58,7 @@ module ExternalChannel
       login_url = URI("#{base_url}/login")
       login_body = {shop_key: api_key, secret_key: api_password}
 
-      response = Faraday.post(login_url, login_body.to_json, default_headers)
-      data = JSON.parse response.body
+      data = request_post(login_url, login_body, default_headers)
 
       token.update(auth_token: data['result']['token'],
                    auth_token_expire_time: data['result']['expires'].to_datetime)
@@ -143,7 +142,8 @@ module ExternalChannel
 
       ids.map do |id|
         query_hash[:id] = id
-        record = JSON.parse(Faraday.get(url, query_hash, header).body)
+        response = request_get(url, query_hash, header)
+        record = JSON.parse response.body
         if block_given?
           yield record
         else
@@ -157,8 +157,7 @@ module ExternalChannel
       body[:token] = ""
       data = []
       while body[:token].nil? == false
-        response = Faraday.post(url, body.to_json, header)
-        each_data = JSON.parse response.body
+        each_data = request_post(url, body, header)
         body[:token] = each_data["result"]["next_token"]
         data << if block_given?
                   yield each_data
@@ -168,6 +167,7 @@ module ExternalChannel
       end
       data.flatten
     end
+
 
 
     ### === 데이터를 정제하는 로직입니다.
