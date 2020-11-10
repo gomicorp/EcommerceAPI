@@ -141,29 +141,29 @@ module ExternalChannel
     def login; end
 
     def call_products(query_hash)
-      client = LazopApiClient::Client.new('https://api.lazada.vn/rest', app_key, app_secret)
-      request = LazopApiClient::Request.new('/products/get','GET')
-
-      response = client.execute(request, token.access_token)
+      response = request_get('/products/get')
       response.body['data']['products']
     end
 
     def call_orders(query_hash)
-      client = LazopApiClient::Client.new('https://api.lazada.vn/rest', app_key, app_secret)
-      request = LazopApiClient::Request.new('/orders/get','GET')
-      request.add_api_parameter('created_after', '2018-02-10T16:00:00+08:00')
+      query_hash.merge!({ created_after: '2018-02-10T16:00:00+08:00' }) if query_hash.empty?
 
-      response = client.execute(request, token.access_token)
+      response = request_get('/orders/get', query_hash)
       response.body['data']['orders']
     end
 
     def call_order_items(order_id)
-      client = LazopApiClient::Client.new('https://api.lazada.vn/rest', app_key, app_secret)
-      request = LazopApiClient::Request.new('/order/items/get','GET')
-      request.add_api_parameter("order_id", order_id)
-
-      response = client.execute(request, token.access_token)
+      response = request_get('/order/items/get', { order_id: order_id })
       response.body['data']
+    end
+
+    def request_get(endpoint, params = {})
+      client = LazopApiClient::Client.new('https://api.lazada.vn/rest', app_key, app_secret)
+      request = LazopApiClient::Request.new(endpoint,'GET')
+
+      params.each { |k, v| request.add_api_parameter(k.to_s, v.to_s) } if params.any?
+
+      client.execute(request, token.access_token)
     end
 
     def refine_products(records)
