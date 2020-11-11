@@ -1,6 +1,6 @@
 module ExternalChannel
   class TikiAdapter < BaseAdapter
-    attr_reader :connection_parameters
+    attr_accessor :default_headers
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # https://open.tiki.vn/#manage-product
@@ -36,7 +36,10 @@ module ExternalChannel
     }
 
     def initialize
-      @connection_parameters = Rails.application.credentials.dig(:tiki, :connection_parameters)
+      @default_headers = {
+        'tiki-api': Rails.application.credentials.dig(:tiki, :connection_parameters),
+        'User-Agent': 'Faraday v1.0.1'
+      }
     end
 
     public
@@ -54,27 +57,26 @@ module ExternalChannel
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash)
-      base_url = 'https://api.tiki.vn/integration/v1/products'
-      response = Faraday.get(base_url, query_hash, { 'tiki-api': connection_parameters })
+      endpoint = 'https://api.tiki.vn/integration/v1/products'
+
+      response = request_get(endpoint, query_hash, default_headers)
 
       data = JSON.parse response.body
-
       data['data']
     end
 
     def call_product(product_id)
-      base_url = "https://api.tiki.vn/integration/v1/products/#{product_id}"
-      response = Faraday.get(base_url, {}, { 'tiki-api': connection_parameters })
+      endpoint = "https://api.tiki.vn/integration/v1/products/#{product_id}"
+      response = request_get(endpoint, {}, default_headers)
 
       JSON.parse response.body
     end
 
     def call_orders(query_hash)
-      base_url = 'https://api.tiki.vn/integration/v2/orders'
-      response = Faraday.get(base_url, query_hash, { 'tiki-api': connection_parameters })
+      endpoint = 'https://api.tiki.vn/integration/v2/orders'
+      response = request_get(endpoint, query_hash, default_headers)
 
       data = JSON.parse response.body
-
       data['data']
     end
 

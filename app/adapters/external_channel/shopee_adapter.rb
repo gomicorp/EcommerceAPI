@@ -1,76 +1,79 @@
 module ExternalChannel
   class ShopeeAdapter < BaseAdapter
-    attr_reader :base_url
+    public
+    attr_accessor :base_url
+
+    private
+    attr_accessor :key, :default_body, :default_headers
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # === from 과 to 사이 최대 기간은 15일임. 받으려면 15일 간격으로 잘라서 받아야 함.
-    #{
-    #  update_time_from
-    #  update_time_to
-    #  pagination_offset : default 0
-    #  pagination_entries_per_page : default 10, max 100
-    #}
-
+    {
+      # = update_time_from
+      # = update_time_to
+      # = pagination_offset : default 0
+      # = pagination_entries_per_page : default 10, max 100
+    }
 
     # === 사용 가능한 Order query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
-    #{
-    #  order_status: ALL/UNPAID/READY_TO_SHIP/COMPLETED/IN_CANCEL/CANCELLED/TO_RETURN, default: ALL
-    #  create_time_from
-    #  create_time_to
-    #  pagination_entries_per_page: default 0
-    #  pagination_offset: default 100, max 100
-    #}
-
-    def initialize
-      @base_url = 'https://partner.shopeemobile.com/api/v1'
-      @shop_id = Rails.application.credentials.dig(:shopee, :api, :shopid)
-      @partner_id = Rails.application.credentials.dig(:shopee, :api, :partner_id)
-      @key = Rails.application.credentials.dig(:shopee, :api, :key)
-    end
+    {
+      # = order_status: ALL/UNPAID/READY_TO_SHIP/COMPLETED/IN_CANCEL/CANCELLED/TO_RETURN, default: ALL
+      # = create_time_from
+      # = create_time_to
+      # = pagination_entries_per_page: default 0
+      # = pagination_offset: default 100, max 100
+    }
 
     public
+    def initialize
+      @base_url = 'https://partner.shopeemobile.com/api/v1'
+      @key = Rails.application.credentials.dig(:shopee, :api, :key)
+
+      shop_id = Rails.application.credentials.dig(:shopee, :api, :shopid)
+      partner_id = Rails.application.credentials.dig(:shopee, :api, :partner_id)
+
+      @default_headers = {
+        'Content-Type': 'application/json'
+      }
+      @default_body = {
+        partner_id: partner_id,
+        shopid: shop_id,
+      }
+    end
+
+    # protected
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
-      ap refine_products(call_products(query_hash))
+      refine_products(call_products(query_hash))
     end
 
     def orders(query_hash = {})
       refine_orders(call_orders(query_hash))
     end
 
-    protected
-
     def login; end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash = {})
-      query_hash[:pagination_offset] ||= 0
-      query_hash[:pagination_entries_per_page] ||= 100
+      endpoint = "#{base_url}/items/get"
+      default_body['timestamp'] = Time.now.to_i
 
-      products_url = "#{base_url}/items/get"
-      products_body = set_shopee_body(query_hash)
-
-      product_ids = []
-      call_list(products_url, products_body) do |response|
-        product_ids << response['items'].pluck('item_id')
-      end
-      call_product_by_ids(product_ids.flatten)
+      call_list(endpoint, default_body.merge(query_hash))
+        .map{ |data| call_product_by_ids(data['items'].pluck('item_id')) }
+        .flatten.pluck('item_id')
     end
 
     def call_orders(query_hash = {})
-      query_hash[:pagination_offset] ||= 0
-      query_hash[:pagination_entries_per_page] ||= 100
       query_hash[:order_status] ||= 'ALL'
 
-      orders_url = "#{base_url}/orders/get"
-      orders_body = set_shopee_body(query_hash)
+      endpoint = "#{base_url}/orders/get"
+      default_body['timestamp'] = Time.now.to_i
 
-      orders_sn = []
-      call_list(orders_url, orders_body) do |response|
-        orders_sn<< response['orders'].pluck('ordersn')
-      end
-      call_order_by_sn(orders_sn.flatten)
+      call_list(endpoint, default_body.merge(query_hash))
+        .map{ |data| call_product_by_ids(data['orders'].pluck('ordersn')) }
+        .flatten
     end
+
     # == call_XXX 로 가져온 레코드를 정제합니다.
     def refine_products(products)
       products.map do |product|
@@ -105,87 +108,59 @@ module ExternalChannel
 
     private
 
-    attr_reader :partner_id, :key, :shop_id
-
-    ### === Shoppe에서 데이터를 가져오는 부분
-
+    # === shopee 에서 데이터를 가져오는 부분
     def call_product_by_ids(ids)
-      url = "#{base_url}/item/get"
-      call_each_by_ids(ids, url, 'item') do |id|
+      endpoint = "#{base_url}/item/get"
+      call_each_by_ids(ids, endpoint, 'item') do |id|
         {item_id: id}
       end
     end
 
     def call_order_by_sn(sn)
-      orders = []
-      url = "#{base_url}/orders/detail"
-      # === shopee 에서 받을 수 있는 order의 개수를 50개로 제한함.
-      sn.each_slice(50).map do |each_sn|
-        body = set_shopee_body({ordersn_list: each_sn})
-        header = get_shopee_header(url, body)
-        response = request_post(url, body, header)
-        orders << response['orders']
+      endpoint = "#{base_url}/orders/detail"
+      # === shopee 에서 받을 수 있는 order 의 개수를 50개로 제한함.
+      call_each_by_ids(sn.each_slice(50), endpoint, 'orders') do |order_sns|
+        { ordersn_list: order_sns }
       end
-      orders.flatten
     end
 
-    # body를 의미하는 block을 받아, 모든 id에 대해 post요청을 보내고 타겟에 대한 묶음을 전달하는 함수.
-    def call_each_by_ids(ids, url, target)
+    # = body 를 의미하는 block 을 받아, 모든 id에 대해 post 요청을 보내고 타겟에 대한 묶음을 전달하는 함수.
+    def call_each_by_ids(ids, endpoint, target)
       ids.map do |id|
-        body = {}
+        default_body['timestamp'] = Time.now.to_i
+
         if block_given?
-          body = yield id
+          default_headers['Authorization'] = make_shopee_signature(endpoint, default_body.merge(yield id))
+          response = request_post(endpoint, default_body.merge(yield id), default_headers)
+
+          response[target]
         end
-        body = set_shopee_body(body)
-        header = get_shopee_header(url, body)
-        response = request_post(url, body, header)
-        response[target]
       end
     end
 
     # === 쇼피의 데이터 중 more 이라는 데이터가 있는 것들은 pagination을 따로 하지 않고, more로만 붙여 준다.
     # === order와 product의 list요청에는 모두 more이라는 데이터가 확인되어, 앞으로 user등의 데이터가 추가되어도 사용될 것이라 기대하고 설정함.
     # === 암것도 모드고 while 문 내에서 more이 false가 될 때까지 부름.
-    def call_list(url, body)
+    def call_list(endpoint, body)
       more = true
       body[:pagination_offset] ||= 0
+      body[:pagination_entries_per_page] ||= 100
+
+      response_data = []
       while more do
-        header = get_shopee_header(url, body)
-        response = request_post(url, body, header)
+        default_headers['Authorization'] = make_shopee_signature(endpoint, body)
+        response = request_post(endpoint, body, default_headers)
         more = response['more']
-        body[:pagination_offset] += 1
-        if block_given?
-          yield response
-        else
-          throw NotImplementedError('call all need block to run')
-        end
+        body[:pagination_offset] += body[:pagination_entries_per_page]
+
+        response_data << response
       end
+
+      response_data
     end
 
-    def get_shopee_header(url, body)
-      {
-          'Authorization': make_shopee_signature(url, body),
-          'Content-Type': 'application/json'
-      }
-    end
-
-    def set_shopee_body(hash)
-      hash.merge!({
-        partner_id: partner_id,
-        shopid: shop_id,
-        timestamp: Time.now.to_i
-      })
-    end
-
-    def request_post(url, body, header)
-      ap "reqeust start #{body.to_json}"
-      response = Faraday.post(url, body, header)
-      ap "request end #{body.to_json}"
-      JSON.parse response.body
-    end
-
-    def make_shopee_signature(url, body)
-      signature_base = url + '|' + body.to_json
+    def make_shopee_signature(endpoint, body)
+      signature_base = endpoint + '|' + body.to_json
       OpenSSL::HMAC.hexdigest('sha256', key, signature_base)
     end
 
@@ -204,7 +179,7 @@ module ExternalChannel
     def refine_variants(product)
       variants = product['variations']
 
-      # === variants가 없으면 product를 참조 해야 한다.
+      # === variants 가 없으면 product 를 참조 해야 한다.
       return [{
                   id: product['item_id'],
                   price: product['price'],

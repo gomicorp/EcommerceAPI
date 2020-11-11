@@ -1,6 +1,6 @@
 module ExternalChannel
   class HaravanAdapter < BaseAdapter
-    attr_reader :api_key, :api_password
+    attr_reader :default_headers, :faraday_options
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # https://docs.haravan.com/blogs/api-reference/1000018172-product
@@ -41,8 +41,10 @@ module ExternalChannel
     }
 
     def initialize
-      @api_key = Rails.application.credentials.dig(:haravan, :api, :key)
-      @api_password = Rails.application.credentials.dig(:haravan, :api, :password)
+      api_key = Rails.application.credentials.dig(:haravan, :api, :key)
+      api_password = Rails.application.credentials.dig(:haravan, :api, :password)
+
+      @default_headers = { 'authorization': 'Basic ' + ["#{api_key}:#{api_password}"].pack('m0') }
     end
 
     public
@@ -60,22 +62,18 @@ module ExternalChannel
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash)
-      base_url = 'https://gomicorp.myharavan.com/admin/products.json'
-      headers = { 'authorization': 'Basic ' + ["#{api_key}:#{api_password}"].pack('m0') }
-      response = Faraday.get(base_url, query_hash, headers)
+      endpoint = 'https://gomicorp.myharavan.com/admin/products.json'
+      response = request_get(endpoint, query_hash, default_headers)
 
       data = JSON.parse response.body
-
       data['products']
     end
 
     def call_orders(query_hash)
-      base_url = 'https://gomicorp.myharavan.com/admin/orders.json'
-      headers = { 'authorization': 'Basic ' + ["#{api_key}:#{api_password}"].pack('m0') }
-      response = Faraday.get(base_url, query_hash, headers)
+      endpoint = 'https://gomicorp.myharavan.com/admin/orders.json'
+      response = request_get(endpoint, query_hash, default_headers)
 
       data = JSON.parse response.body
-
       data['orders']
     end
 
@@ -89,15 +87,26 @@ module ExternalChannel
           title: record['title'],
           channel_name: 'Haravan',
           brand_name: record['vendor'],
-          options: refine_product_options(record['variants'])
+          options: refine_product_options(record)
         }
       end
 
       product_property
     end
 
-    def refine_product_options(variants = [])
+    def refine_product_options(record)
+      variants = record['variants'] || []
       option_property = []
+
+      if variants.empty?
+        return [
+            {
+                id: record['id'],
+                price: record['price'].to_i,
+                name: 'default title'
+            }
+        ]
+      end
 
       variants.each do |variant|
         option_property << {
