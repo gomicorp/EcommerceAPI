@@ -87,7 +87,7 @@ module ExternalChannel
           title: record['title'],
           channel_name: 'Haravan',
           brand_name: record['vendor'],
-          options: refine_product_options(record)
+          variants: refine_product_options(record)
         }
       end
 

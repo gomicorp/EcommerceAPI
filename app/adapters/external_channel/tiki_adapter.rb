@@ -90,7 +90,7 @@ module ExternalChannel
           title: record['name'],
           channel_name: 'Tiki',
           brand_name: call_product(record['product_id'])['attributes']['brand']['value'],
-          options: [
+          variants: [
             {
               id: record['product_id'],
               price: record['price'].to_i,

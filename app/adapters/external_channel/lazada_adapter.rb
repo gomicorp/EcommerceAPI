@@ -50,6 +50,8 @@ module ExternalChannel
     end
 
     private
+
+    # === TODO:/Users/gomidev/Documents/chromedriver 이 경로로 chrome driver를 깔아줘야 함.
     def get_code
       Selenium::WebDriver::Chrome::Service.driver_path = '/Users/gomidev/Documents/chromedriver'
       options = Selenium::WebDriver::Chrome::Options.new # = 크롬 헤드리스 모드 위해 옵션 설정
@@ -114,8 +116,8 @@ module ExternalChannel
     end
 
     def check_token_validation
-      if token.access_token_expired?
-        if token.refresh_token_expired?
+      if !token.auth_token || token.access_token_expired?
+        if !token.refresh_token || token.refresh_token_expired?
           get_code
         else
           refreshing_token
@@ -175,7 +177,7 @@ module ExternalChannel
             title: record['attributes']['name'],
             channel_name: 'Lazada',
             brand_name: ['attributes']['brand'],
-            options: refine_product_options(record['skus'])
+            variants: refine_product_options(record['skus'])
         }
       end
 

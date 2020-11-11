@@ -8,9 +8,10 @@ module ExternalChannel
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # === from 과 to 사이 최대 기간은 15일임. 받으려면 15일 간격으로 잘라서 받아야 함.
+    # === TODO: 쇼피는 요청시 15일 간격으로 보내야함.
     {
-      # = update_time_from
-      # = update_time_to
+      # = update_time_from: 1472774528 (time stamp) => Time.new(yyyy, m, d).to_i
+      # = update_time_to: 1472774528 (time stamp) => Time.new(yyyy, m, d).to_i
       # = pagination_offset : default 0
       # = pagination_entries_per_page : default 10, max 100
     }
@@ -18,8 +19,8 @@ module ExternalChannel
     # === 사용 가능한 Order query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     {
       # = order_status: ALL/UNPAID/READY_TO_SHIP/COMPLETED/IN_CANCEL/CANCELLED/TO_RETURN, default: ALL
-      # = create_time_from
-      # = create_time_to
+      # = create_time_from: 1472774528 (time stamp) => Time.new(yyyy, m, d).to_i
+      # = create_time_to: 1472774528 (time stamp) => Time.new(yyyy, m, d).to_i
       # = pagination_entries_per_page: default 0
       # = pagination_offset: default 100, max 100
     }
@@ -60,7 +61,7 @@ module ExternalChannel
 
       call_list(endpoint, default_body.merge(query_hash))
         .map{ |data| call_product_by_ids(data['items'].pluck('item_id')) }
-        .flatten.pluck('item_id')
+        .flatten
     end
 
     def call_orders(query_hash = {})
@@ -70,7 +71,7 @@ module ExternalChannel
       default_body['timestamp'] = Time.now.to_i
 
       call_list(endpoint, default_body.merge(query_hash))
-        .map{ |data| call_product_by_ids(data['orders'].pluck('ordersn')) }
+        .map{ |data| call_order_by_sn(data['orders'].pluck('ordersn')) }
         .flatten
     end
 
@@ -90,7 +91,7 @@ module ExternalChannel
     def refine_orders(orders)
       orders.map do |order|
         {
-            id: order['ordersn'],
+            id: "#{order['ordersn']}",
             order_number: order['ordersn'],
             order_status: order['order_status'],
             pay_method: order['payment_method'],
@@ -99,8 +100,8 @@ module ExternalChannel
             paid_at: paid_time(order['pay_time']),
             billing_amount: order['escrow_amount'],
             ship_fee: order['actual_shipping_cost'],
-            variants_ids: variants(order['items']),
-            canceled_status: cancel_status(order['order_status']),
+            variant_ids: variants(order['items']),
+            cancelled_status: cancel_status(order['order_status']),
             shipping_status: shipping_status(order['order_status'])
         }
       end
@@ -124,6 +125,7 @@ module ExternalChannel
       end
     end
 
+    # = TODO: 레포의 #103 이슈에 내용 담김
     # = body 를 의미하는 block 을 받아, 모든 id에 대해 post 요청을 보내고 타겟에 대한 묶음을 전달하는 함수.
     def call_each_by_ids(ids, endpoint, target)
       ids.map do |id|
@@ -171,8 +173,8 @@ module ExternalChannel
     # === TODO: No Brand인 경우 베트남 측에서 관리하지 않은 브랜드로 보인다. 이것을 어떻게 처리할지 논의가 필요하다.
     # === 우려되는 사항은 다음과 같다.
     # === 1. 가격등 브랜드와 관련 없는 정보가 바뀔 경우 브랜드를 다시 No Brand로 설정 할 수 있다.
-    def refine_brand_name(attr)
-      brand_attr = attr.find{|attr| attr['attribute_name'] == "Thương hiệu"}
+    def refine_brand_name(attrs)
+      brand_attr = attrs.find{|attr| attr['attribute_name'].downcase == "Thương hiệu".downcase}
       brand_attr['attribute_value']
     end
 
@@ -181,7 +183,7 @@ module ExternalChannel
 
       # === variants 가 없으면 product 를 참조 해야 한다.
       return [{
-                  id: product['item_id'],
+                  id: "#{product['item_id']}",
                   price: product['price'],
                   name: 'default'
               }] if variants.empty?
@@ -207,7 +209,9 @@ module ExternalChannel
 
     def variants(variants)
       variants.map do |variant|
-        [variant['variation_id'] || variant['item_id'], variant['variation_quantity_purchased']]
+        variant_id = variant['variation_id']
+        variant_id = variant['item_id'] if variant_id == 0
+        [variant_id, variant['variation_quantity_purchased']]
       end
     end
   end

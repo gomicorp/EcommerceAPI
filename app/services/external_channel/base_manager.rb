@@ -7,8 +7,8 @@ module ExternalChannel
       @adapter = channel_adapter
     end
 
-    def save_all
-      list = adapter.get_list(data_type)
+    def save_all(query_hash = {})
+      list = adapter.get_list(data_type, query_hash)
       saver.save_all(list) if validator.valid_all?(list)
     end
 
