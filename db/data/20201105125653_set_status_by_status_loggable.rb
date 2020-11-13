@@ -77,28 +77,28 @@ class SetStatusByStatusLoggable < ActiveRecord::Migration[6.0]
       Cart: 'ordered',
       ShipInfo: nil,
       Payment: nil,
-      OrderInfo: 'refund-request'
+      OrderInfo: 'refund_request'
     },
     # 없음
     'refund-receive': {
       Cart: 'ordered',
       ShipInfo: nil,
       Payment: nil,
-      OrderInfo: 'refund-receive'
+      OrderInfo: 'refund_receive'
     },
     # 없음
     'refund-reject': {
       Cart: 'ordered',
       ShipInfo: nil,
       Payment: nil,
-      OrderInfo: 'refund-reject'
+      OrderInfo: 'refund_reject'
     },
     # 없음
     'refund-complete': {
       Cart: 'archived',
       ShipInfo: nil,
       Payment: nil,
-      OrderInfo: 'refund-complete'
+      OrderInfo: 'refund_complete'
     }
   }.freeze
 
@@ -155,30 +155,32 @@ def setup_order_component_statuses
 end
 
 def update_order_comps_status_with_payment_clue(order_comps_stat, order)
+  country = order.country
   # component 별개로 업데이트
   %i[Cart ShipInfo].each do |comp_class|
-    status = order_comps_stat[comp_class]
-    component = order.send(comp_class.to_s.underscore.to_sym)
-    component.update_status(status) unless status.nil?
-    ap "======== #{component.class.name} | id : #{component.id} | status : #{status} ========"
+    update_comp_status(order.send(comp_class.to_s.underscore.to_sym), order_comps_stat[comp_class], country)
   end
 
   payment = order.payment
   clue = payment.paid? ? :paid : :not_paid
-  status = order_comps_stat.dig(:Payment, clue)
-  order.payment.update_status(status)
-  ap "======== Payment | id : #{payment.id} | status : #{status} ========"
-
-  order.update_status order_comps_stat[:OrderInfo]
-  ap "======== OrderInfo | id : #{order.id} | status : #{order_comps_stat[:OrderInfo]} ========"
+  update_comp_status(payment, order_comps_stat.dig(:Payment, clue), country)
+  update_comp_status(order, order_comps_stat[:OrderInfo], country)
 end
 
 def update_order_comps_by_stat_map(order_comps_stat, order)
+  country = order.country
   # 해당 상태의 component들의 status를 체크합니다.
-  order_comps_stat.each do |model_name, status|
+  order_comps_stat.each do |comp_class, status|
+    component = comp_class == :OrderInfo ? order : order.send(comp_class.to_s.underscore.to_sym)
     # 해당 상태의 order와 연결된 component의 status를 업데이트 합니다.
-    component = model_name == :OrderInfo ? order : order.send(model_name.to_s.underscore.to_sym)
-    component.update_status(status) unless status.nil?
-    ap "======== #{component.class.name} | id : #{component.id} | status : #{status} ========"
+    update_comp_status(component, status, country)
   end
+end
+
+def update_comp_status(component, status, country)
+  ap "======== #{component.class.name} | id : #{component.id} | status : #{status} ========"
+  return component.update_status(status) if component.instance_of? OrderInfo
+
+  status_code = component.class::StatusCode
+  component.status_logs.create(status_code: status_code.where(name: status, country: country).first) unless status.nil?
 end
