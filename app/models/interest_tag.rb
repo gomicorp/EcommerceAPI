@@ -7,5 +7,5 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-class InterestTag < ApplicationRecord
+class InterestTag < NationRecord
 end
