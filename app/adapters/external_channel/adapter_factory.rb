@@ -1,16 +1,16 @@
 module ExternalChannel
   class AdapterFactory
-    def initialize(channel_name)
-      case channel_name
-      when 'Haravan'
+    def self.get_adapter(channel_name)
+      case channel_name.downcase
+      when 'haravan'
         ExternalChannel::HaravanAdapter.new
-      when 'Tiki'
+      when 'tiki'
         ExternalChannel::TikiAdapter.new
-      when 'Sendo'
+      when 'sendo'
         ExternalChannel::SendoAdapter.new
-      when 'Lazada'
+      when 'lazada'
         ExternalChannel::LazadaAdapter.new
-      when 'Shopee'
+      when 'shopee'
         ExternalChannel::ShopeeAdapter.new
       else
         raise NotImplementedError('Requested Data Is Not Supported!')

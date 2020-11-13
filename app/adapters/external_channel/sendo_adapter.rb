@@ -2,7 +2,7 @@ module ExternalChannel
   class SendoAdapter < BaseAdapter
     # Product 요청 파라미터
     # {
-    #   date_form: yyyy/mm/dd string,
+    #   date_from: yyyy/mm/dd string,
     #   date_to: yyyy/mm/dd string,
     #   product_name: string,
     # }
@@ -121,11 +121,15 @@ module ExternalChannel
           id: sales_data["order_number"],
           order_number: sales_data["order_number"],
           billing_amount: sales_data["total_amount_buyer"],
-          variants_ids: sales_details.map {|option| [option["product_variant_id"], option["quantity"]]},
+          variant_ids: sales_details.map {|option| [option["product_variant_id"], option["quantity"]]},
           order_status: map_order_status(sales_data["order_status"]),
-          cancel_status: cancelled_status(sales_data["order_status"]),
+          cancelled_status: cancelled_status(sales_data["order_status"]),
           shipping_status: shipping_status(sales_data["order_status"]),
-          pay_method: map_pay_method(sales_data["payment_method"])
+          pay_method: map_pay_method(sales_data["payment_method"]),
+          paid_at: nil,
+          channel: 'sendo',
+          ordered_at: Time.now.utc.to_formatted_s(sales_data['order_date_time_stamp']),
+          ship_fee: sales_data['total_amount_buyer'] - sales_data['total_amount']
         }
       end
     end
