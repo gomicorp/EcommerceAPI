@@ -13,4 +13,5 @@ json.brands company.brands do |brand|
   json.logo brand.logo.attached? ? rails_blob_url(brand.logo) : nil
   json.country brand.country
 end
+json.countries company.brands.map{|brand| brand.country}.uniq
 json.url partner_company_url(company, format: :json)

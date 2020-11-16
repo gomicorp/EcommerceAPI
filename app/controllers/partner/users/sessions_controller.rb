@@ -11,7 +11,7 @@ module Partner
           return render json: jwt_payload(Manager.find(decoded_token[:user_id]))
         end
 
-        @manager = Manager.find_by_email(session_param[:email])
+        @manager = Manager.where(email: session_param[:email]).first
         return render json: { message: 'Email not found' }, status: :unauthorized unless @manager
 
         unless @manager.valid_password?(session_param[:password])
@@ -22,9 +22,11 @@ module Partner
       end
 
       # DELETE /users/sign_out
-      # def destroy
-      #   super
-      # end
+      def destroy
+        authenticate_request!
+        @current_user.update!(token: nil)
+        head :no_content
+      end
 
       protected
 

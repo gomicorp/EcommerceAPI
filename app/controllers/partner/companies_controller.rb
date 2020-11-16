@@ -1,10 +1,10 @@
 module Partner
   class CompaniesController < BaseController
-    # before_action :authenticate_request!
+    before_action :authenticate_request!
     before_action :set_company, only: %i[show update destroy]
 
     def index
-      @companies = Company.includes(include_tables).where(query_param)
+      @companies = @current_user.companies.includes(include_tables).where(query_param)
     end
 
     def show
@@ -34,7 +34,7 @@ module Partner
     private
 
     def set_company
-      @company = Company.find(params[:id])
+      @company = @current_user.companies.find(params[:id])
     end
 
     def include_tables

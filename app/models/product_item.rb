@@ -28,6 +28,11 @@
 class ProductItem < NationRecord
   extend_has_many_attached :images
 
+  extend_has_one_attached :cfs
+  extend_has_one_attached :msds
+  extend_has_one_attached :ingredient_table
+  extend_has_many_attached :box_images
+
   belongs_to :item_group, class_name: 'ProductItemGroup', foreign_key: :item_group_id
   has_one :brand, class_name: 'Brand', through: :item_group
   has_one :company, class_name: 'Company', through: :brand
@@ -45,6 +50,11 @@ class ProductItem < NationRecord
   has_many :collections, through: :product_collection_elements
 
   has_one :zohomap, as: :zohoable
+
+  validates :name, presence: true
+  validates :serial_number, presence: true, uniqueness: true
+  validates :selling_price, presence: true
+  validates :cost_price, presence: true
 
   scope :activated, -> { where(active: true) }
 

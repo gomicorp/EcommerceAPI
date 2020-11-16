@@ -17,6 +17,8 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  order_info_id  :integer
+#  carrier_code    :string(255)
+#  tracking_number :string(255)
 #
 class ShipInfo < ApplicationRecord
 
