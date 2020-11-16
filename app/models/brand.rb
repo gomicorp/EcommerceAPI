@@ -28,6 +28,7 @@ class Brand < NationRecord
   include Translatable
   include Approvable
   extend_has_one_attached :logo
+  extend_has_one_attached :first_image
   translate_column :name
 
   belongs_to :company
@@ -43,6 +44,13 @@ class Brand < NationRecord
   has_many :order_info_brands, class_name: 'OrderInfoBrand', dependent: :delete_all
   has_many :order_infos, through: :order_info_brands
   # ===============================================
+
+
+  # ===============================================
+  # 전시 전용 모델 관계
+  has_many :side_menu_items, class_name: 'Store::SideMenuItem', as: :connectable
+  # ===============================================
+
 
   def official_site_url
     '#'

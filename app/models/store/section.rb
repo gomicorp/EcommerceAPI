@@ -42,6 +42,7 @@ module Store
     enum connection_type: CONNECTION_TYPES
     enum view_port: VIEW_PORTS
 
+    belongs_to :attachable, polymorphic: true, optional: true
     has_many :connections, class_name: 'Store::SectionConnection', foreign_key: :store_section_id
 
     validates :publish_at, presence: true
