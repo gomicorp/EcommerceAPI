@@ -48,6 +48,9 @@ module ExternalChannel
       end
     end
 
+    # == 전달받은 쿼리 파라미터를 각 채널의 포맷에 맞게 변환합니다.
+    def parse_query_hash; end
+
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query = {}); end
     def orders(query = {}); end
