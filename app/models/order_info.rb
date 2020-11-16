@@ -93,6 +93,7 @@ class OrderInfo < NationRecord
       update(shipping_status: shipping_status, payment_status: payment_status)
       update(status: status) unless status.nil?
     end
+  end
 
   def sellers_items
     items.filter(&:item_sold_paper)
