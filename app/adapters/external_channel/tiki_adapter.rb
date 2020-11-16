@@ -45,15 +45,26 @@ module ExternalChannel
     public
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
+      parse_query_hash(query_hash)
+
       refine_products(call_products(query_hash))
     end
 
     def orders(query_hash = {})
+      parse_query_hash(query_hash)
+
       refine_orders(call_orders(query_hash))
     end
 
     protected
     def login; end
+
+    def parse_query_hash(query_hash)
+      query_hash['updated_from_date'] = query_hash['updated_from'].to_datetime.to_s(:db)
+      query_hash['updated_to_date'] = query_hash['updated_to'].to_datetime.to_s(:db)
+      query_hash.delete('updated_from')
+      query_hash.delete('updated_to')
+    end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash)
