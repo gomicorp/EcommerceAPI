@@ -27,7 +27,7 @@ module ExternalChannel
         result = product.save!
 
         if product_id.nil? && result
-          this_product_connection.update({channel:channel, product: product, external_id: product_data[:id]})
+          this_product_connection.update({ channel: channel, product: product, external_id: product_data[:id] })
         end
 
         result
@@ -35,7 +35,7 @@ module ExternalChannel
 
       def save_options(options)
         option_group = product.option_groups.first_or_create
-        options.all? {|option| save_option(option, option_group)}
+        options.all? { |option| save_option(option, option_group) }
       end
 
       def save_option(option, option_group)
@@ -50,10 +50,10 @@ module ExternalChannel
       end
 
       # TODO: 채널 어소시에이션을 걸어야 함.
-      def parse_product(product, default_product={})
+      def parse_product(product, default_product = {})
         {
           brand_id: brand.id,
-          running_status: default_product["running_status"] || 'pending',
+          running_status: default_product['running_status'] || 'pending',
           title: make_valid_title(product[:title]),
           country: Country.at(country_code)
         }
@@ -76,7 +76,7 @@ module ExternalChannel
           parsed_product
         else
           # TODO: 나중에는 국가별로 키값을 가지고 돌면서 title을 주입할 수 있도록 처리해야 함.
-          {'vn': title, 'en': "(not translated)#{title}", 'ko': "(미번역)#{title}"}
+          { 'vn': title, 'en': "(not translated)#{title}", 'ko': "(미번역)#{title}" }
         end
       end
     end

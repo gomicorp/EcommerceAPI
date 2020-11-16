@@ -1,29 +1,29 @@
 module ExternalChannel
   module Product
     class Validator < BaseValidator
-
       attr_reader :variant_validator
 
       def initialize
-        @keys = [:id, :title, :channel_name, :brand_name, :variants]
+        product_keys = %i[id title channel_name brand_name variants]
+        super(product_keys)
+
         @variant_validator = ExternalChannelVariantValidator.new
       end
 
       def valid_all?(products)
-        products.all? {|product| valid? product }
+        products.all? { |product| valid? product }
       end
 
       def valid?(product)
         validate_presence_of(product)
-        has_only_allowed(product)
+        only_allowed?(product)
         variant_validator.valid_all?(product[:variants])
       end
 
-      private
-
       class ExternalChannelVariantValidator < BaseValidator
         def initialize
-          @keys = [:id, :price, :name]
+          variants_keys = %i[id price name]
+          super(variants_keys)
         end
 
         def valid_all?(variants)
@@ -34,7 +34,7 @@ module ExternalChannel
 
         def valid?(variant)
           validate_presence_of(variant)
-          has_only_allowed(variant)
+          only_allowed?(variant)
         end
       end
     end

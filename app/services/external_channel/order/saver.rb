@@ -34,8 +34,8 @@ module ExternalChannel
         end
       end
 
-      def parse_order(order, default_order={})
-        # TODO 모델 구조 변경시 변경 필요
+      def parse_order(order, default_order = {})
+        # TODO: 모델 구조 변경시 변경 필요
         {
           total_price: order[:billing_amount],
           ordered_at: order[:ordered_at],
@@ -50,7 +50,6 @@ module ExternalChannel
           shipping_status: order[:shipping_status] || default_order[:shipping_status]
         }
       end
-
     end
   end
 end

@@ -3,9 +3,9 @@ module ExternalChannel
     class Manager < BaseManager
       def initialize(channel_adapter)
         super(channel_adapter)
-        set_saver!(ExternalChannel::Order::Saver.new)
-        set_validator!(ExternalChannel::Order::Validator.new)
-        set_data_type!('order')
+        self.saver = ExternalChannel::Order::Saver.new
+        self.validator = ExternalChannel::Order::Validator.new
+        self.data_type = 'order'
       end
     end
   end
