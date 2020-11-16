@@ -3,6 +3,7 @@
 # Table name: store_sections
 #
 #  id                   :bigint           not null, primary key
+#  attachable_type      :string(255)
 #  background_color     :string(255)      default("#ffffff"), not null
 #  connection_col_count :integer          default(4), not null
 #  connection_limit     :integer          default(30), not null
@@ -22,11 +23,13 @@
 #  wide_mode            :boolean          default(FALSE), not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
+#  attachable_id        :bigint
 #  country_id           :bigint
 #
 # Indexes
 #
-#  index_store_sections_on_country_id  (country_id)
+#  index_store_sections_on_attachable_type_and_attachable_id  (attachable_type,attachable_id)
+#  index_store_sections_on_country_id                         (country_id)
 #
 # Foreign Keys
 #
@@ -39,6 +42,7 @@ module Store
     enum connection_type: CONNECTION_TYPES
     enum view_port: VIEW_PORTS
 
+    belongs_to :attachable, polymorphic: true, optional: true
     has_many :connections, class_name: 'Store::SectionConnection', foreign_key: :store_section_id
 
     validates :publish_at, presence: true
