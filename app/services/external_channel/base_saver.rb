@@ -15,9 +15,9 @@ module ExternalChannel
     def save(data)
       ActiveRecord::Base.transaction do
         save_data(data)
-      rescue e
-        ActiveRecord::Base.Rollback
-        e
+      rescue StandardError => e
+        ActiveRecord::Rollback
+        Rails.logger.error e
       end
     end
 
