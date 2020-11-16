@@ -2,16 +2,19 @@
 #
 # Table name: order_infos
 #
-#  id         :bigint           not null, primary key
-#  admin_memo :text(65535)
-#  finished   :boolean
-#  ordered_at :datetime
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  cart_id    :integer
-#  channel_id :bigint           not null
-#  country_id :bigint
-#  enc_id     :string(255)
+#  id              :bigint           not null, primary key
+#  admin_memo      :text(65535)
+#  finished        :boolean
+#  ordered_at      :datetime
+#  payment_status  :string(255)
+#  shipping_status :string(255)
+#  status          :string(255)
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  cart_id         :integer
+#  channel_id      :bigint           not null
+#  country_id      :bigint
+#  enc_id          :string(255)
 #
 # Indexes
 #
@@ -26,6 +29,7 @@
 #
 class OrderInfo < NationRecord
   include ChannelRecordable
+
   belongs_to :cart
   belongs_to :channel
   has_one :ship_info, dependent: :destroy
@@ -80,6 +84,15 @@ class OrderInfo < NationRecord
   def quantity
     cart.items.sum(:barcode_count)
   end
+
+  def update_status(status=nil)
+    transaction do
+      payment_status = payment.current_status
+      shipping_status = ship_info.current_status
+
+      update(shipping_status: shipping_status, payment_status: payment_status)
+      update(status: status) unless status.nil?
+    end
 
   def sellers_items
     items.filter(&:item_sold_paper)
