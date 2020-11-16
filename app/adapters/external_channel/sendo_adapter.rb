@@ -19,7 +19,8 @@ module ExternalChannel
     attr_reader :base_url, :default_headers, :token
 
     def initialize
-      @base_url = "https://open.sendo.vn"
+      super
+      @base_url = 'https://open.sendo.vn'
       @token = ExternalChannelToken.find_or_create_by(country: Country.vn,
                                                       channel: Channel.find_by(name: 'Sendo'))
 
@@ -28,35 +29,43 @@ module ExternalChannel
       }
     end
 
+    protected
+
     def check_token_validation
-      if !token.auth_token || @token.auth_token_expired?
-        login
+      login if !token.auth_token || @token.auth_token_expired?
+    end
+
+    # query로 들어오는 값을 지원하는 방식에 맞게 수정합니다.
+
+    # === sendo는 데이터 형식에 따라 query를 리턴하는 방식이 다릅니다.
+    # === 따라서 curring하는 형식으로 처리했습니다.
+    def parse_query_hash(data_type)
+      case data_type
+      when 'product'
+        ->(query) { parse_query_on_product(query) }
+      when 'order'
+        ->(query) { parse_query_on_order(query) }
       end
     end
 
-    public
-
     # == 적절하게 정제된 데이터를 리턴합니다.
-    @override
     def products(query_hash = {})
       check_token_validation
 
-      refine_products(call_products(query_hash))
+      refine_products(call_products(parse_query_hash('product').call(query_hash)))
     end
 
-    @override
     def orders(query_hash = {})
       check_token_validation
 
-      refine_orders(call_orders(query_hash))
+      refine_orders(call_orders(parse_query_hash('order').call(query_hash)))
     end
 
-    @override
     def login
-      api_key = Rails.application.credentials.dig(:sendo, :api,  :key)
+      api_key = Rails.application.credentials.dig(:sendo, :api, :key)
       api_password = Rails.application.credentials.dig(:sendo, :api, :password)
       login_url = URI("#{base_url}/login")
-      login_body = {shop_key: api_key, secret_key: api_password}
+      login_body = { shop_key: api_key, secret_key: api_password }
 
       data = request_post(login_url, login_body, default_headers)
 
@@ -65,7 +74,6 @@ module ExternalChannel
     end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
-    @override
     def call_products(query_hash = {})
       products_url = URI("#{base_url}/api/partner/product/search")
       products_body = {
@@ -74,15 +82,14 @@ module ExternalChannel
       }.merge(query_hash)
       products_header = {
         'Authorization': "bearer #{token.auth_token}",
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       }
       product_ids = request_lists(products_url, products_body, products_header) do |products|
-        products["result"]["data"].pluck("id")
+        products['result']['data'].pluck('id')
       end
       get_all_by_ids(product_ids, "#{base_url}/api/partner/product")
     end
 
-    @override
     def call_orders(query_hash = {})
       orders_url = URI("#{base_url}/api/partner/salesorder/search")
       orders_body = {
@@ -94,38 +101,36 @@ module ExternalChannel
         'cache-control': 'no-cache'
       }
       request_lists(orders_url, orders_body, orders_header) do |orders|
-        orders["result"]["data"]
+        orders['result']['data']
       end
     end
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
-    @override
     def refine_products(products)
       products.map do |product|
         {
-          id: product["id"],
-          title: product["name"],
+          id: product['id'],
+          title: product['name'],
           channel_name: 'sendo',
-          brand_name: product["brand_name"] || 'not brand',
+          brand_name: product['brand_name'] || 'not brand',
           variants: form_variants(product)
         }
       end
     end
 
-    @override
     def refine_orders(orders)
       orders.map do |order|
-        sales_data = order["sales_order"]
-        sales_details = order["sku_details"]
+        sales_data = order['sales_order']
+        sales_details = order['sku_details']
         {
-          id: sales_data["order_number"],
-          order_number: sales_data["order_number"],
-          billing_amount: sales_data["total_amount_buyer"],
-          variant_ids: sales_details.map {|option| [option["product_variant_id"], option["quantity"]]},
-          order_status: map_order_status(sales_data["order_status"]),
-          cancelled_status: cancelled_status(sales_data["order_status"]),
-          shipping_status: shipping_status(sales_data["order_status"]),
-          pay_method: map_pay_method(sales_data["payment_method"]),
+          id: sales_data['order_number'],
+          order_number: sales_data['order_number'],
+          billing_amount: sales_data['total_amount_buyer'],
+          variant_ids: sales_details.map { |option| [option['product_variant_id'], option['quantity']] },
+          order_status: map_order_status(sales_data['order_status']),
+          cancelled_status: cancelled_status(sales_data['order_status']),
+          shipping_status: shipping_status(sales_data['order_status']),
+          pay_method: map_pay_method(sales_data['payment_method']),
           paid_at: nil,
           channel: 'sendo',
           ordered_at: Time.now.utc.to_formatted_s(sales_data['order_date_time_stamp']),
@@ -136,12 +141,29 @@ module ExternalChannel
 
     private
 
+    ### === 요청 query데이터를 parsing하는 로직입니다.
+
+    def parse_query_on_product(query_hash)
+      {
+        date_from: "#{query_hash[:update_from].year}/#{query_hash[:update_from].month}/#{query_hash[:update_from].day}",
+        date_to: "#{query_hash[:update_to].year}/#{query_hash[:update_to].month}/#{query_hash[:update_to].day}"
+      }
+    end
+
+    def parse_query_on_order(query_hash)
+      {
+        order_date_from: "#{query_hash[:update_from].year}/#{query_hash[:update_from].month}/#{query_hash[:update_from].day}",
+        order_date_to: "#{query_hash[:update_to].year}/#{query_hash[:update_to].month}/#{query_hash[:update_to].day}"
+      }
+    end
+
+    ### === 데이터를 불러오는 로직입니다.
     ### === 데이터를 불러오는 로직입니다.
 
     def get_all_by_ids(ids, url, query_hash = {})
       header = {
-          'Content-Type': 'application/json',
-          'Authorization': "Bearer #{token.auth_token}"
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer #{token.auth_token}"
       }
 
       ids.map do |id|
@@ -151,18 +173,20 @@ module ExternalChannel
         if block_given?
           yield record
         else
-          record["result"]
+          record['result']
         end
       end
     end
 
     # == list 에서 모든 데이터를 요청합니다.
     def request_lists(url, body, header)
-      body[:token] = ""
+      body[:token] = ''
       data = []
       while body[:token].nil? == false
         each_data = request_post(url, body, header)
-        body[:token] = each_data["result"]["next_token"]
+        raise ArgumentError, 'parameter is not enough' unless each_data['success']
+
+        body[:token] = each_data['result']['next_token']
         data << if block_given?
                   yield each_data
                 else
@@ -172,31 +196,30 @@ module ExternalChannel
       data.flatten
     end
 
-
-
     ### === 데이터를 정제하는 로직입니다.
-
 
     ## === product 데이터를 정제합니다.
 
     def form_variants(product)
-      variants = product["variants"]
+      variants = product['variants']
 
       # variants 가 빈배열인 데이터가 있다.
       # 이 경우, default 옵션 데이터를 만들어 줄 필요가 있다.
-      return [
-        {
-          id: product["id"],
-          name: 'default',
-          price: product["price"]
-        }
-      ] if variants.empty?
+      if variants.empty?
+        return [
+          {
+            id: product['id'],
+            name: 'default',
+            price: product['price']
+          }
+        ]
+      end
 
       variants.map do |variant|
         {
-          id: variant["variant_sku"],
-          name: variant["variant_sku"],
-          price: variant["variant_price"]
+          id: variant['variant_sku'],
+          name: variant['variant_sku'],
+          price: variant['variant_price']
         }
       end
     end
@@ -204,19 +227,11 @@ module ExternalChannel
     ## === order 데이를 정제합니다.
 
     def cancelled_status(order_status)
-      if order_status == 13
-        map_order_status(order_status)
-      else
-        nil
-      end
+      map_order_status(order_status) if order_status == 13
     end
 
     def shipping_status(order_status)
-      if [6,7,8].include? order_status
-        map_order_status(order_status)
-      else
-        nil
-      end
+      map_order_status(order_status) if [6, 7, 8].include? order_status
     end
 
     # == 센도의 결제 방법(숫자) 글자로 바꿔주는 함수입니다.
@@ -232,8 +247,6 @@ module ExternalChannel
         'Combine'
       when 5
         'PayLater'
-      else
-        nil
       end
     end
 
@@ -258,7 +271,7 @@ module ExternalChannel
         'Returned': [22],
         'WaitingSendo': [23]
       }
-      order_status = allowed_order_status.select {|key, value| value.include?(sendo_order_status)}
+      order_status = allowed_order_status.select { |_key, value| value.include?(sendo_order_status) }
       if order_status.empty?
         nil
       else
