@@ -15,9 +15,9 @@ module ExternalChannel
     def save(data)
       ActiveRecord::Base.transaction do
         save_data(data)
-      rescue StandardError => e
+      rescue => e
         ActiveRecord::Rollback
-        Rails.logger.error e
+        Rails.logger.error "#{Time.now} | Error : #{e.inspect} occured"
       end
     end
 
