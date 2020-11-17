@@ -116,7 +116,7 @@ module ExternalChannel
           order_status: order['order_status'],
           pay_method: order['payment_method'],
           channel: 'shopee',
-          ordered_at: Time.new(order['create_time']).getutc,
+          ordered_at: Time.at(order['create_time']).getutc,
           paid_at: paid_time(order['pay_time']),
           billing_amount: order['escrow_amount'],
           ship_fee: order['actual_shipping_cost'],

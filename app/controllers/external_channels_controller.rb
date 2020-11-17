@@ -12,6 +12,7 @@ class ExternalChannelsController < ApiController
   end
 
   private
+
   def batch_params
     params.permit(:country_code, :type, :channel_name, query_hash: {})
   end
