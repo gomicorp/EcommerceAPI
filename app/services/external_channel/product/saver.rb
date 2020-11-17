@@ -7,6 +7,8 @@ module ExternalChannel
       def save_data(data)
         refresh_data
         @channel = Channel.find_by_name(data[:channel_name])
+        raise ActiveRecord::RecordNotFound('NotFoundChannelError => The given channel doesn\'t exist on gomi back office.') if channel.nil?
+
         @brand = find_brand(data[:brand_name])
         save_product(data) && save_options(data[:variants])
       end
@@ -20,14 +22,14 @@ module ExternalChannel
       end
 
       def save_product(product_data)
-        this_product_connection = ExternalChannelProductId.find_or_initialize_by(channel_id: channel.id, external_id: product_data[:id])
+        this_product_connection = ExternalChannelProductId.find_or_initialize_by(channel_id: channel.id, external_id: product_data[:id].to_s)
         product_id = this_product_connection.product ? this_product_connection.product_id : nil
         @product = ::Product.find_or_initialize_by(id: product_id)
         product.assign_attributes(parse_product(product_data, product.attributes))
         result = product.save!
 
         if product_id.nil? && result
-          this_product_connection.update({ channel: channel, product: product, external_id: product_data[:id] })
+          this_product_connection.update({ channel: channel, product: product, external_id: product_data[:id].to_s })
         end
 
         result
@@ -54,8 +56,7 @@ module ExternalChannel
         {
           brand_id: brand.id,
           running_status: default_product['running_status'] || 'pending',
-          title: make_valid_title(product[:title]),
-          country: Country.at(country_code)
+          title: make_valid_title(product[:title])
         }
       end
 
@@ -69,14 +70,15 @@ module ExternalChannel
         }
       end
 
+      # TODO: 지금 이름이 vn이랑 vi랑 섞여서 기록되어 있다. 확인이 필요하다.
       def make_valid_title(title)
         if product.title.nil? == false
           parsed_product = JSON.parse(product.title)
-          parsed_product[country_code] = title
+          parsed_product[Country.send(ApplicationRecord.country_code).locale] = title
           parsed_product
         else
           # TODO: 나중에는 국가별로 키값을 가지고 돌면서 title을 주입할 수 있도록 처리해야 함.
-          { 'vn': title, 'en': "(not translated)#{title}", 'ko': "(미번역)#{title}" }
+          { 'vi': title, 'en': "(not translated)#{title}", 'ko': "(미번역)#{title}" }
         end
       end
     end
