@@ -123,7 +123,7 @@ module ExternalChannel
         sales_data = order['sales_order']
         sales_details = order['sku_details']
         {
-          id: sales_data['order_number'],
+          id: sales_data['order_number'].to_s,
           order_number: sales_data['order_number'],
           billing_amount: sales_data['total_amount_buyer'],
           variant_ids: sales_details.map { |option| [option['product_variant_id'], option['quantity']] },
@@ -133,7 +133,7 @@ module ExternalChannel
           pay_method: map_pay_method(sales_data['payment_method']),
           paid_at: nil,
           channel: 'sendo',
-          ordered_at: Time.now.utc.to_formatted_s(sales_data['order_date_time_stamp']),
+          ordered_at: Time.at(sales_data['order_date_time_stamp']).getutc,
           ship_fee: sales_data['total_amount_buyer'] - sales_data['total_amount']
         }
       end

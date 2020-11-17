@@ -16,7 +16,7 @@
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
 #  country_id                :bigint
-#  external_channel_order_id :integer
+#  external_channel_order_id :string(255)
 #
 # Indexes
 #
