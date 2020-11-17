@@ -1,9 +1,9 @@
 module ExternalChannel
   module Order
     class Validator < BaseValidator
-
       def initialize
-        @keys = [:id, :order_number, :paid_at, :order_status, :pay_method, :channel, :ordered_at, :billing_amount, :ship_fee, :variant_ids, :cancelled_status, :shipping_status ]
+        order_keys = %i[id order_number paid_at order_status pay_method channel ordered_at billing_amount ship_fee variant_ids cancelled_status shipping_status]
+        super(order_keys)
       end
 
       def valid_all?(orders)
@@ -13,8 +13,8 @@ module ExternalChannel
       end
 
       def valid?(order)
-        validate_presence_of(order, [:paid_at, :cancelled_status, :shipping_status])
-        has_only_allowed(order)
+        validate_presence_of(order, %i[paid_at cancelled_status shipping_status])
+        only_allowed?(order)
       end
     end
   end

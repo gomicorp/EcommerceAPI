@@ -1,9 +1,11 @@
 module ExternalChannel
   class BaseManager
-    attr_reader :adapter, :saver, :validator, :data_type
+    attr_accessor :data_type
+    attr_reader :adapter, :saver, :validator
 
     def initialize(channel_adapter)
-      return false unless is_valid_adapter?(channel_adapter)
+      return unless valid_adapter?(channel_adapter)
+
       @adapter = channel_adapter
     end
 
@@ -13,10 +15,11 @@ module ExternalChannel
     end
 
     protected
+
     # do not set saver directly!
     # Use this function when you want to set saver class
-    def set_saver!(saver)
-      if is_valid_saver? saver
+    def saver=(saver)
+      if valid_saver? saver
         @saver = saver
         true
       else
@@ -26,8 +29,8 @@ module ExternalChannel
 
     # do not set validator directly!
     # Use this function when you want to set validator class
-    def set_validator!(validator)
-      if is_valid_validator? validator
+    def validator=(validator)
+      if valid_validator? validator
         @validator = validator
         true
       else
@@ -35,23 +38,17 @@ module ExternalChannel
       end
     end
 
-    # do not set data_type directly!
-    # Use this function when you want to set validator class
-    def set_data_type!(data_type)
-      @data_type = data_type
-    end
-
     private
 
-    def is_valid_adapter?(channel_adapter)
+    def valid_adapter?(channel_adapter)
       channel_adapter.is_a? ExternalChannel::BaseAdapter
     end
 
-    def is_valid_saver?(saver)
+    def valid_saver?(saver)
       saver.is_a? ExternalChannel::BaseSaver
     end
 
-    def is_valid_validator?(validator)
+    def valid_validator?(validator)
       validator.is_a? ExternalChannel::BaseValidator
     end
   end
