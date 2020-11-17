@@ -4,6 +4,7 @@ class ExternalChannelsController < ApiController
   end
 
   def batch
+    ApplicationRecord.country_code = batch_params[:country_code]
     adapter = ExternalChannel::AdapterFactory.get_adapter(batch_params[:channel_name])
     manager = ExternalChannel::ManagerFactory.get_manager(batch_params[:type], adapter)
 
@@ -12,6 +13,6 @@ class ExternalChannelsController < ApiController
 
   private
   def batch_params
-    params.permit(:type, :channel_name, :query_hash)
+    params.permit(:country_code, :type, :channel_name, query_hash: {})
   end
 end

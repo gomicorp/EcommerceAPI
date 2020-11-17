@@ -1,12 +1,15 @@
 module ExternalChannel
   class BaseAdapter
+    DEAFULT_EXCEPTION = [
+      Errno::ETIMEDOUT, Timeout::Error,
+      Faraday::TimeoutError, Faraday::RetriableResponse, Net::OpenTimeout,
+      Faraday::ConnectionFailed
+    ].freeze
 
     def initialize; end
 
-    public
-
     # == 타입에 따라 정제된 데이터를 리턴합니다.
-    def get_list(data_type, query={})
+    def get_list(data_type, query = {})
       case data_type
       when 'product'
         products(query)
@@ -23,21 +26,19 @@ module ExternalChannel
     def check_token_validation; end
 
     # == 리퀘스트를 던지는 caller 메소드입니다.
-    def request_get(endpoint, params, headers)
+    def request_get(endpoint, params, headers, retry_exceptions = nil)
+      retry_exceptions ||= DEAFULT_EXCEPTION
       Faraday.new(endpoint, params: params) do |conn|
-        conn.request(:retry, max: 5, interval: 1, exceptions: ['Timeout::Error'])
+        conn.request(:retry, max: 5, interval: 1, exceptions: retry_exceptions)
 
         return conn.get { |req| req.headers.merge!(headers) }
       end
     end
 
-    def request_post(endpoint, body, headers, default_eception = nil)
-      default_eception ||= [
-        Errno::ETIMEDOUT, 'Timeout::Error',
-        Faraday::TimeoutError, Faraday::RetriableResponse, 'Net::OpenTimeout'
-      ]
-      Faraday.new(endpoint) do |conn|
-        conn.request(:retry, max: 5, interval: 1, exceptions: default_eception)
+    def request_post(endpoint, body, headers, retry_exceptions = nil)
+      retry_exceptions ||= DEAFULT_EXCEPTION
+      Faraday.new(endpoint, request: { open_timeout: 5 }) do |conn|
+        conn.request(:retry, max: 5, interval: 1, exceptions: retry_exceptions)
 
         response = conn.post do |req|
           req.headers.merge!(headers)
@@ -48,8 +49,12 @@ module ExternalChannel
       end
     end
 
+    # == 전달받은 쿼리 파라미터를 각 채널의 포맷에 맞게 변환합니다.
+    def parse_query_hash(query); end
+
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query = {}); end
+
     def orders(query = {}); end
 
     # == 로그인이 필요한 어댑터
@@ -57,10 +62,14 @@ module ExternalChannel
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query); end
+
     def call_orders(query); end
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
     def refine_products(records); end
+
     def refine_orders(records); end
+
+    
   end
 end

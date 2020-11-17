@@ -36,8 +36,9 @@ module ExternalChannel
     }
 
     def initialize
-      @token = ExternalChannelToken.find_or_create_by(country: Country.vn,
-                                                     channel: Channel.find_by(name: 'Lazada'))
+      super
+      @token = ExternalChannelToken.find_or_create_by(country: Country.send(ApplicationRecord.country_code),
+                                                      channel: Channel.find_by(name: 'Lazada'))
 
       @app_key = Rails.application.credentials.dig(:lazada, :api, :app_key)
       @app_secret = Rails.application.credentials.dig(:lazada, :api, :app_secret)
@@ -61,7 +62,7 @@ module ExternalChannel
       options.add_argument('--no-sandbox')
 
       browser = Selenium::WebDriver.for :chrome, options: options
-      browser.navigate.to "https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://5bd34cab2604.ngrok.io/external_channels/code&client_id=#{app_key}"
+      browser.navigate.to "https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://552c8752613f.ngrok.io/external_channels/code&client_id=#{app_key}"
 
       # = 로그인이 안 되어있는 경우 : form.empty? => true
       form = browser.find_elements(css: 'form[name=form1]')
@@ -130,17 +131,28 @@ module ExternalChannel
     def products(query_hash = {})
       check_token_validation
 
+      parse_query_hash(query_hash)
+
       refine_products(call_products(query_hash))
     end
 
     def orders(query_hash = {})
       check_token_validation
 
+      parse_query_hash(query_hash)
+
       refine_orders(call_orders(query_hash))
     end
 
     protected
     def login; end
+
+    def parse_query_hash(query_hash)
+      query_hash['update_after'] = query_hash['updated_from']
+      query_hash['update_before'] = query_hash['updated_to']
+      query_hash.delete('updated_from')
+      query_hash.delete('updated_to')
+    end
 
     def call_products(query_hash)
       response = request_get('/products/get')
@@ -176,7 +188,7 @@ module ExternalChannel
             id: record['item_id'],
             title: record['attributes']['name'],
             channel_name: 'Lazada',
-            brand_name: ['attributes']['brand'],
+            brand_name: record['attributes']['brand'],
             variants: refine_product_options(record['skus'])
         }
       end
