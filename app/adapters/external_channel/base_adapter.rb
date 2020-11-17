@@ -1,12 +1,9 @@
 module ExternalChannel
   class BaseAdapter
-
     def initialize; end
 
-    public
-
     # == 타입에 따라 정제된 데이터를 리턴합니다.
-    def get_list(data_type, query={})
+    def get_list(data_type, query = {})
       case data_type
       when 'product'
         products(query)
@@ -36,7 +33,7 @@ module ExternalChannel
         Errno::ETIMEDOUT, 'Timeout::Error',
         Faraday::TimeoutError, Faraday::RetriableResponse, 'Net::OpenTimeout'
       ]
-      Faraday.new(endpoint) do |conn|
+      Faraday.new(endpoint, request: { open_timeout: 5 }) do |conn|
         conn.request(:retry, max: 5, interval: 1, exceptions: default_eception)
 
         response = conn.post do |req|
@@ -49,10 +46,11 @@ module ExternalChannel
     end
 
     # == 전달받은 쿼리 파라미터를 각 채널의 포맷에 맞게 변환합니다.
-    def parse_query_hash; end
+    def parse_query_hash(query); end
 
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query = {}); end
+
     def orders(query = {}); end
 
     # == 로그인이 필요한 어댑터
@@ -60,10 +58,12 @@ module ExternalChannel
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query); end
+
     def call_orders(query); end
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
     def refine_products(records); end
+
     def refine_orders(records); end
   end
 end

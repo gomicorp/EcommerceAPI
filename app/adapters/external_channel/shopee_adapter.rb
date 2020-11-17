@@ -1,9 +1,9 @@
 module ExternalChannel
   class ShopeeAdapter < BaseAdapter
-    public
     attr_accessor :base_url
 
     private
+
     attr_accessor :key, :default_body, :default_headers
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
@@ -26,6 +26,7 @@ module ExternalChannel
     }
 
     public
+
     def initialize
       @base_url = 'https://partner.shopeemobile.com/api/v1'
       @key = Rails.application.credentials.dig(:shopee, :api, :key)
@@ -38,18 +39,36 @@ module ExternalChannel
       }
       @default_body = {
         partner_id: partner_id,
-        shopid: shop_id,
+        shopid: shop_id
       }
     end
 
-    # protected
+    protected
+
+    # query로 들어오는 값을 지원하는 방식에 맞게 수정합니다.
+    # === input
+    # = update_from: UTC Time
+    # = update_to: UTC Time
+
+    # === response
+    # = update_time_from: 1472774528 (time stamp) => Time.new(yyyy, m, d).to_i
+    # = update_time_to: 1472774528 (time stamp) => Time.new(yyyy, m, d).to_i
+    # = pagination_offset : default 0
+    # = pagination_entries_per_page : default 10, max 100
+    def parse_query_hash(query_hash)
+      {
+        update_time_from: (query_hash[:update_from] || 0).to_i,
+        update_time_to: (query_hash[:update_to] || 0).to_i
+      }
+    end
+
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
-      refine_products(call_products(query_hash))
+      refine_products(call_products(parse_query_hash(query_hash)))
     end
 
     def orders(query_hash = {})
-      refine_orders(call_orders(query_hash))
+      refine_orders(call_orders(parse_query_hash(query_hash)))
     end
 
     def login; end
@@ -60,7 +79,7 @@ module ExternalChannel
       default_body['timestamp'] = Time.now.to_i
 
       call_list(endpoint, default_body.merge(query_hash))
-        .map{ |data| call_product_by_ids(data['items'].pluck('item_id')) }
+        .map { |data| call_product_by_ids(data['items'].pluck('item_id')) }
         .flatten
     end
 
@@ -71,7 +90,7 @@ module ExternalChannel
       default_body['timestamp'] = Time.now.to_i
 
       call_list(endpoint, default_body.merge(query_hash))
-        .map{ |data| call_order_by_sn(data['orders'].pluck('ordersn')) }
+        .map { |data| call_order_by_sn(data['orders'].pluck('ordersn')) }
         .flatten
     end
 
@@ -79,11 +98,11 @@ module ExternalChannel
     def refine_products(products)
       products.map do |product|
         {
-            id: product['item_id'],
-            title: product['name'],
-            channel_name: 'shopee',
-            brand_name: refine_brand_name(product['attributes']),
-            variants: refine_variants(product)
+          id: product['item_id'],
+          title: product['name'],
+          channel_name: 'shopee',
+          brand_name: refine_brand_name(product['attributes']),
+          variants: refine_variants(product)
         }
       end
     end
@@ -91,18 +110,18 @@ module ExternalChannel
     def refine_orders(orders)
       orders.map do |order|
         {
-            id: "#{order['ordersn']}",
-            order_number: order['ordersn'],
-            order_status: order['order_status'],
-            pay_method: order['payment_method'],
-            channel: 'shopee',
-            ordered_at: Time.new(order['create_time']).getutc,
-            paid_at: paid_time(order['pay_time']),
-            billing_amount: order['escrow_amount'],
-            ship_fee: order['actual_shipping_cost'],
-            variant_ids: variants(order['items']),
-            cancelled_status: cancel_status(order['order_status']),
-            shipping_status: shipping_status(order['order_status'])
+          id: (order['ordersn']).to_s,
+          order_number: order['ordersn'],
+          order_status: order['order_status'],
+          pay_method: order['payment_method'],
+          channel: 'shopee',
+          ordered_at: Time.new(order['create_time']).getutc,
+          paid_at: paid_time(order['pay_time']),
+          billing_amount: order['escrow_amount'],
+          ship_fee: order['actual_shipping_cost'],
+          variant_ids: variants(order['items']),
+          cancelled_status: cancel_status(order['order_status']),
+          shipping_status: shipping_status(order['order_status'])
         }
       end
     end
@@ -113,7 +132,7 @@ module ExternalChannel
     def call_product_by_ids(ids)
       endpoint = "#{base_url}/item/get"
       call_each_by_ids(ids, endpoint, 'item') do |id|
-        {item_id: id}
+        { item_id: id }
       end
     end
 
@@ -128,15 +147,14 @@ module ExternalChannel
     # = TODO: 레포의 #103 이슈에 내용 담김
     # = body 를 의미하는 block 을 받아, 모든 id에 대해 post 요청을 보내고 타겟에 대한 묶음을 전달하는 함수.
     def call_each_by_ids(ids, endpoint, target)
+      return unless block_given?
       ids.map do |id|
         default_body['timestamp'] = Time.now.to_i
 
-        if block_given?
-          default_headers['Authorization'] = make_shopee_signature(endpoint, default_body.merge(yield id))
-          response = request_post(endpoint, default_body.merge(yield id), default_headers)
+        default_headers['Authorization'] = make_shopee_signature(endpoint, default_body.merge(yield id))
+        response = request_post(endpoint, default_body.merge(yield id), default_headers)
 
-          response[target]
-        end
+        response[target]
       end
     end
 
@@ -147,22 +165,34 @@ module ExternalChannel
       more = true
       body[:pagination_offset] ||= 0
       body[:pagination_entries_per_page] ||= 100
+      update_from = body[:update_time_from]
 
-      response_data = []
-      while more do
-        default_headers['Authorization'] = make_shopee_signature(endpoint, body)
-        response = request_post(endpoint, body, default_headers)
-        more = response['more']
-        body[:pagination_offset] += body[:pagination_entries_per_page]
+      while body[:update_time_to] > update_from
+        update_limit = body[:update_time_to] - 15.days.to_i
+        body[:update_time_from] = update_limit > update_from ? update_limit : update_from
 
-        response_data << response
+        response_data = []
+        while more
+          default_headers['Authorization'] = make_shopee_signature(endpoint, body)
+          response = request_post(endpoint, body, default_headers)
+          raise ArgumentError, 'Request Parameter is not good one' if response.key?('error')
+
+          more = response['more']
+          body[:pagination_offset] += body[:pagination_entries_per_page]
+
+          response_data << response
+        end
+        
+        body[:update_time_to] = body[:update_time_from]
+        more = true
       end
 
+      ap response_data
       response_data
     end
 
     def make_shopee_signature(endpoint, body)
-      signature_base = endpoint + '|' + body.to_json
+      signature_base = "#{endpoint}|#{body.to_json}"
       OpenSSL::HMAC.hexdigest('sha256', key, signature_base)
     end
 
@@ -174,7 +204,7 @@ module ExternalChannel
     # === 우려되는 사항은 다음과 같다.
     # === 1. 가격등 브랜드와 관련 없는 정보가 바뀔 경우 브랜드를 다시 No Brand로 설정 할 수 있다.
     def refine_brand_name(attrs)
-      brand_attr = attrs.find{|attr| attr['attribute_name'].downcase == "Thương hiệu".downcase}
+      brand_attr = attrs.find { |attr| attr['attribute_name'].downcase == 'Thương hiệu'.downcase }
       brand_attr['attribute_value']
     end
 
@@ -182,14 +212,16 @@ module ExternalChannel
       variants = product['variations']
 
       # === variants 가 없으면 product 를 참조 해야 한다.
-      return [{
-                  id: "#{product['item_id']}",
-                  price: product['price'],
-                  name: 'default'
-              }] if variants.empty?
+      if variants.empty?
+        return [{
+          id: (product['item_id']).to_s,
+          price: product['price'],
+          name: 'default'
+        }]
+      end
 
       variants.map do |variant|
-        {id: variant['variation_id'], price: variant['price'], name: variant['name']}
+        { id: variant['variation_id'], price: variant['price'], name: variant['name'] }
       end
     end
 
@@ -204,13 +236,13 @@ module ExternalChannel
     end
 
     def shipping_status(order_status)
-      %w(READY_TO_SHIP RETRY_SHIP SHIPPED).include? order_status ? order_status : nil
+      %w[READY_TO_SHIP RETRY_SHIP SHIPPED].include?(order_status) || nil
     end
 
     def variants(variants)
       variants.map do |variant|
         variant_id = variant['variation_id']
-        variant_id = variant['item_id'] if variant_id == 0
+        variant_id = variant['item_id'] if variant_id.zero? 
         [variant_id, variant['variation_quantity_purchased']]
       end
     end
