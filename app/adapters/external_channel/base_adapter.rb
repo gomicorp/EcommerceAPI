@@ -1,8 +1,8 @@
 module ExternalChannel
   class BaseAdapter
     DEAFULT_EXCEPTION = [
-      Errno::ETIMEDOUT, Timeout::Error,
-      Faraday::TimeoutError, Faraday::RetriableResponse, Net::OpenTimeout,
+      Errno::ETIMEDOUT, 'Timeout::Error',
+      Faraday::TimeoutError, Faraday::RetriableResponse, 'Net::OpenTimeout',
       Faraday::ConnectionFailed
     ].freeze
 
@@ -29,6 +29,7 @@ module ExternalChannel
     def request_get(endpoint, params, headers, retry_exceptions = nil)
       retry_exceptions ||= DEAFULT_EXCEPTION
       Faraday.new(endpoint, params: params) do |conn|
+        conn.response :logger, Rails.logger
         conn.request(:retry, max: 5, interval: 1, exceptions: retry_exceptions)
 
         return conn.get { |req| req.headers.merge!(headers) }
@@ -37,8 +38,11 @@ module ExternalChannel
 
     def request_post(endpoint, body, headers, retry_exceptions = nil)
       retry_exceptions ||= DEAFULT_EXCEPTION
-      Faraday.new(endpoint, request: { open_timeout: 5 }) do |conn|
-        conn.request(:retry, max: 5, interval: 1, exceptions: retry_exceptions)
+      Faraday.new(endpoint, request: { open_timeout: 5, timeout: 5 }) do |conn|
+        conn.response :logger, Rails.logger
+        conn.request(:retry, max: 5,
+                             interval: 1,
+                             exceptions: retry_exceptions)
 
         response = conn.post do |req|
           req.headers.merge!(headers)
@@ -69,7 +73,5 @@ module ExternalChannel
     def refine_products(records); end
 
     def refine_orders(records); end
-
-    
   end
 end

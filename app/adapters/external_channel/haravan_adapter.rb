@@ -49,7 +49,7 @@ module ExternalChannel
     end
 
     protected
-    
+
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
       parse_query_hash(query_hash)
@@ -63,7 +63,6 @@ module ExternalChannel
       refine_orders(call_orders(query_hash))
     end
 
-    protected
     def login; end
 
     def parse_query_hash(query_hash)
@@ -114,9 +113,9 @@ module ExternalChannel
       if variants.empty?
         return [
             {
-                id: record['id'],
-                price: record['price'].to_i,
-                name: 'default title'
+              id: record['id'],
+              price: record['price'].to_i,
+              name: 'default title'
             }
         ]
       end
@@ -136,10 +135,10 @@ module ExternalChannel
       order_property = []
 
       records.each do |record|
-        next if ['shopee', 'tiki', 'lazada', 'sendo'].include? record['source']
+        next if %w[shopee tiki lazada sendo].include? record['source']
 
         paid_at = nil
-        if record['gateway'] == "Thanh toán khi giao hàng (COD)"
+        if record['gateway'] == 'Thanh toán khi giao hàng (COD)'
           paid_at = record['fulfillments'][0]['cod_paid_date']&.to_time if record['fulfillments'].any?
         else
           paid_at = record['created_at'].to_time
@@ -154,8 +153,8 @@ module ExternalChannel
           ordered_at: record['created_at'].to_time,
           paid_at: paid_at,
           billing_amount: record['total_price'],
-          ship_fee: record['shipping_lines'].inject(0){ |sum, line| sum + (line['price']) },
-          variant_ids: record['line_items'].map{ |variant| [variant['id'], variant['quantity'].to_i] },
+          ship_fee: record['shipping_lines'].inject(0) { |sum, line| sum + (line['price']) },
+          variant_ids: record['line_items'].map { |variant| [variant['id'], variant['quantity'].to_i] },
           cancelled_status: record['cancelled_status'],
           shipping_status: record['fulfillments_status']
         }

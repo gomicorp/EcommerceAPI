@@ -58,8 +58,8 @@ module ExternalChannel
     # = pagination_entries_per_page : default 10, max 100
     def parse_query_hash(query_hash)
       {
-        update_time_from: (query_hash[:update_from] || (Time.now - 1.days)).to_i,
-        update_time_to: (query_hash[:update_to] || Time.now).to_i
+        update_time_from: (query_hash[:updated_from] || (Time.now - 1.days)).to_i,
+        update_time_to: (query_hash[:updated_to] || Time.now).to_i
       }
     end
 
@@ -148,7 +148,7 @@ module ExternalChannel
     # = TODO: 레포의 #103 이슈에 내용 담김
     # = body 를 의미하는 block 을 받아, 모든 id에 대해 post 요청을 보내고 타겟에 대한 묶음을 전달하는 함수.
     def call_each_by_ids(ids, endpoint, target)
-      return unless block_given?
+      return [] unless block_given?
 
       ids.map do |id|
         # ap Time.now
@@ -186,7 +186,7 @@ module ExternalChannel
 
           response_data << response
         end
-        
+
         body[:update_time_to] = body[:update_time_from]
         more = true
       end
@@ -245,7 +245,7 @@ module ExternalChannel
     def variants(variants)
       variants.map do |variant|
         variant_id = variant['variation_id']
-        variant_id = variant['item_id'] if variant_id.zero? 
+        variant_id = variant['item_id'] if variant_id.zero?
         [variant_id, variant['variation_quantity_purchased']]
       end
     end

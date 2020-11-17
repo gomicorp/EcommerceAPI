@@ -44,7 +44,7 @@ module ExternalChannel
     end
 
     protected
-    
+
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
       parse_query_hash(query_hash)
@@ -58,12 +58,11 @@ module ExternalChannel
       refine_orders(call_orders(query_hash))
     end
 
-    protected
     def login; end
 
     def parse_query_hash(query_hash)
-      query_hash['updated_from_date'] = query_hash['updated_from'].to_datetime.to_s(:db)
-      query_hash['updated_to_date'] = query_hash['updated_to'].to_datetime.to_s(:db)
+      query_hash['updated_from_date'] = query_hash['updated_from'].to_datetime.to_s
+      query_hash['updated_to_date'] = query_hash['updated_to'].to_datetime.to_s
       query_hash.delete('updated_from')
       query_hash.delete('updated_to')
     end
@@ -75,22 +74,23 @@ module ExternalChannel
       response = request_get(endpoint, query_hash, default_headers)
 
       data = JSON.parse response.body
-      data['data']
+      data['data'] || []
     end
 
     def call_product(product_id)
       endpoint = "https://api.tiki.vn/integration/v1/products/#{product_id}"
       response = request_get(endpoint, {}, default_headers)
 
-      JSON.parse response.body
+      data = JSON.parse response.body
+      data || []
     end
 
     def call_orders(query_hash)
       endpoint = 'https://api.tiki.vn/integration/v2/orders'
       response = request_get(endpoint, query_hash, default_headers)
-
       data = JSON.parse response.body
-      data['data']
+
+      data['data'] || []
     end
 
     # == call_XXX 로 가져온 레코드를 정제합니다.

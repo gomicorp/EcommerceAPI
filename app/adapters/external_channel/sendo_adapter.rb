@@ -144,8 +144,8 @@ module ExternalChannel
     ### === 요청 query데이터를 parsing하는 로직입니다.
 
     def parse_query_on_product(query_hash)
-      update_from = query_hash[:update_from] || (Time.now - 1.days)
-      update_to = query_hash[:update_to] || Time.now
+      update_from = Time.new(query_hash[:updated_from]) || (Time.now - 1.days)
+      update_to = Time.new(query_hash[:updated_to]) || Time.now
       {
         date_from: "#{update_from.year}/#{update_from.month}/#{update_from.day}",
         date_to: "#{update_to.year}/#{update_to.month}/#{update_to.day}"
@@ -153,9 +153,8 @@ module ExternalChannel
     end
 
     def parse_query_on_order(query_hash)
-      update_from = query_hash[:update_from] || (Time.now - 1.days)
-      update_to = query_hash[:update_to] || Time.now
-
+      update_from = Time.new(query_hash[:updated_from]) || (Time.now - 1.days)
+      update_to = Time.new(query_hash[:updated_to]) || Time.now
       {
         order_date_from: "#{update_from.year}/#{update_from.month}/#{update_from.day}",
         order_date_to: "#{update_to.year}/#{update_to.month}/#{update_to.day}"
