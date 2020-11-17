@@ -6,7 +6,7 @@
 #  cancelled_status          :string(255)
 #  channel                   :string(255)
 #  order_number              :string(255)
-#  order_status              :integer
+#  order_status              :string(255)
 #  ordered_at                :datetime
 #  paid_at                   :datetime
 #  pay_method                :string(255)
@@ -27,9 +27,6 @@
 #  fk_rails_...  (country_id => countries.id)
 #
 class ExternalChannelOrderInfo < NationRecord
-  ORDER_STATUSES = %w[pending authorized partiallypaid paid partiallyrefunded refunded voided]
-  enum order_status: ORDER_STATUSES
-
   has_many :external_channel_order_info_brands, class_name: 'ExternalChannelOrderInfoBrand', dependent: :destroy
   has_many :brands, class_name: 'Brand', through: :external_channel_order_info_brands
   has_many :external_channel_cart_items, class_name: 'ExternalChannelCartItem'

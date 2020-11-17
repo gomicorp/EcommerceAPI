@@ -6,7 +6,7 @@
 #  cancelled_status          :string(255)
 #  channel                   :string(255)
 #  order_number              :string(255)
-#  order_status              :integer
+#  order_status              :string(255)
 #  ordered_at                :datetime
 #  paid_at                   :datetime
 #  pay_method                :string(255)
