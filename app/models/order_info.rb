@@ -34,6 +34,7 @@ class OrderInfo < NationRecord
   has_many :items, through: :cart
   has_many :product_options, through: :items, source: :product_option
   has_many :adjustments, class_name: 'Adjustment'
+  has_many :sellers_papers, through: :items, source: :item_sold_paper
 
   # ===============================================
   has_many :order_info_brands, class_name: 'OrderInfoBrand', dependent: :destroy
@@ -42,6 +43,7 @@ class OrderInfo < NationRecord
 
   validates_presence_of :cart_id, :enc_id
   validates_uniqueness_of :cart_id, :enc_id
+
 
   delegate :order_status, to: :cart
   # alias_attribute :status, :order_status
@@ -53,6 +55,7 @@ class OrderInfo < NationRecord
   scope :sold, -> { includes(:cart).where(cart: Cart.where(order_status: Cart::SOLD_STATUSES)) }
   scope :eager_index, -> { includes(:payment, :ship_info) }
   scope :stage_in, ->(stage) { includes(:cart).where(cart: Cart.send((stage || :all).to_sym)) }
+  scope :sellers_order, -> { includes(:items).where(cart: Cart.where(items: CartItem.sold_by_seller)) }
 
   def self.gen_enc_id
     [
@@ -76,5 +79,9 @@ class OrderInfo < NationRecord
 
   def quantity
     cart.items.sum(:barcode_count)
+  end
+
+  def sellers_items
+    items.filter(&:item_sold_paper)
   end
 end

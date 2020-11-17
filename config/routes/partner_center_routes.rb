@@ -8,9 +8,16 @@ namespace :partner do
   end
 
   resources :companies, &-> { approve_requests_on(:companies) }
-  resources :brands, &-> { approve_requests_on(:brands) }
+  resources :brands do
+    approve_requests_on(:brands)
+    scope module: :brands do
+      resources :product_item_groups
+      resources :product_items
+    end
+  end
   resources :managers, only: %i[index show create]
   resources :memberships, only: %i[index show create update destroy]
+
 
   namespace :office do
     get '/notice', to: 'left_bar#notice'
