@@ -167,11 +167,11 @@ module ExternalChannel
       body[:pagination_entries_per_page] ||= 100
       update_from = body[:update_time_from]
 
+      response_data = []
       while body[:update_time_to] > update_from
         update_limit = body[:update_time_to] - 15.days.to_i
         body[:update_time_from] = update_limit > update_from ? update_limit : update_from
 
-        response_data = []
         while more
           default_headers['Authorization'] = make_shopee_signature(endpoint, body)
           response = request_post(endpoint, body, default_headers)
