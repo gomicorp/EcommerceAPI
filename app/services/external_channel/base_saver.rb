@@ -1,11 +1,5 @@
 module ExternalChannel
   class BaseSaver
-    include ParseCountryCode
-
-    def initialize(caller_country_code = nil)
-      @country_code = (caller_country_code || default_country_code)
-    end
-
     def save_all(data)
       data.all? { |each| save(each) }
     end
@@ -35,7 +29,7 @@ module ExternalChannel
       # 이것이 DB에 들어갈 때, mysql은 \문자를 보고 또 escape를 한다.
       # & => \u0026 => \\u0026 => \\\\u0026
       brand_name = brand_name.gsub('&amp;', '&').to_json.gsub('&amp;', '&').gsub(/[\\*+?()|]/, '\\\\\\').downcase
-      found_brand = Brand.where("LOWER(JSON_EXTRACT(name, '$.#{country_code}')) LIKE ?", brand_name.to_s).first
+      found_brand = Brand.where("LOWER(JSON_EXTRACT(name, '$.#{Country.send(ApplicationRecord.country_code).locale}')) LIKE ?", brand_name.to_s.downcase).first
       raise ActiveRecord::RecordNotFound, "The Brand #{brand_name} Not Found" if found_brand.nil?
 
       found_brand
