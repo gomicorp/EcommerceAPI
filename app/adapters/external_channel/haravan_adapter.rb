@@ -41,13 +41,15 @@ module ExternalChannel
     }
 
     def initialize
+      super
       api_key = Rails.application.credentials.dig(:haravan, :api, :key)
       api_password = Rails.application.credentials.dig(:haravan, :api, :password)
 
       @default_headers = { 'authorization': 'Basic ' + ["#{api_key}:#{api_password}"].pack('m0') }
     end
 
-    public
+    protected
+    
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
       parse_query_hash(query_hash)

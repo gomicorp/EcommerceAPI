@@ -28,6 +28,7 @@ module ExternalChannel
     public
 
     def initialize
+      super
       @base_url = 'https://partner.shopeemobile.com/api/v1'
       @key = Rails.application.credentials.dig(:shopee, :api, :key)
 
@@ -57,8 +58,8 @@ module ExternalChannel
     # = pagination_entries_per_page : default 10, max 100
     def parse_query_hash(query_hash)
       {
-        update_time_from: (query_hash[:update_from] || 0).to_i,
-        update_time_to: (query_hash[:update_to] || 0).to_i
+        update_time_from: (query_hash[:update_from] || (Time.now - 1.days)).to_i,
+        update_time_to: (query_hash[:update_to] || Time.now).to_i
       }
     end
 
@@ -148,7 +149,9 @@ module ExternalChannel
     # = body 를 의미하는 block 을 받아, 모든 id에 대해 post 요청을 보내고 타겟에 대한 묶음을 전달하는 함수.
     def call_each_by_ids(ids, endpoint, target)
       return unless block_given?
+
       ids.map do |id|
+        # ap Time.now
         default_body['timestamp'] = Time.now.to_i
 
         default_headers['Authorization'] = make_shopee_signature(endpoint, default_body.merge(yield id))
@@ -167,11 +170,11 @@ module ExternalChannel
       body[:pagination_entries_per_page] ||= 100
       update_from = body[:update_time_from]
 
+      response_data = []
       while body[:update_time_to] > update_from
         update_limit = body[:update_time_to] - 15.days.to_i
         body[:update_time_from] = update_limit > update_from ? update_limit : update_from
 
-        response_data = []
         while more
           default_headers['Authorization'] = make_shopee_signature(endpoint, body)
           response = request_post(endpoint, body, default_headers)
@@ -179,6 +182,7 @@ module ExternalChannel
 
           more = response['more']
           body[:pagination_offset] += body[:pagination_entries_per_page]
+          # ap Time.now
 
           response_data << response
         end
@@ -187,7 +191,6 @@ module ExternalChannel
         more = true
       end
 
-      ap response_data
       response_data
     end
 

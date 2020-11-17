@@ -36,6 +36,7 @@ module ExternalChannel
     }
 
     def initialize
+      super
       @token = ExternalChannelToken.find_or_create_by(country: Country.send(ApplicationRecord.country_code),
                                                       channel: Channel.find_by(name: 'Lazada'))
 

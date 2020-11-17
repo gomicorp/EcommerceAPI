@@ -1,5 +1,11 @@
 module ExternalChannel
   class BaseAdapter
+    DEAFULT_EXCEPTION = [
+      Errno::ETIMEDOUT, Timeout::Error,
+      Faraday::TimeoutError, Faraday::RetriableResponse, Net::OpenTimeout,
+      Faraday::ConnectionFailed
+    ].freeze
+
     def initialize; end
 
     # == 타입에 따라 정제된 데이터를 리턴합니다.
@@ -20,21 +26,19 @@ module ExternalChannel
     def check_token_validation; end
 
     # == 리퀘스트를 던지는 caller 메소드입니다.
-    def request_get(endpoint, params, headers)
+    def request_get(endpoint, params, headers, retry_exceptions = nil)
+      retry_exceptions ||= DEAFULT_EXCEPTION
       Faraday.new(endpoint, params: params) do |conn|
-        conn.request(:retry, max: 5, interval: 1, exceptions: ['Timeout::Error'])
+        conn.request(:retry, max: 5, interval: 1, exceptions: retry_exceptions)
 
         return conn.get { |req| req.headers.merge!(headers) }
       end
     end
 
-    def request_post(endpoint, body, headers, default_eception = nil)
-      default_eception ||= [
-        Errno::ETIMEDOUT, 'Timeout::Error',
-        Faraday::TimeoutError, Faraday::RetriableResponse, 'Net::OpenTimeout'
-      ]
+    def request_post(endpoint, body, headers, retry_exceptions = nil)
+      retry_exceptions ||= DEAFULT_EXCEPTION
       Faraday.new(endpoint, request: { open_timeout: 5 }) do |conn|
-        conn.request(:retry, max: 5, interval: 1, exceptions: default_eception)
+        conn.request(:retry, max: 5, interval: 1, exceptions: retry_exceptions)
 
         response = conn.post do |req|
           req.headers.merge!(headers)
@@ -65,5 +69,7 @@ module ExternalChannel
     def refine_products(records); end
 
     def refine_orders(records); end
+
+    
   end
 end

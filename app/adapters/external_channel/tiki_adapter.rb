@@ -36,13 +36,15 @@ module ExternalChannel
     }
 
     def initialize
+      super
       @default_headers = {
         'tiki-api': Rails.application.credentials.dig(:tiki, :connection_parameters),
         'User-Agent': 'Faraday v1.0.1'
       }
     end
 
-    public
+    protected
+    
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
       parse_query_hash(query_hash)

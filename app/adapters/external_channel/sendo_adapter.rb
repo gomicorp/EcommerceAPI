@@ -144,20 +144,24 @@ module ExternalChannel
     ### === 요청 query데이터를 parsing하는 로직입니다.
 
     def parse_query_on_product(query_hash)
+      update_from = query_hash[:update_from] || (Time.now - 1.days)
+      update_to = query_hash[:update_to] || Time.now
       {
-        date_from: "#{query_hash[:update_from].year}/#{query_hash[:update_from].month}/#{query_hash[:update_from].day}",
-        date_to: "#{query_hash[:update_to].year}/#{query_hash[:update_to].month}/#{query_hash[:update_to].day}"
+        date_from: "#{update_from.year}/#{update_from.month}/#{update_from.day}",
+        date_to: "#{update_to.year}/#{update_to.month}/#{update_to.day}"
       }
     end
 
     def parse_query_on_order(query_hash)
+      update_from = query_hash[:update_from] || (Time.now - 1.days)
+      update_to = query_hash[:update_to] || Time.now
+
       {
-        order_date_from: "#{query_hash[:update_from].year}/#{query_hash[:update_from].month}/#{query_hash[:update_from].day}",
-        order_date_to: "#{query_hash[:update_to].year}/#{query_hash[:update_to].month}/#{query_hash[:update_to].day}"
+        order_date_from: "#{update_from.year}/#{update_from.month}/#{update_from.day}",
+        order_date_to: "#{update_to.year}/#{update_to.month}/#{update_to.day}"
       }
     end
 
-    ### === 데이터를 불러오는 로직입니다.
     ### === 데이터를 불러오는 로직입니다.
 
     def get_all_by_ids(ids, url, query_hash = {})
@@ -170,6 +174,7 @@ module ExternalChannel
         query_hash[:id] = id
         response = request_get(url, query_hash, header)
         record = JSON.parse response.body
+        # ap Time.now
         if block_given?
           yield record
         else
