@@ -26,6 +26,7 @@
 /config/credentials/test.key
 /config/credentials/staging.key
 /config/credentials/didimdol.key
+/config/credentials/partner.key
 
 /public/packs
 /public/packs-test
