@@ -65,7 +65,7 @@ staging:
 
 didimdol:
   <<: *default
-  database: store_didimdol
+  database: store_production
   host: <%= Rails.application.credentials.dig(:database, :host) %>
   username: <%= Rails.application.credentials.dig(:database, :username) %>
   password: <%= Rails.application.credentials.dig(:database, :password) %>
