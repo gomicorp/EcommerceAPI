@@ -2,23 +2,23 @@
 #
 # Table name: ship_infos
 #
-#  id             :bigint           not null, primary key
-#  loc_city       :string(255)
-#  loc_detail     :text(65535)
-#  loc_district   :string(255)
-#  loc_state      :string(255)
-#  postal_code    :string(255)
-#  receiver_email :string(255)
-#  receiver_name  :string(255)
-#  receiver_tel   :string(255)
-#  ship_amount    :integer          default(0), not null
-#  ship_type      :integer          default("normal"), not null
-#  user_memo      :text(65535)
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  order_info_id  :integer
+#  id              :bigint           not null, primary key
 #  carrier_code    :string(255)
+#  loc_city        :string(255)
+#  loc_detail      :text(65535)
+#  loc_district    :string(255)
+#  loc_state       :string(255)
+#  postal_code     :string(255)
+#  receiver_email  :string(255)
+#  receiver_name   :string(255)
+#  receiver_tel    :string(255)
+#  ship_amount     :integer          default(0), not null
+#  ship_type       :integer          default("normal"), not null
 #  tracking_number :string(255)
+#  user_memo       :text(65535)
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  order_info_id   :integer
 #
 class ShipInfo < ApplicationRecord
 
