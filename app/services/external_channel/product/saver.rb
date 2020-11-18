@@ -78,7 +78,9 @@ module ExternalChannel
           parsed_product
         else
           # TODO: 나중에는 국가별로 키값을 가지고 돌면서 title을 주입할 수 있도록 처리해야 함.
-          { 'vi': title, 'en': "(not translated)#{title}", 'ko': "(미번역)#{title}" }
+          data = { 'en': "(not translated)#{title}", 'ko': "(미번역)#{title}" }
+          data[Country.send(ApplicationRecord.country_code).locale] = title
+          data
         end
       end
     end

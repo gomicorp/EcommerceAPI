@@ -42,6 +42,7 @@ module ExternalChannel
         conn.response :logger, Rails.logger
         conn.request(:retry, max: 5,
                              interval: 1,
+                             methods: [:post],
                              exceptions: retry_exceptions)
 
         response = conn.post do |req|

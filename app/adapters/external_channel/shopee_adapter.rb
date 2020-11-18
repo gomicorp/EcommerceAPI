@@ -56,20 +56,22 @@ module ExternalChannel
     # = update_time_to: 1472774528 (time stamp) => Time.new(yyyy, m, d).to_i
     # = pagination_offset : default 0
     # = pagination_entries_per_page : default 10, max 100
-    def parse_query_hash(query_hash)
-      {
-        update_time_from: (query_hash[:updated_from] || (Time.now - 1.days)).to_i,
-        update_time_to: (query_hash[:updated_to] || Time.now).to_i
-      }
+    def parse_query_hash(data_type)
+      case data_type
+      when 'product'
+        ->(query) { parse_query_on_product(query) }
+      when 'order'
+        ->(query) { parse_query_on_order(query) }
+      end
     end
 
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
-      refine_products(call_products(parse_query_hash(query_hash)))
+      refine_products(call_products(parse_query_hash('product').call(query_hash)))
     end
 
     def orders(query_hash = {})
-      refine_orders(call_orders(parse_query_hash(query_hash)))
+      refine_orders(call_orders(parse_query_hash('order').call(query_hash)))
     end
 
     def login; end
@@ -79,7 +81,7 @@ module ExternalChannel
       endpoint = "#{base_url}/items/get"
       default_body['timestamp'] = Time.now.to_i
 
-      call_list(endpoint, default_body.merge(query_hash))
+      call_list(endpoint, default_body.merge(query_hash), 'product')
         .map { |data| call_product_by_ids(data['items'].pluck('item_id')) }
         .flatten
     end
@@ -90,7 +92,7 @@ module ExternalChannel
       endpoint = "#{base_url}/orders/get"
       default_body['timestamp'] = Time.now.to_i
 
-      call_list(endpoint, default_body.merge(query_hash))
+      call_list(endpoint, default_body.merge(query_hash), 'order')
         .map { |data| call_order_by_sn(data['orders'].pluck('ordersn')) }
         .flatten
     end
@@ -129,6 +131,64 @@ module ExternalChannel
 
     private
 
+    # === query 요청 보내기
+    def parse_query_on_product(query_hash)
+      {
+        update_time_from: (query_hash[:updated_from].to_datetime || (Time.now - 1.days)).to_i,
+        update_time_to: (query_hash[:updated_to].to_datetime || Time.now).to_i
+      }
+    end
+
+    def parse_query_on_order(query_hash)
+      {
+        create_time_from: (query_hash[:updated_from].to_datetime || (Time.now - 1.days)).to_i,
+        create_time_to: (query_hash[:updated_to].to_datetime || Time.now).to_i
+      }
+    end
+
+    # === 쇼피의 데이터 중 more 이라는 데이터가 있는 것들은 pagination을 따로 하지 않고, more로만 붙여 준다.
+    # === order와 product의 list요청에는 모두 more이라는 데이터가 확인되어, 앞으로 user등의 데이터가 추가되어도 사용될 것이라 기대하고 설정함.
+    # === 암것도 모드고 while 문 내에서 more이 false가 될 때까지 부름.
+    def call_list(endpoint, body, data_type)
+      more = true
+      body[:pagination_offset] ||= 0
+      body[:pagination_entries_per_page] ||= 100
+      to, from = time_symbol(data_type)
+
+      update_from = body[from]
+
+      response_data = []
+      while body[to] > update_from
+        update_limit = body[to] - 15.days.to_i
+        body[from] = update_limit > update_from ? update_limit : update_from
+
+        while more
+          default_headers['Authorization'] = make_shopee_signature(endpoint, body)
+          response = request_post(endpoint, body, default_headers)
+          raise RuntimeError.new(response['error'].to_s) if response.key?('error')
+
+          more = response['more']
+          body[:pagination_offset] += body[:pagination_entries_per_page]
+
+          response_data << response
+        end
+
+        body[to] = body[from]
+        more = true
+      end
+
+      response_data
+    end
+
+    def time_symbol(data_type)
+      case data_type
+      when 'product'
+        [:update_time_to, :update_time_from]
+      when 'order'
+        [:create_time_to, :create_time_from]
+      end
+    end
+
     # === shopee 에서 데이터를 가져오는 부분
     def call_product_by_ids(ids)
       endpoint = "#{base_url}/item/get"
@@ -151,47 +211,14 @@ module ExternalChannel
       return [] unless block_given?
 
       ids.map do |id|
-        # ap Time.now
         default_body['timestamp'] = Time.now.to_i
 
         default_headers['Authorization'] = make_shopee_signature(endpoint, default_body.merge(yield id))
         response = request_post(endpoint, default_body.merge(yield id), default_headers)
+        raise RuntimeError.new(response['error'].to_s) if response.key?('error')
 
         response[target]
       end
-    end
-
-    # === 쇼피의 데이터 중 more 이라는 데이터가 있는 것들은 pagination을 따로 하지 않고, more로만 붙여 준다.
-    # === order와 product의 list요청에는 모두 more이라는 데이터가 확인되어, 앞으로 user등의 데이터가 추가되어도 사용될 것이라 기대하고 설정함.
-    # === 암것도 모드고 while 문 내에서 more이 false가 될 때까지 부름.
-    def call_list(endpoint, body)
-      more = true
-      body[:pagination_offset] ||= 0
-      body[:pagination_entries_per_page] ||= 100
-      update_from = body[:update_time_from]
-
-      response_data = []
-      while body[:update_time_to] > update_from
-        update_limit = body[:update_time_to] - 15.days.to_i
-        body[:update_time_from] = update_limit > update_from ? update_limit : update_from
-
-        while more
-          default_headers['Authorization'] = make_shopee_signature(endpoint, body)
-          response = request_post(endpoint, body, default_headers)
-          raise ArgumentError, 'Request Parameter is not good one' if response.key?('error')
-
-          more = response['more']
-          body[:pagination_offset] += body[:pagination_entries_per_page]
-          # ap Time.now
-
-          response_data << response
-        end
-
-        body[:update_time_to] = body[:update_time_from]
-        more = true
-      end
-
-      response_data
     end
 
     def make_shopee_signature(endpoint, body)

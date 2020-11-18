@@ -173,7 +173,8 @@ module ExternalChannel
         query_hash[:id] = id
         response = request_get(url, query_hash, header)
         record = JSON.parse response.body
-        # ap Time.now
+        raise RuntimeError.new(record.to_json.to_s) unless record['success']
+
         if block_given?
           yield record
         else
@@ -188,7 +189,7 @@ module ExternalChannel
       data = []
       while body[:token].nil? == false
         each_data = request_post(url, body, header)
-        raise ArgumentError, 'parameter is not enough' unless each_data['success']
+        raise RuntimeError.new(each_data.to_json.to_s) unless each_data['success']
 
         body[:token] = each_data['result']['next_token']
         data << if block_given?

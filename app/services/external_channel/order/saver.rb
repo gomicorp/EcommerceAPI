@@ -16,7 +16,7 @@ module ExternalChannel
       def set_order_related_info(target, variant_ids)
         variant_ids.each do |variant|
           option = ::ProductOption.find_by(channel_code: variant[0])
-          return false if option.nil?
+          raise ActiveRecord::RecordNotFound, "#{variant[0]} option not found" if option.nil?
 
           target.product_options << option
 

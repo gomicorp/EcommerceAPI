@@ -82,15 +82,18 @@ module ExternalChannel
       response = request_get(endpoint, {}, default_headers)
 
       data = JSON.parse response.body
-      data || []
+      raise RuntimeError.new(data['error'].to_s) unless data['error'].nil?
+
+      data
     end
 
     def call_orders(query_hash)
       endpoint = 'https://api.tiki.vn/integration/v2/orders'
       response = request_get(endpoint, query_hash, default_headers)
       data = JSON.parse response.body
+      raise RuntimeError.new(data['error'].to_s) unless data['error'].nil?
 
-      data['data'] || []
+      data['data']
     end
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
