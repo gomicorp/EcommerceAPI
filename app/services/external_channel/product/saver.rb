@@ -51,7 +51,6 @@ module ExternalChannel
         end
       end
 
-      # TODO: 채널 어소시에이션을 걸어야 함.
       def parse_product(product, default_product = {})
         {
           brand_id: brand.id,
@@ -77,7 +76,6 @@ module ExternalChannel
           parsed_product[Country.send(ApplicationRecord.country_code).locale] = title
           parsed_product
         else
-          # TODO: 나중에는 국가별로 키값을 가지고 돌면서 title을 주입할 수 있도록 처리해야 함.
           data = { 'en': "(not translated)#{title}", 'ko': "(미번역)#{title}" }
           data[Country.send(ApplicationRecord.country_code).locale] = title
           data
