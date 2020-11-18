@@ -13,7 +13,7 @@ module ExternalChannel
       when 'shopee'
         ExternalChannel::ShopeeAdapter.new
       else
-        raise NotImplementedError('Requested Data Is Not Supported!')
+        raise NotImplementedError, 'Requested Data Is Not Supported!'
       end
     end
   end

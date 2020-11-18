@@ -42,9 +42,9 @@ module ExternalChannel
     def parse_query_hash(data_type)
       case data_type
       when 'product'
-        ->(query) { parse_query_on_product(query) }
+        ->(query) { parse_query_on_product(default_query(query)) }
       when 'order'
-        ->(query) { parse_query_on_order(query) }
+        ->(query) { parse_query_on_order(default_query(query)) }
       end
     end
 
@@ -131,7 +131,7 @@ module ExternalChannel
           cancelled_status: cancelled_status(sales_data['order_status']),
           shipping_status: shipping_status(sales_data['order_status']),
           pay_method: map_pay_method(sales_data['payment_method']),
-          paid_at: nil,
+          paid_at: paid_at(sales_data),
           channel: 'sendo',
           ordered_at: Time.at(sales_data['order_date_time_stamp']).getutc,
           ship_fee: sales_data['total_amount_buyer'] - sales_data['total_amount']
@@ -144,8 +144,8 @@ module ExternalChannel
     ### === 요청 query데이터를 parsing하는 로직입니다.
 
     def parse_query_on_product(query_hash)
-      update_from = Time.new(query_hash[:updated_from]) || (Time.now - 1.days)
-      update_to = Time.new(query_hash[:updated_to]) || Time.now
+      update_from = query_hash[:updated_from].to_datetime
+      update_to = query_hash[:updated_to].to_datetime
       {
         date_from: "#{update_from.year}/#{update_from.month}/#{update_from.day}",
         date_to: "#{update_to.year}/#{update_to.month}/#{update_to.day}"
@@ -153,12 +153,18 @@ module ExternalChannel
     end
 
     def parse_query_on_order(query_hash)
-      update_from = Time.new(query_hash[:updated_from]) || (Time.now - 1.days)
-      update_to = Time.new(query_hash[:updated_to]) || Time.now
+      update_from = query_hash[:updated_from].to_datetime
+      update_to = query_hash[:updated_to].to_datetime
       {
         order_date_from: "#{update_from.year}/#{update_from.month}/#{update_from.day}",
         order_date_to: "#{update_to.year}/#{update_to.month}/#{update_to.day}"
       }
+    end
+    
+    def default_query(query_hash)
+      query_hash[:updated_from] ||= Time.now - 1.days
+      query_hash[:updated_to] ||= Time.now
+      query_hash
     end
 
     ### === 데이터를 불러오는 로직입니다.
@@ -281,6 +287,14 @@ module ExternalChannel
         nil
       else
         order_status.keys[0].to_s
+      end
+    end
+
+    def paid_at(sales_data)
+      if sales_data['order_status'] == 8
+        Time.at(sales_data['order_date_time_stamp']).getutc 
+      else
+        nil
       end
     end
   end

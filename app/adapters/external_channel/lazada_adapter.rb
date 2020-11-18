@@ -148,8 +148,10 @@ module ExternalChannel
     def login; end
 
     def parse_query_hash(query_hash)
-      query_hash['update_after'] = query_hash['updated_from']
-      query_hash['update_before'] = query_hash['updated_to']
+      query_hash['updated_from'] ||= DateTime.now - 1.days
+      query_hash['updated_to'] ||= DateTime.now
+      query_hash['update_after'] = query_hash['updated_from'].to_s
+      query_hash['update_before'] = query_hash['updated_to'].to_s
       query_hash.delete('updated_from')
       query_hash.delete('updated_to')
     end

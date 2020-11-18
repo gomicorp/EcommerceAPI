@@ -38,7 +38,7 @@ module ExternalChannel
         # TODO: 모델 구조 변경시 변경 필요
         {
           total_price: order[:billing_amount],
-          ordered_at: order[:ordered_at],
+          ordered_at: default_order[:ordered_at] || order[:ordered_at],
           pay_method: order[:pay_method],
           channel: order[:channel],
           paid_at: order[:paid_at] || default_order[:paid_at],

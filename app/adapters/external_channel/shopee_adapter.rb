@@ -59,9 +59,9 @@ module ExternalChannel
     def parse_query_hash(data_type)
       case data_type
       when 'product'
-        ->(query) { parse_query_on_product(query) }
+        ->(query) { parse_query_on_product(default_query(query)) }
       when 'order'
-        ->(query) { parse_query_on_order(query) }
+        ->(query) { parse_query_on_order(default_query(query)) }
       end
     end
 
@@ -134,16 +134,22 @@ module ExternalChannel
     # === query 요청 보내기
     def parse_query_on_product(query_hash)
       {
-        update_time_from: (query_hash[:updated_from].to_datetime || (Time.now - 1.days)).to_i,
-        update_time_to: (query_hash[:updated_to].to_datetime || Time.now).to_i
+        update_time_from: query_hash[:updated_from].to_datetime.to_i,
+        update_time_to: query_hash[:updated_to].to_datetime.to_i
       }
     end
 
     def parse_query_on_order(query_hash)
       {
-        create_time_from: (query_hash[:updated_from].to_datetime || (Time.now - 1.days)).to_i,
-        create_time_to: (query_hash[:updated_to].to_datetime || Time.now).to_i
+        create_time_from: query_hash[:updated_from].to_datetime.to_i,
+        create_time_to: query_hash[:updated_to].to_datetime.to_i
       }
+    end
+
+    def default_query(query_hash)
+      query_hash[:updated_from] ||= (Time.now - 1.days)
+      query_hash[:updated_to] ||= Time.now
+      query_hash
     end
 
     # === 쇼피의 데이터 중 more 이라는 데이터가 있는 것들은 pagination을 따로 하지 않고, more로만 붙여 준다.

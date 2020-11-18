@@ -41,16 +41,16 @@ module ExternalChannel
       ).first
 
       # 브랜드를 못찾으면 브랜드가 지정되지 않았다는 의미로 생성
-      found_brand = no_brand if found_brand.nil?
+      found_brand = temp_brand if found_brand.nil?
 
       found_brand
     end
 
     private
 
-    def no_brand
+    def temp_brand
       # NO BRAND MATCH 라는 브랜드를 찾음
-      no_brand = Brand.find_or_create_by(eng_name: NO_BRAND_NAME, company: no_company)
+      no_brand = Brand.find_or_create_by(subtitle: NO_BRAND_NAME, company: temp_company)
       return no_brand unless no_brand.id.nil?
 
       # TODO: 지금 이름이 vn이랑 vi랑 섞여서 기록되어 있다. 확인이 필요하다.
@@ -65,7 +65,7 @@ module ExternalChannel
       no_brand
     end
 
-    def no_company
+    def temp_company
       no_company = Company.find_or_create_by(name: NO_COMPANY_NAME, description: NO_COMPANY_DESC)
       no_company.save! if no_company.id.nil?
       no_company

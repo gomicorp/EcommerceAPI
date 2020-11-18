@@ -7,7 +7,7 @@ module ExternalChannel
     {
       # = category_id : 상품 카테고리로 검색
       # = active : 상품의 활성화 상태로 검색 ( 1 = active | 0 = inactive)
-      # = created_from_date : 상품 생성 시간 >= date
+      # = created_from_date : 상품 생성 시간 >= date yyyy-mm-dd hh:mm:ss
       # = created_to_date : 상품 생성 시간 <= date
       # = updated_from_date : 상품 업데이트 시간 >= date
       # = updated_to_date : 상품 업데이트 시간 <= date
@@ -61,8 +61,10 @@ module ExternalChannel
     def login; end
 
     def parse_query_hash(query_hash)
-      query_hash['updated_from_date'] = query_hash['updated_from'].to_datetime.to_s
-      query_hash['updated_to_date'] = query_hash['updated_to'].to_datetime.to_s
+      query_hash['updated_from'] ||= DateTime.now - 1.days
+      query_hash['updated_to_date'] ||= DateTime.now
+      query_hash['updated_from_date'] = query_hash['updated_from'].to_datetime.strftime("%F %T")
+      query_hash['updated_to_date'] = query_hash['updated_to'].to_datetime.strftime("%F %T")
       query_hash.delete('updated_from')
       query_hash.delete('updated_to')
     end
@@ -74,7 +76,9 @@ module ExternalChannel
       response = request_get(endpoint, query_hash, default_headers)
 
       data = JSON.parse response.body
-      data['data'] || []
+      raise RuntimeError.new(data['error'].to_s) unless data['error'].nil?
+
+      data['data']
     end
 
     def call_product(product_id)
