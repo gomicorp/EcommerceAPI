@@ -62,7 +62,7 @@ module ExternalChannel
 
     def parse_query_hash(query_hash)
       query_hash['updated_from'] ||= DateTime.now - 1.days
-      query_hash['updated_to_date'] ||= DateTime.now
+      query_hash['updated_to'] ||= DateTime.now
       query_hash['updated_from_date'] = query_hash['updated_from'].to_datetime.strftime("%F %T")
       query_hash['updated_to_date'] = query_hash['updated_to'].to_datetime.strftime("%F %T")
       query_hash.delete('updated_from')
