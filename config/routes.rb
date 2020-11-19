@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  root 'hello#world'
+
   # global file crud (active_storage)
   resources :files, only: %i[show create destroy]
 
