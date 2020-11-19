@@ -7,13 +7,13 @@ module ExternalChannel
         'This Company is prepared to protect server from expected that the external sales channels doesn\'t serve the profer brand data.
         DO NOT DELETE THIS COMPANY.'.freeze
       NO_BRAND_NAME = 'NO BRAND MATCH'.freeze
-      
+
       protected
 
       def save_data(data)
         refresh_data
         @channel = Channel.find_by_name(data[:channel_name])
-        raise ActiveRecord::RecordNotFound('NotFoundChannelError => The given channel doesn\'t exist on gomi back office.') if channel.nil?
+        raise ActiveRecord::RecordNotFound("NotFoundChannelError => The given channel #{data[:channel_name]} doesn\'t exist on gomi back office.") if channel.nil?
 
         @brand = find_brand(data[:brand_name]) || temp_brand
         save_product(data) && save_options(data[:variants])

@@ -1,4 +1,8 @@
 class ExternalChannelsController < ApiController
+  def initialize
+    @error = []
+  end
+
   def code
     render status: 200, plain: 'get code success'
   end
@@ -7,7 +11,7 @@ class ExternalChannelsController < ApiController
     ApplicationRecord.country_code = batch_params[:country_code]
     Channel.all.pluck(:name).each do |channel_name|
       adapter = ExternalChannel::AdapterFactory.get_adapter(channel_name)
-      Rails.logger.info "Request to Channel #{channel_name}"
+      Rails.logger.debug "Request to Channel #{channel_name}"
       
       product_manager = ExternalChannel::ManagerFactory.get_manager('product', adapter)
       order_manager = ExternalChannel::ManagerFactory.get_manager('order', adapter)
@@ -18,7 +22,10 @@ class ExternalChannelsController < ApiController
       next
     rescue StandardError => e
       Rails.logger.error "#{Time.now} | Error : #{e.inspect} occured\nFIND here:\n#{e.backtrace.last(20)}"
+      error << e
     end
+
+    render_json
   end
 
   def batch
@@ -26,12 +33,30 @@ class ExternalChannelsController < ApiController
     adapter = ExternalChannel::AdapterFactory.get_adapter(batch_params[:channel_name])
     manager = ExternalChannel::ManagerFactory.get_manager(batch_params[:type], adapter)
 
-    manager.save_all(batch_params[:query_hash])
+    begin
+      manager.save_all(batch_params[:query_hash])
+    rescue StandardError => e
+      error << e
+    end
+
+    render_json
   end
 
   private
 
+  attr_accessor :error
+
   def batch_params
     params.permit(:country_code, :type, :channel_name, query_hash: {})
+  end
+
+  def render_json
+    if error.empty?
+      render status: :no_content
+    else
+      render json: {
+        errors: error.map { |e| { message: e.inspect, backtract: e.backtrace } }
+      }, status: :bad_request
+    end
   end
 end

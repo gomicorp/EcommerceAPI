@@ -8,15 +8,16 @@ module ExternalChannel
         order_info = ::ExternalChannelOrderInfo.find_by(external_channel_order_id: order[:id])
         order_info = ::ExternalChannelOrderInfo.new if order_info.nil?
         order_info.update!(parse_order(order))
-        set_order_related_info(order_info, order[:variant_ids]) if order_info.products.nil?
+        set_order_related_info(order_info, order) if order_info.products.nil?
       end
 
       private
 
-      def set_order_related_info(target, variant_ids)
+      def set_order_related_info(target, order)
+        variant_ids = order[:variant_ids]
         variant_ids.each do |variant|
           option = ::ProductOption.find_by(channel_code: variant[0])
-          raise ActiveRecord::RecordNotFound, "#{variant[0]} option not found" if option.nil?
+          raise ActiveRecord::RecordNotFound, "On #{order[:channel]}, #{order[:order_number]}-#{variant[0]} option not found" if option.nil?
 
           target.product_options << option
 

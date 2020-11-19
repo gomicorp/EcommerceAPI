@@ -12,7 +12,7 @@ module ExternalChannel
         save_data(data)
       rescue StandardError => e
         ActiveRecord::Rollback
-        Rails.logger.error "#{Time.now} | Error : #{e.inspect} occured\nFIND here:\n#{e.backtrace}"
+        Rails.logger.error "#{Time.now} | Error : #{e.inspect} occured\nFIND here:\n#{e.backtrace.last(20)}"
       end
     end
 

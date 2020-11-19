@@ -41,15 +41,15 @@ module ExternalChannel
     private
 
     def valid_adapter?(channel_adapter)
-      channel_adapter.is_a? ExternalChannel::BaseAdapter
+      channel_adapter.is_a? BaseAdapter
     end
 
     def valid_saver?(saver)
-      saver.is_a? ExternalChannel::BaseSaver
+      saver.is_a? BaseSaver
     end
 
     def valid_validator?(validator)
-      validator.is_a? ExternalChannel::BaseValidator
+      validator.is_a? BaseValidator
     end
   end
 end
