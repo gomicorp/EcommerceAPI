@@ -32,6 +32,7 @@ module GomiBranch
     # void 배송 매니저는
     # 주문 정보를 CS 로부터 전달 받아, 출고 처리를 합니다.
     def output(order_info)
+      ship_info = order_info.ship_info
       OutputService.new(order_info).call
       Shipping::Tracking.create(ship_info.tracking_number, ship_info.carrier_code)
     end
