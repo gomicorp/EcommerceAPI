@@ -26,6 +26,7 @@ module Api
 
     # 빼줘야 하는 것.
     config.eager_load_paths -= [Rails.root.join('lib', 'tasks')]
+    config.autoload_paths -= [Rails.root.join('lib', 'tasks')]
     config.autoload_paths -= ["#{config.root}/app/simple_office/"]
   end
 end

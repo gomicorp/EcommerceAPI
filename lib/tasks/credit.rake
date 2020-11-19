@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'helper'
+require_relative '../../config/initializers/tasks/helper'
 
 namespace :credit do
   %i[development staging production].each do |env_name|

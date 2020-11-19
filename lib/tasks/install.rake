@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'fileutils'
-require_relative 'helper'
+require_relative '../../config/initializers/tasks/helper'
 
 namespace :install do
   desc 'Install all'
