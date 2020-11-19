@@ -54,7 +54,11 @@ module Store
         end
       end
 
-      # batch process end-point
+      # [Hooks] batch process end-point
+      # by. 젠킨스 아저씨
+      #
+      # path => track_store_order_info_ship_info_path
+      # PATCH /store/order_infos/0/ship_info/track
       def track
         ship_infos = ShipInfo.where(current_status: ShipInfo::StatusLog.where(code: 'ship_ing'))
         agent = GomiBranch::ShippingManager.new
