@@ -20,7 +20,13 @@ module Api
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
 
+    # 추가해줘야 하는 것.
     config.eager_load_paths << Rails.root.join('lib')
     config.eager_load_paths << Rails.root.join('app', 'time_machines')
+
+    # 빼줘야 하는 것.
+    config.eager_load_paths -= [Rails.root.join('lib', 'tasks')]
+    config.autoload_paths -= [Rails.root.join('lib', 'tasks')]
+    config.autoload_paths -= ["#{config.root}/app/simple_office/"]
   end
 end
