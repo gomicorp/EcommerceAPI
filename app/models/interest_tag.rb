@@ -17,5 +17,5 @@
 #
 #  fk_rails_...  (country_id => countries.id)
 #
-class InterestTag < ApplicationRecord
+class InterestTag < NationRecord
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'helper'
+require_relative '../../vendor/tasks/helper'
 
 rake.alias 'db:migrate', 'db:migrate:with_data' do
   rake :annotate_models if Rails.env.development?

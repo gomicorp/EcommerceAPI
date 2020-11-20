@@ -6,8 +6,8 @@
 class SetCountriesDataAndAssociations < ActiveRecord::Migration[6.0]
   def up
     Country.seed_data.each do |country_seed|
-      country = Country.find_by!(locale: country_seed[:locale])
-      country.update!(country_seed)
+      country = Country.find_by(short_name: country_seed[:short_name])
+      country ||= Country.create(country_seed)
     end
     model_names_need_country = [
       :Adjustment,
@@ -15,9 +15,11 @@ class SetCountriesDataAndAssociations < ActiveRecord::Migration[6.0]
       :Product,
       :ProductItemGroup,
       :ProductItem,
-      :ProductCollection
+      :ProductCollection,
+      :Cart
     ]
     country = Country.find_by(short_name: :th)
+    return country.nil?
 
     model_names_need_country.each do |model_name|
       model = Object.const_get(model_name)
