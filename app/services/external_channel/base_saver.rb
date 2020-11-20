@@ -14,6 +14,7 @@ module ExternalChannel
         ActiveRecord::Rollback
         Rails.logger.error "#{Time.now} | Error : #{e.inspect} occured\nFIND here:\n#{e.backtrace.last(20)}"
       end
+      true
     end
 
     protected

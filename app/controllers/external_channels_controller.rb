@@ -52,7 +52,7 @@ class ExternalChannelsController < ApiController
 
   def render_json
     if error.empty?
-      render status: :no_content
+      render status: :no_content, plain: 'success'
     else
       render json: {
         errors: error.map { |e| { message: e.inspect, backtract: e.backtrace } }
