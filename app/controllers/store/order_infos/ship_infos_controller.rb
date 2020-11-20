@@ -1,7 +1,6 @@
 module Store
   module OrderInfos
     class ShipInfosController < CommonController
-      before_action :authenticate_request!
       before_action :set_ship_info, unless: :bulk_method?, except: :track
 
       def edit
