@@ -46,7 +46,7 @@ class ShipInfo < ApplicationRecord
   validates_presence_of :receiver_name, :receiver_tel, :receiver_email
   validates_presence_of :loc_state, :loc_city, :loc_detail
 
-  scope :order_status, ->(status_name) { includes(:order_info).where(order_info: OrderInfo.order_status(status_name)) }
+  scope :order_status, ->(status_name) { includes(:order_info).where(order_info: OrderInfo.stage_in(status_name)) }
 
   def self.available_status
     STATUS

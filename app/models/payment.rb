@@ -52,7 +52,7 @@ class Payment < ApplicationRecord
   )
 
   scope :order_status, ->(status_name) {
-    includes(:order_info).where(order_info: OrderInfo.order_status(status_name))
+    includes(:order_info).where(order_info: OrderInfo.stage_in(status_name))
   }
   # scope :pay_slips_attached, -> { left_joins(:pay_slips_attachments).where('active_storage_attachments.id is NOT NULL') }
   # scope :pay_slips_unattached, -> { left_joins(:pay_slips_attachments).where('active_storage_attachments.id is NULL') }

@@ -44,6 +44,7 @@ module StatusLoggable
       has_many :status_logs, class_name: status_log_class_name, as: :loggable
 
       has_one :current_status, -> { order(id: :desc).limit(1) }, class_name: status_log_class_name, as: :loggable
+      has_one :status, class_name: 'StatusCode', through: :current_status, source: :status_code
     end
 
     def declare_loggable_status_code_class(loggable_model_name, status_log_class_name, code_names = [])

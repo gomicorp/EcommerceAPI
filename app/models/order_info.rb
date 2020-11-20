@@ -30,6 +30,23 @@
 class OrderInfo < NationRecord
   include ChannelRecordable
 
+  STATUSES = %w[
+    pay_wait
+    paid
+    ship_prepare
+    ship_ing
+    ship_complete
+    refund_request
+    refund_reject
+    refund_complete
+    cancel_request
+    cancel_complete
+    order_complete
+  ].freeze
+  NEGATIVE_STATUSES = %w[cancel_complete refund_complete].freeze
+
+  enum status: STATUSES.to_echo
+
   belongs_to :cart
   belongs_to :channel
   has_one :ship_info, dependent: :destroy
@@ -49,16 +66,14 @@ class OrderInfo < NationRecord
   validates_uniqueness_of :cart_id, :enc_id
 
 
-  delegate :order_status, to: :cart
   # alias_attribute :status, :order_status
   delegate :delivery_amount, to: :ship_info, allow_nil: true
   delegate :amount, to: :payment, allow_nil: true
   delegate :pay_method, to: :payment, allow_nil: true
 
-  scope :order_status, ->(status_name) { includes(:cart).where(cart: Cart.public_send(status_name)) }
   scope :sold, -> { includes(:cart).where(cart: Cart.where(order_status: Cart::SOLD_STATUSES)) }
-  scope :eager_index, -> { includes(:payment, :ship_info) }
-  scope :stage_in, ->(stage) { includes(:cart).where(cart: Cart.send((stage || :all).to_sym)) }
+  scope :eager_index, -> { includes(:payment, :ship_info, cart: [:user, { items: { product_option: [:product_page, { option_group: :product }] } }]) }
+  scope :stage_in, ->(stage) { where(status: stage) }
   scope :sellers_order, -> { includes(:items).where(cart: Cart.where(items: CartItem.sold_by_seller)) }
 
   def self.gen_enc_id
