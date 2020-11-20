@@ -37,7 +37,7 @@ module GomiBranch
       Shipping::Tracking.create(ship_info.tracking_number, ship_info.carrier_code)
     end
 
-    def update_tracking_info(ship_infos=nil)
+    def update_tracking_info(ship_infos = nil)
       ship_infos ||= [@ship_info]
       ship_infos.each do |ship_info|
         carrier_code = ship_info.carrier_code
@@ -72,9 +72,9 @@ module GomiBranch
           raise CannotChangeStatusError, "Order #{order_info.enc_id} is not paid." unless pay_completed
         when 'ship_ing'
           raise CannotChangeStatusError, "Order #{order_info.enc_id} is not paid." unless pay_completed
-          raise CannotChangeStatusError, "Order #{order_info.enc_id}  is not ready to ship." unless ship_prepared
+          raise CannotChangeStatusError, "Order #{order_info.enc_id} is not ready to ship." unless ship_prepared
         when 'ship_complete'
-          raise CannotChangeStatusError, "Order #{order_info.enc_id} 's shipping is not complete." unless being_shipped
+          raise CannotChangeStatusError, "Order #{order_info.enc_id}'s shipping is not complete." unless being_shipped
         else
           # return 관련 로직은 아직 구현되지 않음.
           raise CannotChangeStatusError, 'Not supplied yet.'
