@@ -77,18 +77,12 @@ module ExternalChannel
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash)
       endpoint = 'https://gomicorp.myharavan.com/admin/products.json'
-      response = request_get(endpoint, query_hash, default_headers)
-
-      data = JSON.parse response.body
-      data['products']
+      call_all(endpoint, query_hash, 'products')
     end
 
     def call_orders(query_hash)
       endpoint = 'https://gomicorp.myharavan.com/admin/orders.json'
-      response = request_get(endpoint, query_hash, default_headers)
-
-      data = JSON.parse response.body
-      data['orders']
+      call_all(endpoint, query_hash, 'orders')
     end
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
@@ -163,6 +157,22 @@ module ExternalChannel
       end
 
       order_property
+    end
+
+    private
+
+    def call_all(end_point, query_hash, target)
+      query_hash[:page] ||= 1
+      data = []
+      response =[1]
+      while(!response.empty?)
+        ap query_hash
+        temp = request_get(end_point, query_hash, default_headers)
+        response = (JSON.parse temp.body)[target.to_s]
+        data << response
+        query_hash[:page] += 1
+      end
+      data.flatten
     end
   end
 end
