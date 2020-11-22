@@ -104,7 +104,6 @@ module ExternalChannel
 
     def refine_product_options(record)
       variants = record['variants'] || []
-      option_property = []
 
       if variants.empty?
         return [
@@ -116,22 +115,20 @@ module ExternalChannel
         ]
       end
 
-      variants.each do |variant|
-        option_property << {
+      variants.map do |variant|
+        {
           id: variant['id'],
           price: variant['price'].to_i,
           name: variant['title']
         }
       end
-
-      option_property
     end
 
     def refine_orders(records)
       order_property = []
 
       records.each do |record|
-        next if %w[shopee tiki lazada sendo].include? record['source']
+        next unless %w[haravan_draft_order].include? record['source']
 
         paid_at = nil
         if record['gateway'] == 'Thanh toán khi giao hàng (COD)'
@@ -150,7 +147,7 @@ module ExternalChannel
           paid_at: paid_at,
           billing_amount: record['total_price'],
           ship_fee: record['shipping_lines'].inject(0) { |sum, line| sum + (line['price']) },
-          variant_ids: record['line_items'].map { |variant| [variant['id'], variant['quantity'].to_i] },
+          variant_ids: record['line_items'].map { |variant| [variant['variant_id'], variant['quantity'].to_i] },
           cancelled_status: record['cancelled_status'],
           shipping_status: record['fulfillments_status']
         }
