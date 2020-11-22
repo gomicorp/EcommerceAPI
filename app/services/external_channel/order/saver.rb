@@ -21,6 +21,7 @@ module ExternalChannel
           order_to_option = ::ExternalChannelCartItem.new
           order_to_option.external_channel_order_info_id = target.id
           order_to_option.external_option_id = option.id
+          order_to_option.product_option = target
           order_to_option.option_count = variant[1]
           order_to_option.save!
           
