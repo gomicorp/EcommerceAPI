@@ -19,4 +19,5 @@
 #
 class ExternalChannelCartItem < NationRecord
   has_one :product_option, class_name: 'ProductOption'
+  belongs_to :external_channel_order_info, class_name: 'ExternalChannelOrderInfo'
 end
