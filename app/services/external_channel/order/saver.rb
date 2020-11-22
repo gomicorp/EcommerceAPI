@@ -19,9 +19,8 @@ module ExternalChannel
           option = ::ProductOption.find_by(channel_code: variant[0])
           raise ActiveRecord::RecordNotFound, "On #{order[:channel]}, #{order[:order_number]}-#{variant[0]} option not found" if option.nil?
 
-          target.product_options << option
-
           order_to_option = ::ExternalChannelCartItem.new
+          order_to_option.product_option = option
           order_to_option.external_option_id = option.id
           order_to_option.option_count = variant[1]
           order_to_option.save!
