@@ -117,7 +117,7 @@ module ExternalChannel
     end
 
     def check_token_validation
-      if !token.auth_token || token.access_token_expired?
+      if !token.access_token || token.access_token_expired?
         if !token.refresh_token || token.refresh_token_expired?
           get_code
         else
