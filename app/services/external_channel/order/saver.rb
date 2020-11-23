@@ -26,10 +26,7 @@ module ExternalChannel
           order_to_option.save!
           
           option.brands.each do |brand|
-            order_to_brand = ::ExternalChannelOrderInfoBrand.new
-            order_to_brand.brand = brand
-            order_to_brand.external_channel_order_info = target
-            order_to_brand.save!
+            ::ExternalChannelOrderInfoBrand.find_or_create_by!(brand: brand, external_channel_order_info: target)
           end
         end
       end

@@ -163,7 +163,6 @@ module ExternalChannel
       data = []
       response =[1]
       while(!response.empty?)
-        ap query_hash
         temp = request_get(end_point, query_hash, default_headers)
         response = (JSON.parse temp.body)[target.to_s]
         data << response
