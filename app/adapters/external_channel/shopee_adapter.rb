@@ -264,7 +264,7 @@ module ExternalChannel
     #=== order 데이터 refine
 
     def paid_time(pay_time)
-      pay_time ? Time.new(pay_time).getutc : nil
+      pay_time ? Time.at(pay_time).getutc : nil
     end
 
     def cancel_status(order_status)
