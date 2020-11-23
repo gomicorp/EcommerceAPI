@@ -4,6 +4,8 @@ class ExternalChannelsController < ApiController
   end
 
   def code
+    adapter.set_code(code_params['code'])
+
     render status: 200, plain: 'get code success'
   end
 
@@ -45,6 +47,10 @@ class ExternalChannelsController < ApiController
   private
 
   attr_accessor :error
+
+  def code_params
+    params.permit('code')
+  end
 
   def batch_params
     params.permit(:country_code, :type, :channel_name, query_hash: {})

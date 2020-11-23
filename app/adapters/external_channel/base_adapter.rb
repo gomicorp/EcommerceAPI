@@ -8,6 +8,8 @@ module ExternalChannel
 
     def initialize; end
 
+    def set_code(code); end
+
     # == 타입에 따라 정제된 데이터를 리턴합니다.
     def get_list(data_type, query = {})
       case data_type

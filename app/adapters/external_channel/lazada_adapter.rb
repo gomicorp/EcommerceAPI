@@ -54,7 +54,7 @@ module ExternalChannel
 
     # === TODO:/Users/gomidev/Documents/chromedriver 이 경로로 chrome driver를 깔아줘야 함.
     def get_code
-      Selenium::WebDriver::Chrome::Service.driver_path = '/Users/gomidev/Documents/chromedriver'
+      Selenium::WebDriver::Chrome::Service.driver_path = Rails.application.credentials.dig(:chrome_driver_path)
       options = Selenium::WebDriver::Chrome::Options.new # = 크롬 헤드리스 모드 위해 옵션 설정
       options.add_argument('--disable-extensions')
       options.add_argument('--headless')
