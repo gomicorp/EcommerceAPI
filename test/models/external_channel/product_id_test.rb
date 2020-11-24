@@ -23,7 +23,7 @@
 require 'test_helper'
 
 module ExternalChannel
-  class ProductIdTest < ActiveSupport::TestCase
+  class ProductMapperTest < ActiveSupport::TestCase
     # test "the truth" do
     #   assert true
     # end

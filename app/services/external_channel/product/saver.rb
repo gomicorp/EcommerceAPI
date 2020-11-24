@@ -28,7 +28,7 @@ module ExternalChannel
       end
 
       def save_product(product_data)
-        this_product_connection = ExternalChannel::ProductId.find_or_initialize_by(channel_id: channel.id, external_id: product_data[:id].to_s)
+        this_product_connection = ExternalChannel::ProductMapper.find_or_initialize_by(channel_id: channel.id, external_id: product_data[:id].to_s)
         product_id = this_product_connection.product ? this_product_connection.product_id : nil
         @product = ::Product.find_or_initialize_by(id: product_id)
         product.assign_attributes(parse_product(product_data, product.attributes))
