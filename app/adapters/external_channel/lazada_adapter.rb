@@ -150,14 +150,14 @@ module ExternalChannel
     def parse_query_hash(query_hash)
       query_hash['updated_from'] ||= DateTime.now - 1.days
       query_hash['updated_to'] ||= DateTime.now
-      query_hash['update_after'] = query_hash['updated_from'].to_s
-      query_hash['update_before'] = query_hash['updated_to'].to_s
+      query_hash['update_after'] = query_hash['updated_from'].to_time.iso8601.to_s
+      query_hash['update_before'] = query_hash['updated_to'].to_time.iso8601.to_s
       query_hash.delete('updated_from')
       query_hash.delete('updated_to')
     end
 
     def call_products(query_hash)
-      response = request_get('/products/get')
+      response = request_get('/products/get', query_hash)
       response.body['data']['products']
     end
 
@@ -173,11 +173,11 @@ module ExternalChannel
       response.body['data']
     end
 
-    def request_get(endpoint, params = {})
+    def request_get(endpoint, params)
       client = LazopApiClient::Client.new('https://api.lazada.vn/rest', app_key, app_secret)
       request = LazopApiClient::Request.new(endpoint,'GET')
 
-      params.each { |k, v| request.add_api_parameter(k.to_s, v.to_s) } if params.any?
+      params.each { |k, v| request.add_api_parameter(k.to_s, v.to_s) }
 
       client.execute(request, token.access_token)
     end
@@ -231,15 +231,16 @@ module ExternalChannel
             channel: 'Lazada',
             ordered_at: record['created_at'].to_time,
             paid_at: nil,
-            billing_amount: record['price'] + record['shipping_fee'],
+            billing_amount: record['price'].to_i + record['shipping_fee'],
             ship_fee: record['shipping_fee'],
-            variant_ids: [order_item['id'], 1],
-            cancelled_status: ['canceled'].include?(order_item['status']) ? order_item['status'] : nil,
-            shipping_status: %w[ready_to_ship, delivered, shipped returned].include?(record['status']) ? order_item['status'] : nil
+            variant_ids: [order_item['order_item_id'], 1],
+            cancelled_status: ['cancelled'].include?(order_item['status']) ? order_item['status'] : nil,
+            shipping_status: %w[ready_to_ship, delivered, shipped returned].include?(record['statuses']) ? order_item['status'] : nil
           }
         end
       end
 
+      #Rails.logger.info order_property
       order_property
     end
   end
