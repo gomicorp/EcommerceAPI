@@ -4,6 +4,7 @@
 #
 #  id                             :bigint           not null, primary key
 #  option_count                   :integer          not null
+#  unit_price                     :integer
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  country_id                     :bigint

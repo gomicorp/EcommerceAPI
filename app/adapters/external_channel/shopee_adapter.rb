@@ -280,7 +280,7 @@ module ExternalChannel
       variants.map do |variant|
         variant_id = variant['variation_id']
         variant_id = variant['item_id'] if variant_id.zero?
-        [variant_id, variant['variation_quantity_purchased']]
+        [variant_id, variant['variation_quantity_purchased'], variant['variation_discounted_price'].to_i]
       end
     end
   end

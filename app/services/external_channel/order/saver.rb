@@ -5,7 +5,6 @@ module ExternalChannel
       protected
 
       def save_data(order)
-        ap 'here we are'
         order_info = ExternalChannel::OrderInfo.find_or_initialize_by(external_channel_order_id: order[:id])
         is_new_record = order_info.new_record?
         order_info.update!(parse_order(order))
@@ -26,6 +25,7 @@ module ExternalChannel
           order_to_option.external_channel_order_info_id = target.id
           order_to_option.product_option = option
           order_to_option.option_count = variant[1]
+          order_to_option.unit_price = variant[2]
           order_to_option.save!
           
           option.brands.each do |brand|
