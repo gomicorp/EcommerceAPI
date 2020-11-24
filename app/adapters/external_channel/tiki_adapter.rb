@@ -133,7 +133,7 @@ module ExternalChannel
             order_status: record['status'],
             pay_method: record['payment']['method'],
             channel: 'Tiki',
-            ordered_at: record['created_at'].to_time,
+            ordered_at: record['created_at'].to_time.getutc,
             paid_at: nil,
             billing_amount: record['invoice']['total_seller_income'],
             ship_fee: record['invoice']['shipping_amount_after_discount'],

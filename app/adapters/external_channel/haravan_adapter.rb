@@ -132,9 +132,9 @@ module ExternalChannel
 
         paid_at = nil
         if record['gateway'] == 'Thanh toán khi giao hàng (COD)'
-          paid_at = record['fulfillments'][0]['cod_paid_date']&.to_time if record['fulfillments'].any?
+          paid_at = record['fulfillments'][0]['cod_paid_date']&.to_time.getutc if record['fulfillments'].any?
         else
-          paid_at = record['created_at'].to_time
+          paid_at = record['created_at'].to_time.getutc
         end
 
         order_property << {
@@ -143,7 +143,7 @@ module ExternalChannel
           order_status: record['financial_status'],
           pay_method: record['gateway'],
           channel: 'haravan',
-          ordered_at: record['created_at'].to_time,
+          ordered_at: record['created_at'].to_time.getutc,
           paid_at: paid_at,
           billing_amount: record['total_price'],
           ship_fee: record['shipping_lines'].inject(0) { |sum, line| sum + (line['price']) },
