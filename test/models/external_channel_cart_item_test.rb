@@ -8,7 +8,6 @@
 #  updated_at                     :datetime         not null
 #  country_id                     :bigint
 #  external_channel_order_info_id :bigint
-#  external_option_id             :string(255)      not null
 #  product_option_id              :bigint
 #
 # Indexes
