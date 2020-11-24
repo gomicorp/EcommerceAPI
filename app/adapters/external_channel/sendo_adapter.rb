@@ -67,7 +67,8 @@ module ExternalChannel
       login_url = URI("#{base_url}/login")
       login_body = { shop_key: api_key, secret_key: api_password }
 
-      data = request_post(login_url, login_body, default_headers)
+      response = request_post(login_url, login_body, default_headers)
+      data = JSON.parse(response.body)
 
       token.update(auth_token: data['result']['token'],
                    auth_token_expire_time: data['result']['expires'].to_datetime)
@@ -194,7 +195,8 @@ module ExternalChannel
       body[:token] = ''
       data = []
       while body[:token].nil? == false
-        each_data = request_post(url, body, header)
+        response = request_post(url, body, header)
+        each_data = JSON.parse(response.body) 
         raise RuntimeError.new(each_data.to_json.to_s) unless each_data['success']
 
         body[:token] = each_data['result']['next_token']
