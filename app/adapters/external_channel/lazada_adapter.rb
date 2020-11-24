@@ -229,11 +229,12 @@ module ExternalChannel
             order_status: order_item['status'],
             pay_method: record['payment_method'],
             channel: 'Lazada',
-            ordered_at: record['created_at'].to_time,
+            ordered_at: record['created_at'].to_time.getutc,
             paid_at: nil,
             billing_amount: record['price'].to_i + record['shipping_fee'],
             ship_fee: record['shipping_fee'],
             variant_ids: [order_item['sku'], 1],
+            cancelled_status: ['cancelled'].include?(order_item['status']) ? order_item['status'] : nil,
             shipping_status: %w[ready_to_ship, delivered, shipped returned].include?(record['statuses']) ? order_item['status'] : nil
           }
         end
