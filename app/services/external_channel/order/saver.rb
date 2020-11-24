@@ -5,9 +5,13 @@ module ExternalChannel
       protected
 
       def save_data(order)
-        order_info = ExternalChannel::OrderInfo.find_or_create_by(external_channel_order_id: order[:id])
+        ap 'here we are'
+        order_info = ExternalChannel::OrderInfo.find_or_initialize_by(external_channel_order_id: order[:id])
+        is_new_record = order_info.new_record?
         order_info.update!(parse_order(order))
-        set_order_related_info(order_info, order)
+        
+        set_order_related_info(order_info, order) if is_new_record
+        true
       end
 
       private
