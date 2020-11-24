@@ -223,6 +223,7 @@ module ExternalChannel
 
       records.each do |record|
         call_order_items(record['order_id']).each_with_index do |order_item, index|
+          #Rails.logger.info order_item['sku']
           order_property << {
             id: "#{record['order_id']}-#{index}",
             order_number: record['order_number'],
@@ -233,8 +234,8 @@ module ExternalChannel
             paid_at: nil,
             billing_amount: record['price'].to_i + record['shipping_fee'],
             ship_fee: record['shipping_fee'],
-            variant_ids: [order_item['sku'], 1],
             cancelled_status: ['cancelled'].include?(order_item['status']) ? order_item['status'] : nil,
+            variant_ids: [[order_item['sku'].to_s, 1]],
             shipping_status: %w[ready_to_ship, delivered, shipped returned].include?(record['statuses']) ? order_item['status'] : nil
           }
         end
