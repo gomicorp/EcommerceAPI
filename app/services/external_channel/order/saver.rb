@@ -5,7 +5,7 @@ module ExternalChannel
       protected
 
       def save_data(order)
-        order_info = ::ExternalChannelOrderInfo.find_or_create_by(external_channel_order_id: order[:id])
+        order_info = ExternalChannel::OrderInfo.find_or_create_by(external_channel_order_id: order[:id])
         order_info.update!(parse_order(order))
         set_order_related_info(order_info, order)
       end

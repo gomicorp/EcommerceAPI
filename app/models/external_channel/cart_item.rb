@@ -24,7 +24,7 @@
 module ExternalChannel
   class CartItem < NationRecord
     belongs_to :product_option, class_name: 'ProductOption'
-    belongs_to :external_channel_order_info, class_name: 'ExternalChannelOrderInfo', dependent: :destroy
+    belongs_to :order_info, class_name: 'ExternalChannel::OrderInfo', dependent: :destroy
   end
 end
 

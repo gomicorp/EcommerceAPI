@@ -28,8 +28,10 @@
 #
 require 'test_helper'
 
-class ExternalChannelOrderInfoTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+module ExternalChannel
+  class OrderInfoTest < ActiveSupport::TestCase
+    # test "the truth" do
+    #   assert true
+    # end
+  end
 end
