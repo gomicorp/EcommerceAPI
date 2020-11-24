@@ -15,8 +15,10 @@
 #
 require 'test_helper'
 
-class ExternalChannelOrderInfoBrandTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+module ExternalChannel
+  class OrderInfoBrandTest < ActiveSupport::TestCase
+    # test "the truth" do
+    #   assert true
+    # end
+  end
 end
