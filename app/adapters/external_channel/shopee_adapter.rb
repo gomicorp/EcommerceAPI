@@ -171,12 +171,12 @@ module ExternalChannel
         while more
           default_headers['Authorization'] = make_shopee_signature(endpoint, body)
           response = request_post(endpoint, body, default_headers)
-          raise RuntimeError.new(response['error'].to_s) if response.key?('error')
+          data = JSON.parse(response.body)
+          raise RuntimeError.new(data['error'].to_s) if data.key?('error')
 
-          more = response['more']
+          more = data['more']
           body[:pagination_offset] += body[:pagination_entries_per_page]
-
-          response_data << response
+          response_data << data 
         end
 
         body[to] = body[from]
@@ -221,9 +221,10 @@ module ExternalChannel
 
         default_headers['Authorization'] = make_shopee_signature(endpoint, default_body.merge(yield id))
         response = request_post(endpoint, default_body.merge(yield id), default_headers)
-        raise RuntimeError.new(response['error'].to_s) if response.key?('error')
+        data = JSON.parse(response.body)
+        raise RuntimeError.new(data['error'].to_s) if data.key?('error')
 
-        response[target]
+        data[target]
       end
     end
 

@@ -2,8 +2,7 @@ module ExternalChannel
   class BaseAdapter
     DEAFULT_EXCEPTION = [
       Errno::ETIMEDOUT, 'Timeout::Error',
-      Faraday::TimeoutError, Faraday::RetriableResponse, 'Net::OpenTimeout',
-      Faraday::ConnectionFailed
+      Faraday::TimeoutError, Faraday::RetriableResponse, Faraday::ConnectionFailed
     ].freeze
 
     def initialize; end
@@ -47,12 +46,10 @@ module ExternalChannel
                              methods: [:post],
                              exceptions: retry_exceptions)
 
-        response = conn.post do |req|
+        return conn.post do |req|
           req.headers.merge!(headers)
           req.body = body.to_json
         end
-
-        return JSON.parse(response.body)
       end
     end
 

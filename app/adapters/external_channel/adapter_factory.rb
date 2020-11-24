@@ -3,15 +3,15 @@ module ExternalChannel
     def self.get_adapter(channel_name)
       case channel_name.downcase
       when 'haravan'
-        ExternalChannel::HaravanAdapter.new
+        HaravanAdapter.new
       when 'tiki'
-        ExternalChannel::TikiAdapter.new
+        TikiAdapter.new
       when 'sendo'
-        ExternalChannel::SendoAdapter.new
+        SendoAdapter.new
       when 'lazada'
-        ExternalChannel::LazadaAdapter.new
+        LazadaAdapter.new
       when 'shopee'
-        ExternalChannel::ShopeeAdapter.new
+        ShopeeAdapter.new
       else
         raise NotImplementedError, 'Requested Data Is Not Supported!'
       end

@@ -67,7 +67,8 @@ module ExternalChannel
       login_url = URI("#{base_url}/login")
       login_body = { shop_key: api_key, secret_key: api_password }
 
-      data = request_post(login_url, login_body, default_headers)
+      response = request_post(login_url, login_body, default_headers)
+      data = JSON.parse(response.body)
 
       token.update(auth_token: data['result']['token'],
                    auth_token_expire_time: data['result']['expires'].to_datetime)
@@ -194,7 +195,8 @@ module ExternalChannel
       body[:token] = ''
       data = []
       while body[:token].nil? == false
-        each_data = request_post(url, body, header)
+        response = request_post(url, body, header)
+        each_data = JSON.parse(response.body) 
         raise RuntimeError.new(each_data.to_json.to_s) unless each_data['success']
 
         body[:token] = each_data['result']['next_token']
@@ -249,16 +251,13 @@ module ExternalChannel
     # == TODO: 주문 상태 리펙토링 후 아래 로직을 수정해야 합니다.
     # == 우리의 판매 방법의 수가 센도의 판매 방법의 수 보다 같거나 많을 것이라고 판단하여 아래와 같이 case 구문으로 구현하였습니다.
     def map_pay_method(sendo_pay_method)
-      case sendo_pay_method
-      when 1
-        'COD'
-      when 2
-        'Senpay'
-      when 4
-        'Combine'
-      when 5
-        'PayLater'
-      end
+      pay_method = Array.new(8)
+      pay_method[1] = 'COD'
+      pay_method[2] = 'Senpay'
+      pay_method[4] = 'Combine'
+      pay_method[5] = 'PayLater'
+      
+      pay_method[sendo_pay_method]
     end
 
     # == 센도의 주문상태(숫)를 글자로 바꿔주는 함수입니다.
