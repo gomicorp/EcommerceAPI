@@ -128,7 +128,7 @@ module ExternalChannel
       order_property = []
 
       records.each do |record|
-        next unless %w[haravan_draft_order].include? record['source']
+        next if %w[shopee sendo lazada tiki].include? record['source']
 
         paid_at = nil
         if record['gateway'] == 'Thanh toán khi giao hàng (COD)'
