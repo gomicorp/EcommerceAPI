@@ -21,7 +21,10 @@
 #  fk_rails_...  (country_id => countries.id)
 #  fk_rails_...  (external_channel_order_info_id => external_channel_order_infos.id)
 #
-class ExternalChannelCartItem < NationRecord
-  belongs_to :product_option, class_name: 'ProductOption'
-  belongs_to :external_channel_order_info, class_name: 'ExternalChannelOrderInfo', dependent: :destroy
+module ExternalChannel
+  class CartItem < NationRecord
+    belongs_to :product_option, class_name: 'ProductOption'
+    belongs_to :external_channel_order_info, class_name: 'ExternalChannelOrderInfo', dependent: :destroy
+  end
 end
+

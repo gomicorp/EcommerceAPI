@@ -23,8 +23,10 @@
 #
 require 'test_helper'
 
-class ExternalChannelCartItemTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+module ExternalChannel
+  class CartItemTest < ActiveSupport::TestCase
+    # test "the truth" do
+    #   assert true
+    # end
+  end
 end

@@ -29,8 +29,8 @@
 class ExternalChannelOrderInfo < NationRecord
   has_many :external_channel_order_info_brands, class_name: 'ExternalChannelOrderInfoBrand', dependent: :destroy
   has_many :brands, class_name: 'Brand', through: :external_channel_order_info_brands
-  has_many :external_channel_cart_items, class_name: 'ExternalChannelCartItem'
-  has_many :product_options, through: :external_channel_cart_items
+  has_many :cart_items, class_name: 'ExternalChannel::CartItem'
+  has_many :product_options, through: :cart_items
   has_many :product_pages, through: :product_options
 
   zombie :product_options
