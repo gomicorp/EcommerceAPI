@@ -91,13 +91,9 @@ module ExternalChannel
     
       # === 브랜드 찾기
       def find_brand(brand_name)
-        # 현재 DB에 있는 브랜드 중 &등 특수문자를 쓴 경우, rails에 의해 유니코드로 escape된다.
-        # 이 데이터는 루비 orm에 의해 쿼리의 파라비터로 변환되는데, 이때 \문자가 escape 된다.
-        # 이것이 DB에 들어갈 때, mysql은 \문자를 보고 또 escape를 한다.
-        # & => \u0026 => \\u0026 => \\\\u0026
         Brand.where(
-          "REPLACE(LOWER(JSON_EXTRACT(name, '$.#{Country.send(ApplicationRecord.country_code).locale}')), ' ', '') LIKE ?",
-          "\"#{brand_name.gsub(' ', '').downcase}\""
+          "REPLACE(LOWER(subtitle), ' ', '') LIKE ?",
+          brand_name.gsub(' ', '').downcase
         ).first
       end
 
