@@ -20,7 +20,9 @@
 #
 #  fk_rails_...  (country_id => countries.id)
 #
-class ExternalChannelProductId < NationRecord
-  belongs_to :product, dependent: :destroy
-  belongs_to :channel, dependent: :destroy
+module ExternalChannel
+  class ProductId < NationRecord
+    belongs_to :product, dependent: :destroy
+    belongs_to :channel, dependent: :destroy
+  end
 end

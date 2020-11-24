@@ -22,8 +22,10 @@
 #
 require 'test_helper'
 
-class ExternalChannelProductIdTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+module ExternalChannel
+  class ProductIdTest < ActiveSupport::TestCase
+    # test "the truth" do
+    #   assert true
+    # end
+  end
 end
