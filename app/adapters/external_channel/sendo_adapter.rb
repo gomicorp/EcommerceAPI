@@ -251,16 +251,13 @@ module ExternalChannel
     # == TODO: 주문 상태 리펙토링 후 아래 로직을 수정해야 합니다.
     # == 우리의 판매 방법의 수가 센도의 판매 방법의 수 보다 같거나 많을 것이라고 판단하여 아래와 같이 case 구문으로 구현하였습니다.
     def map_pay_method(sendo_pay_method)
-      case sendo_pay_method
-      when 1
-        'COD'
-      when 2
-        'Senpay'
-      when 4
-        'Combine'
-      when 5
-        'PayLater'
-      end
+      pay_method = Array.new(8)
+      pay_method[1] = 'COD'
+      pay_method[2] = 'Senpay'
+      pay_method[4] = 'Combine'
+      pay_method[5] = 'PayLater'
+      
+      pay_method[sendo_pay_method]
     end
 
     # == 센도의 주문상태(숫)를 글자로 바꿔주는 함수입니다.
