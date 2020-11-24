@@ -16,6 +16,7 @@ Rails.application.routes.draw do
 
     draw :common_routes
     draw :sellers_routes
+    draw :external_channel_routes
   end
 
   namespace :haravan do

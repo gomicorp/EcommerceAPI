@@ -37,7 +37,7 @@ class OrderInfo < NationRecord
   has_many :sellers_papers, through: :items, source: :item_sold_paper
 
   # ===============================================
-  has_many :order_info_brands, class_name: 'OrderInfoBrand', dependent: :delete_all
+  has_many :order_info_brands, class_name: 'OrderInfoBrand', dependent: :destroy
   has_many :brands, through: :order_info_brands
   # ===============================================
 
