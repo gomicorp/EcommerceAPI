@@ -25,8 +25,10 @@
 #
 require 'test_helper'
 
-class ExternalChannelTokenTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+module ExternalChannel
+  class TokenTest < ActiveSupport::TestCase
+    # test "the truth" do
+    #   assert true
+    # end
+  end
 end

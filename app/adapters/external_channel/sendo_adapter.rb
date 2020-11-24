@@ -21,7 +21,7 @@ module ExternalChannel
     def initialize
       super
       @base_url = 'https://open.sendo.vn'
-      @token = ExternalChannelToken.find_or_create_by(country: Country.vn,
+      @token = ExternalChannel::Token.find_or_create_by(country: Country.vn,
                                                       channel: Channel.find_by(name: 'Sendo'))
 
       @default_headers = {
