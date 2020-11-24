@@ -132,7 +132,11 @@ module ExternalChannel
 
         paid_at = nil
         if record['gateway'] == 'Thanh toán khi giao hàng (COD)'
-          paid_at = record['fulfillments'][0]['cod_paid_date']&.to_time.getutc if record['fulfillments'].any?
+          if record['fulfillments'].any? || record['fulfillments'].empty? 
+            paid_at = nil
+          else
+            paid_at = record['fulfillments'][0]['cod_paid_date'] ? record['fulfillments'][0]['cod_paid_date'].to_time.getutc : nil
+          end
         else
           paid_at = record['created_at'].to_time.getutc
         end
