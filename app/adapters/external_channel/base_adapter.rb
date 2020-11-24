@@ -1,7 +1,7 @@
 module ExternalChannel
   class BaseAdapter
     DEAFULT_EXCEPTION = [
-      Errno::ETIMEDOUT, 'Timeout::Error',
+      Errno::ETIMEDOUT, Timeout::Error,
       Faraday::TimeoutError, Faraday::RetriableResponse, Faraday::ConnectionFailed
     ].freeze
 
