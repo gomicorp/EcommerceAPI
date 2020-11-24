@@ -203,7 +203,7 @@ module ExternalChannel
 
       skus.each do |sku|
         option_property << {
-            id: sku['SkuId'],
+            id: sku['SellerSku'],
             price: sku['special_price'],
             name: sku['_compatible_variation_']
         }
@@ -233,7 +233,7 @@ module ExternalChannel
             paid_at: nil,
             billing_amount: record['price'] + record['shipping_fee'],
             ship_fee: record['shipping_fee'],
-            variant_ids: [order_item['id'], 1],
+            variant_ids: [order_item['sku'], 1],
             cancelled_status: ['canceled'].include?(order_item['status']) ? order_item['status'] : nil,
             shipping_status: %w[ready_to_ship, delivered, shipped returned].include?(record['status']) ? order_item['status'] : nil
           }
