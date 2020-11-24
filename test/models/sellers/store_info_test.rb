@@ -5,7 +5,7 @@
 #  id             :bigint           not null, primary key
 #  comment        :text(65535)
 #  name           :text(65535)      not null
-#  url            :text(65535)      not null
+#  url            :text(65535)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  seller_info_id :bigint

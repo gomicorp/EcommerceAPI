@@ -29,7 +29,7 @@
 #
 class ProductOption < ApplicationRecord
   include ChannelRecordable
-  belongs_to :option_group, class_name: 'ProductOptionGroup', dependent: :destroy, foreign_key: :product_option_group_id
+  belongs_to :option_group, class_name: 'ProductOptionGroup', foreign_key: :product_option_group_id
   has_many :barcode_options
   has_many :barcodes, through: :barcode_options
 
@@ -40,7 +40,7 @@ class ProductOption < ApplicationRecord
   has_one :product_page, class_name: 'Product', through: :option_group, source: :product
 
   # ===============================================
-  has_many :product_option_brands, class_name: 'ProductOptionBrand', dependent: :delete_all
+  has_many :product_option_brands, class_name: 'ProductOptionBrand', dependent: :destroy
   has_many :brands, through: :product_option_brands
   # ===============================================
 

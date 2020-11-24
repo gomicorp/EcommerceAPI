@@ -1,11 +1,12 @@
 module Partner
   class BrandsController < BaseController
+    before_action :authenticate_request!
     before_action :set_brand, only: %i[show edit update destroy]
 
     # GET /partner/brands
     # GET /partner/brands.json
     def index
-      @brands = Brand.all
+      @brands = @current_user.brands.includes(include_tables).where(query_param)
     end
 
     # GET /partner/brands/1.json
@@ -45,7 +46,7 @@ module Partner
     private
     # Use callbacks to share common setup or constraints between actions.
     def set_brand
-      @brand = Brand.find(params[:id])
+      @brand = @current_user.brands.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
@@ -55,6 +56,14 @@ module Partner
       params[:brand][:name] = name.merge(country.locale => name['en'])
 
       params.require(:brand).permit(:company_id, :country_id, :logo, name: {})
+    end
+
+    def include_tables
+      [:company, :country]
+    end
+
+    def query_param
+      params.permit(*Brand.attribute_names, id: [])
     end
   end
 end

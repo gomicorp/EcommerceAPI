@@ -2,14 +2,17 @@
 #
 # Table name: brands
 #
-#  id         :bigint           not null, primary key
-#  eng_name   :string(255)
-#  name       :string(255)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  company_id :bigint
-#  country_id :bigint
-#  pixel_id   :bigint
+#  id          :bigint           not null, primary key
+#  description :text(65535)
+#  name        :string(255)
+#  slogan      :string(255)
+#  subtitle    :string(255)
+#  theme_color :string(255)
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  company_id  :bigint
+#  country_id  :bigint
+#  pixel_id    :bigint
 #
 # Indexes
 #
@@ -25,12 +28,13 @@ class Brand < NationRecord
   include Translatable
   include Approvable
   extend_has_one_attached :logo
+  extend_has_one_attached :first_image
   translate_column :name
 
   belongs_to :company
   has_many :products
   has_many :product_item_groups
-  has_many :items, through: :product_item_groups, class_name: :ProductItem
+  has_many :items, through: :product_item_groups, class_name: 'ProductItem'
   has_many :managers, through: :company
 
   # ===============================================
@@ -40,6 +44,13 @@ class Brand < NationRecord
   has_many :order_info_brands, class_name: 'OrderInfoBrand', dependent: :delete_all
   has_many :order_infos, through: :order_info_brands
   # ===============================================
+
+
+  # ===============================================
+  # 전시 전용 모델 관계
+  has_many :side_menu_items, class_name: 'Store::SideMenuItem', as: :connectable
+  # ===============================================
+
 
   def official_site_url
     '#'

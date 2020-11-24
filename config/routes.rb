@@ -1,18 +1,23 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: {
-    sessions: 'users/sessions',
-    registrations: 'users/registrations',
-    passwords: 'users/passwords'
-  }
-  
+  root 'hello#world'
+
   # global file crud (active_storage)
   resources :files, only: %i[show create destroy]
-  
-  draw :partner_center_routes
-  draw :gomisa_routes
 
-  draw :common_routes
-  draw :sellers_routes
+  constraints format: :json do
+    devise_for :users, controllers: {
+        sessions: 'users/sessions',
+        registrations: 'users/registrations',
+        passwords: 'users/passwords'
+    }
+
+    draw :partner_center_routes
+    draw :gomisa_routes
+
+    draw :common_routes
+    draw :sellers_routes
+    draw :external_channel_routes
+  end
 
   namespace :haravan do
     namespace :settlement do

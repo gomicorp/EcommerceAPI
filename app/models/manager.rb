@@ -34,5 +34,5 @@ class Manager < User
 
   has_many :memberships, dependent: :destroy
   has_many :companies, through: :memberships
-  has_many :brands, through: :companies
+  has_many :brands, -> { global }, class_name: 'Brand', through: :companies
 end

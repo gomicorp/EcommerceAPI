@@ -1,0 +1,38 @@
+# == Schema Information
+#
+# Table name: external_channel_order_infos
+#
+#  id                        :bigint           not null, primary key
+#  cancelled_status          :string(255)
+#  channel                   :string(255)
+#  order_number              :string(255)
+#  order_status              :string(255)
+#  ordered_at                :datetime
+#  paid_at                   :datetime
+#  pay_method                :string(255)
+#  ship_fee                  :integer
+#  shipping_status           :string(255)
+#  total_price               :integer
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  country_id                :bigint
+#  external_channel_order_id :string(255)
+#
+# Indexes
+#
+#  index_external_channel_order_infos_on_country_id  (country_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (country_id => countries.id)
+#
+
+# This model initially had no columns defined. If you add columns to the
+# model remove the '{}' from the fixture names and add the columns immediately
+# below each fixture, per the syntax in the comments below
+#
+one: {}
+# column: value
+#
+two: {}
+# column: value

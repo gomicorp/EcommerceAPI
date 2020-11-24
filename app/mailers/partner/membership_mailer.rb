@@ -2,7 +2,7 @@ module Partner
   class MembershipMailer < ApplicationMailer
     layout false
 
-    HOST = %w[production staging].include?(Rails.env) ? 'https://partner.gomicorp.com' : 'http://localhost:3000'
+    HOST = %w[production staging partner].include?(Rails.env) ? 'https://partner.gomicorp.com' : 'http://localhost:3000'
 
     def create(membership, membership_param)
       @membership = membership
