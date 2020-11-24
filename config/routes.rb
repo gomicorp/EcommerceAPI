@@ -16,12 +16,7 @@ Rails.application.routes.draw do
 
     draw :common_routes
     draw :sellers_routes
-  end
-
-  namespace :external_channels do
-    get 'code', to: 'code'
-    post 'batch', to: 'batch'
-    post 'batch_all', to: 'batch_all'
+    draw :external_channel_routes
   end
 
   namespace :haravan do
