@@ -72,13 +72,7 @@ module ExternalChannel
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash)
       endpoint = 'https://api.tiki.vn/integration/v1/products'
-
-      response = request_get(endpoint, query_hash, default_headers)
-
-      data = JSON.parse response.body
-      raise RuntimeError.new(data['error'].to_s) unless data['error'].nil?
-
-      data['data']
+      call_all(endpoint, query_hash)
     end
 
     def call_product(product_id)
@@ -93,11 +87,7 @@ module ExternalChannel
 
     def call_orders(query_hash)
       endpoint = 'https://api.tiki.vn/integration/v2/orders'
-      response = request_get(endpoint, query_hash, default_headers)
-      data = JSON.parse response.body
-      raise RuntimeError.new(data['error'].to_s) unless data['error'].nil?
-
-      data['data']
+      call_all(endpoint, query_hash)
     end
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
@@ -144,6 +134,26 @@ module ExternalChannel
       end
 
       order_property
+    end
+
+    private
+
+    def call_all(endpoint, query_hash)
+      dataset = []
+      maximum_page = 100000 # === TODO: 임의의 큰수 10만입니다. 추후에 util로 Integer MAX 등으로 대체해야 합니다.
+      query_hash[:page] ||= 1
+      
+      while query_hash[:page] <= maximum_page
+        response = request_get(endpoint, query_hash, default_headers)
+
+        data = JSON.parse response.body
+        raise RuntimeError.new(data['error'].to_s) unless data['error'].nil?
+
+        dataset << data['data']     
+        maximum_page = data['paging']['total'].to_i || maximum_page
+        query_hash[:page] += 1
+      end
+      dataset.flatten
     end
   end
 end
