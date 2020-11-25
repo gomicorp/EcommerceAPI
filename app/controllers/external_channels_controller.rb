@@ -4,6 +4,7 @@ class ExternalChannelsController < ApiController
   end
 
   def code
+    ApplicationRecord.country_code = 'vn'
     ExternalChannel::AdapterFactory.get_adapter('Lazada').set_code(code_params)
 
     render status: 200, plain: 'get code success'
