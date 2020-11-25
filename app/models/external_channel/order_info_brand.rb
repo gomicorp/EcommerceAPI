@@ -15,9 +15,9 @@
 #
 module ExternalChannel
   class OrderInfoBrand < ApplicationRecord
-    belongs_to :external_channel_order_info, class_name: 'ExternalChannel::OrderInfo', dependent: :destroy
+    belongs_to :order_info, class_name: 'ExternalChannel::OrderInfo', dependent: :destroy
     belongs_to :brand, dependent: :destroy
 
-    validates_uniqueness_of :brand_id, scope: %i[external_channel_order_info_id]
+    validates_uniqueness_of :brand_id, scope: %i[order_info_id]
   end
 end
