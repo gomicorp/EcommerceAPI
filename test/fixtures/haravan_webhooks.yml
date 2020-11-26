@@ -1,0 +1,22 @@
+# == Schema Information
+#
+# Table name: haravan_webhooks
+#
+#  id         :bigint           not null, primary key
+#  event_name :string(255)
+#  is_applied :boolean
+#  table_name :string(255)
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  haravan_id :string(255)
+#
+
+# This model initially had no columns defined. If you add columns to the
+# model remove the '{}' from the fixture names and add the columns immediately
+# below each fixture, per the syntax in the comments below
+#
+one: {}
+# column: value
+#
+two: {}
+# column: value

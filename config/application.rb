@@ -2,7 +2,7 @@ require_relative 'boot'
 
 require 'rails/all'
 
-ALLOW_LOCALES = %i[ko en vn th].freeze
+ALLOW_LOCALES = %i[ko en vi th].freeze
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
