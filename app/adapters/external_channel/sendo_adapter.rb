@@ -221,7 +221,7 @@ module ExternalChannel
       if variants.empty?
         return [
           {
-            id: product['id'],
+            id: product['sku'],
             name: 'default',
             price: product['price']
           }
@@ -230,7 +230,7 @@ module ExternalChannel
 
       variants.map do |variant|
         {
-          id: variant['variant_sku'],
+          id: "#{product['sku']}-#{variant['variant_sku']}",
           name: variant['variant_sku'],
           price: variant['variant_price']
         }
