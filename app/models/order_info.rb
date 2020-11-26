@@ -102,8 +102,8 @@ class OrderInfo < NationRecord
 
   def update_status(status=nil)
     transaction do
-      payment_status = payment.current_status
-      shipping_status = ship_info.current_status
+      payment_status = payment.current_status&.code
+      shipping_status = ship_info.current_status&.code
 
       update(shipping_status: shipping_status, payment_status: payment_status)
       update(status: status) unless status.nil?
