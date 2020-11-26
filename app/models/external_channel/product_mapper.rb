@@ -22,7 +22,7 @@
 #
 module ExternalChannel
   class ProductMapper < NationRecord
-    belongs_to :product, class_name: '::Product', dependent: :destroy
-    belongs_to :channel, dependent: :destroy
+    belongs_to :product, class_name: '::Product'
+    belongs_to :channel
   end
 end

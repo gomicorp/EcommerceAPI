@@ -62,7 +62,7 @@ module ExternalChannel
       options.add_argument('--no-sandbox')
 
       browser = Selenium::WebDriver.for :chrome, options: options
-      browser.navigate.to "https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://didimdol-api.gomistore.com/external_channels/code&client_id=#{app_key}"
+      browser.navigate.to "https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://api.gomistore.com/external_channels/code&client_id=#{app_key}"
 
       # = 로그인이 안 되어있는 경우 : form.empty? => true
       form = browser.find_elements(css: 'form[name=form1]')

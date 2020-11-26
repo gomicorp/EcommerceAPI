@@ -29,7 +29,7 @@ module ExternalChannel
     # == 리퀘스트를 던지는 caller 메소드입니다.
     def request_get(endpoint, params, headers, retry_exceptions = nil)
       retry_exceptions ||= DEAFULT_EXCEPTION
-      Faraday.new(endpoint, params: params) do |conn|
+      Faraday.new(endpoint, params: params, request: { open_timeout: 5, timeout: 5 }) do |conn|
         conn.response :logger, Rails.logger
         conn.request(:retry, max: 5, interval: 1, exceptions: retry_exceptions)
 
