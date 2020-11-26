@@ -41,7 +41,7 @@ class Product < NationRecord
   }.freeze
   enum running_status: RUNNING_STATUSES.keys
 
-  has_many :product_mappers, class_name: 'ExternalChannel::ProductMapper'
+  has_many :product_mappers, class_name: 'ExternalChannel::ProductMapper', dependent: :destroy
 
   belongs_to :brand
 

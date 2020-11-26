@@ -19,6 +19,7 @@
 class Channel < NationRecord
   has_many :order_infos
   has_many :product_options
+  has_many :product_mappers, dependent: :destroy
 
   validates_uniqueness_of :name, scope: %i[country_id]
 
