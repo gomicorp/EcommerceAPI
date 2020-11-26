@@ -100,8 +100,8 @@ module ExternalChannel
       # === 브랜드가 없을 경우 임시 브랜드 생성/할당
       def temp_brand
         # NO BRAND MATCH 라는 브랜드를 찾음
-        no_brand = Brand.find_or_create_by(subtitle: NO_BRAND_NAME, company: temp_company)
-        return no_brand unless no_brand.id.nil?
+        no_brand = Brand.find_or_initialize_by(subtitle: NO_BRAND_NAME, company: temp_company)
+        return no_brand unless no_brand.new_record?
 
         # TODO: 지금 이름이 vn이랑 vi랑 섞여서 기록되어 있다. 확인이 필요하다.
         # 이름이 없으면 만들어 줌
