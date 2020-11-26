@@ -15,7 +15,6 @@ module ExternalChannel
         @channel = Channel.find_by_name(data[:channel_name])
         raise ActiveRecord::RecordNotFound("NotFoundChannelError => The given channel #{data[:channel_name]} doesn\'t exist on gomi back office.") if channel.nil?
 
-        @brand = find_brand(data[:brand_name]) || temp_brand
         save_product(data) && save_options(data[:variants])
       end
 
@@ -31,6 +30,8 @@ module ExternalChannel
         this_product_connection = ExternalChannel::ProductMapper.find_or_initialize_by(channel_id: channel.id, external_id: product_data[:id].to_s)
         product_id = this_product_connection.product ? this_product_connection.product_id : nil
         @product = ::Product.find_or_initialize_by(id: product_id)
+        @brand = find_brand(product_data[:brand_name]) || product.brand || temp_brand
+
         product.assign_attributes(parse_product(product_data, product.attributes))
         result = product.save!
 
@@ -100,13 +101,13 @@ module ExternalChannel
       # === 브랜드가 없을 경우 임시 브랜드 생성/할당
       def temp_brand
         # NO BRAND MATCH 라는 브랜드를 찾음
-        no_brand = Brand.find_or_create_by(subtitle: NO_BRAND_NAME, company: temp_company)
-        return no_brand unless no_brand.id.nil?
+        no_brand = Brand.find_or_initialize_by(subtitle: NO_BRAND_NAME, company: temp_company)
+        return no_brand unless no_brand.new_record?
 
         # TODO: 지금 이름이 vn이랑 vi랑 섞여서 기록되어 있다. 확인이 필요하다.
         # 이름이 없으면 만들어 줌
         brand_title = { en: NO_BRAND_NAME, ko: NO_BRAND_NAME }
-        brand_title[Country.send(ApplicationRecord.country_code).locale.to_sym] = NO_BRAND_NAME
+        brand_title[Country.send(ApplicationRecord.country_code).locale] = NO_BRAND_NAME
         no_brand.name ||= brand_title
 
         # 원래 없었으면 저장함
