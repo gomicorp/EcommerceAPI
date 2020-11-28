@@ -86,7 +86,8 @@ module Store
           return false
         end
 
-        ship_info.update_status(target_status) && order_info.update_status(target_status)
+        ship_info.update_status(target_status) &&
+            order_info.update_status(convert_ship_status_to_order_status(target_status))
       end
 
       def self.available_statuses
@@ -107,6 +108,13 @@ module Store
         @errors.empty?
       end
 
+      def convert_ship_status_to_order_status(ship_status)
+        converting_table = {
+            ship_complete: :order_complete
+        }
+
+        converting_table[ship_status.to_s.to_sym] || ship_status
+      end
 
       class CannotChangeStatusError < StandardError
         def initialize(msg = nil)
