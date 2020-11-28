@@ -6,6 +6,6 @@ namespace :batch do
     ship_infos = ShipInfo.where(current_status: ShipInfo::StatusLog.where(code: 'ship_ing'))
     agent = GomiBranch::ShippingManager.new
 
-    agent.update_tracking_info(ship_infos) || raise('배송 완료 처리 실패. 망함.')
+    agent.update_tracking_info(ship_infos.where.not(carrier_code: nil)) || raise('배송 완료 처리 실패. 망함.')
   end
 end

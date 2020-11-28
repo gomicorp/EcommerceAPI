@@ -61,7 +61,7 @@ module Store
       def track
         ship_infos = ShipInfo.where(current_status: ShipInfo::StatusLog.where(code: 'ship_ing'))
         agent = GomiBranch::ShippingManager.new
-        if agent.update_tracking_info ship_infos
+        if agent.update_tracking_info ship_infos.where.not(carrier_code: nil)
           render :show, status: :ok
         else
           render json: agent.errors, status: :not_modified
