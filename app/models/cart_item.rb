@@ -4,20 +4,23 @@
 #
 # Table name: cart_items
 #
-#  id                        :bigint           not null, primary key
-#  barcode_count             :integer          default(0), not null
-#  captured                  :boolean          default(FALSE), not null
-#  captured_additional_price :integer          default(0), not null
-#  captured_base_price       :integer          default(0), not null
-#  captured_discount_price   :integer          default(0), not null
-#  captured_price_change     :integer          default(0), not null
-#  captured_retail_price     :integer          default(0), not null
-#  option_count              :integer          default(0), not null
-#  created_at                :datetime         not null
-#  updated_at                :datetime         not null
-#  cart_id                   :bigint
-#  product_id                :bigint
-#  product_option_id         :bigint           default(0), not null
+#  id                                 :bigint           not null, primary key
+#  barcode_count                      :integer          default(0), not null
+#  captured                           :boolean          default(FALSE), not null
+#  captured_additional_price          :integer          default(0), not null
+#  captured_base_price                :integer          default(0), not null
+#  captured_discount_price            :integer          default(0), not null
+#  captured_price_change              :integer          default(0), not null
+#  captured_retail_price              :integer          default(0), not null
+#  captured_seller_shipping           :boolean
+#  captured_seller_warehouse_key      :string(255)
+#  captured_seller_warehouse_ship_fee :integer
+#  option_count                       :integer          default(0), not null
+#  created_at                         :datetime         not null
+#  updated_at                         :datetime         not null
+#  cart_id                            :bigint
+#  product_id                         :bigint
+#  product_option_id                  :bigint           default(0), not null
 #
 # Indexes
 #
