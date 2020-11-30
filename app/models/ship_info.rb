@@ -21,6 +21,17 @@
 #  order_info_id   :integer
 #
 class ShipInfo < ApplicationRecord
+
+  STATUS = %w[
+    ship_prepare
+    ship_ing
+    ship_complete
+    return_request
+    return_processing
+    return_complete
+  ].freeze
+  act_as_status_loggable status_list: STATUS.to_echo
+
   enum ship_type: %i[normal express]
 
   FEE_TABLE = {
@@ -35,7 +46,11 @@ class ShipInfo < ApplicationRecord
   validates_presence_of :receiver_name, :receiver_tel, :receiver_email
   validates_presence_of :loc_state, :loc_city, :loc_detail
 
-  scope :order_status, ->(status_name) { includes(:order_info).where(order_info: OrderInfo.order_status(status_name)) }
+  scope :order_status, ->(status_name) { includes(:order_info).where(order_info: OrderInfo.stage_in(status_name)) }
+
+  def self.available_status
+    STATUS
+  end
 
   def self.fee_table(ship_type)
     FEE_TABLE[ship_type.to_sym]

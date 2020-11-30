@@ -12,10 +12,11 @@ Rails.application.routes.draw do
     }
 
     draw :partner_center_routes
-    draw :gomisa_routes
+    draw :store_routes
 
     draw :common_routes
     draw :sellers_routes
+
     draw :external_channel_routes
   end
 
@@ -24,7 +25,7 @@ Rails.application.routes.draw do
       resources :brands, only: %i[index show]
     end
   end
-  
+
   devise_for :pandals
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 end
