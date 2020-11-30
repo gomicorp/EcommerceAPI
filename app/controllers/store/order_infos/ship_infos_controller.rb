@@ -13,7 +13,7 @@ module Store
       def update
         if @ship_info.update(ship_info_params)
           if @ship_info.saved_change_to_tracking_number? && @ship_info.tracking_number? && @ship_info.carrier_code?
-            agent = GomiBranch::ShippingManager.new @ship_info
+            agent = Store::GomiBranch::ShippingManager.new @ship_info
             agent.status_task_set('ship_ing')
           end
           render :show, status: :ok
@@ -35,12 +35,12 @@ module Store
         if bulk_method?
           @order_infos = OrderInfo.where(id: order_info_ids)
           @order_infos.each do |order_info|
-            agent = GomiBranch::ShippingManager.new order_info.ship_info
+            agent = Store::GomiBranch::ShippingManager.new order_info.ship_info
             @successes << agent.status_task_set(to_be_status)
             @messages << agent.message if agent.message
           end
         else
-          agent = GomiBranch::ShippingManager.new @ship_info
+          agent = Store::GomiBranch::ShippingManager.new @ship_info
           @successes << agent.status_task_set(to_be_status)
           @messages << agent.message
         end
@@ -60,7 +60,7 @@ module Store
       # PATCH /store/order_infos/0/ship_info/track
       def track
         ship_infos = ShipInfo.where(current_status: ShipInfo::StatusLog.where(code: 'ship_ing'))
-        agent = GomiBranch::ShippingManager.new
+        agent = Store::GomiBranch::ShippingManager.new
         if agent.update_tracking_info ship_infos.where.not(carrier_code: nil)
           render :show, status: :ok
         else
