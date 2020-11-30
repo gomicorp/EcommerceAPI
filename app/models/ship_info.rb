@@ -2,23 +2,36 @@
 #
 # Table name: ship_infos
 #
-#  id             :bigint           not null, primary key
-#  order_info_id  :integer
-#  receiver_name  :string(255)
-#  receiver_tel   :string(255)
-#  receiver_email :string(255)
-#  loc_state      :string(255)
-#  loc_city       :string(255)
-#  loc_district   :string(255)
-#  loc_detail     :text(65535)
-#  ship_type      :integer          default("normal"), not null
-#  ship_amount    :integer          default(0), not null
-#  user_memo      :text(65535)
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  postal_code    :string(255)
+#  id              :bigint           not null, primary key
+#  carrier_code    :string(255)
+#  loc_city        :string(255)
+#  loc_detail      :text(65535)
+#  loc_district    :string(255)
+#  loc_state       :string(255)
+#  postal_code     :string(255)
+#  receiver_email  :string(255)
+#  receiver_name   :string(255)
+#  receiver_tel    :string(255)
+#  ship_amount     :integer          default(0), not null
+#  ship_type       :integer          default("normal"), not null
+#  tracking_number :string(255)
+#  user_memo       :text(65535)
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  order_info_id   :integer
 #
 class ShipInfo < ApplicationRecord
+
+  STATUS = %w[
+    ship_prepare
+    ship_ing
+    ship_complete
+    return_request
+    return_processing
+    return_complete
+  ].freeze
+  act_as_status_loggable status_list: STATUS.to_echo
+
   enum ship_type: %i[normal express]
 
   FEE_TABLE = {
@@ -33,7 +46,11 @@ class ShipInfo < ApplicationRecord
   validates_presence_of :receiver_name, :receiver_tel, :receiver_email
   validates_presence_of :loc_state, :loc_city, :loc_detail
 
-  scope :order_status, ->(status_name) { includes(:order_info).where(order_info: OrderInfo.order_status(status_name)) }
+  scope :order_status, ->(status_name) { includes(:order_info).where(order_info: OrderInfo.stage_in(status_name)) }
+
+  def self.available_status
+    STATUS
+  end
 
   def self.fee_table(ship_type)
     FEE_TABLE[ship_type.to_sym]

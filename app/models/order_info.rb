@@ -2,16 +2,19 @@
 #
 # Table name: order_infos
 #
-#  id         :bigint           not null, primary key
-#  admin_memo :text(65535)
-#  finished   :boolean
-#  ordered_at :datetime
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  cart_id    :integer
-#  channel_id :bigint           not null
-#  country_id :bigint
-#  enc_id     :string(255)
+#  id              :bigint           not null, primary key
+#  admin_memo      :text(65535)
+#  finished        :boolean
+#  ordered_at      :datetime
+#  payment_status  :string(255)
+#  shipping_status :string(255)
+#  status          :string(255)
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  cart_id         :integer
+#  channel_id      :bigint           not null
+#  country_id      :bigint
+#  enc_id          :string(255)
 #
 # Indexes
 #
@@ -26,6 +29,24 @@
 #
 class OrderInfo < NationRecord
   include ChannelRecordable
+
+  STATUSES = %w[
+    pay_wait
+    paid
+    ship_prepare
+    ship_ing
+    ship_complete
+    refund_request
+    refund_reject
+    refund_complete
+    cancel_request
+    cancel_complete
+    order_complete
+  ].freeze
+  NEGATIVE_STATUSES = %w[cancel_complete refund_complete].freeze
+
+  enum status: STATUSES.to_echo
+
   belongs_to :cart
   belongs_to :channel
   has_one :ship_info, dependent: :destroy
@@ -45,16 +66,14 @@ class OrderInfo < NationRecord
   validates_uniqueness_of :cart_id, :enc_id
 
 
-  delegate :order_status, to: :cart
   # alias_attribute :status, :order_status
   delegate :delivery_amount, to: :ship_info, allow_nil: true
   delegate :amount, to: :payment, allow_nil: true
   delegate :pay_method, to: :payment, allow_nil: true
 
-  scope :order_status, ->(status_name) { includes(:cart).where(cart: Cart.public_send(status_name)) }
   scope :sold, -> { includes(:cart).where(cart: Cart.where(order_status: Cart::SOLD_STATUSES)) }
-  scope :eager_index, -> { includes(:payment, :ship_info) }
-  scope :stage_in, ->(stage) { includes(:cart).where(cart: Cart.send((stage || :all).to_sym)) }
+  scope :eager_index, -> { includes(:payment, :ship_info, cart: [:user, { items: { product_option: [:product_page, { option_group: :product }] } }]) }
+  scope :stage_in, ->(stage) { where(status: stage) }
   scope :sellers_order, -> { includes(:items).where(cart: Cart.where(items: CartItem.sold_by_seller)) }
 
   def self.gen_enc_id
@@ -79,6 +98,16 @@ class OrderInfo < NationRecord
 
   def quantity
     cart.items.sum(:barcode_count)
+  end
+
+  def update_status(status=nil)
+    transaction do
+      payment_status = payment.current_status&.code
+      shipping_status = ship_info.current_status&.code
+
+      update(shipping_status: shipping_status, payment_status: payment_status)
+      update(status: status) unless status.nil?
+    end
   end
 
   def sellers_items
