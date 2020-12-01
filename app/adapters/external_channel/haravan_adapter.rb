@@ -65,11 +65,6 @@ module ExternalChannel
 
     def login; end
 
-    # = query_mapper 와 date_formatter 가 반드시 필요합니다.
-    def parse_query_hash(query_mapper, query_hash)
-      super
-    end
-
     def date_formatter(utc_time)
       utc_time.strftime('%Y-%m-%d %H:%M')
     end
