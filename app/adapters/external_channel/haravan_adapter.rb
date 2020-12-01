@@ -146,7 +146,7 @@ module ExternalChannel
           paid_at: paid_at,
           billing_amount: record['total_price'],
           ship_fee: record['shipping_lines'].inject(0) { |sum, line| sum + (line['price']) },
-          variant_ids: record['line_items'].map { |variant| [variant['variant_id'], variant['quantity'].to_i] },
+          variant_ids: record['line_items'].map { |variant| [variant['variant_id'], variant['quantity'].to_i, variant['price'].to_i ] },
           cancelled_status: record['cancelled_status'],
           shipping_status: record['fulfillments_status']
         }

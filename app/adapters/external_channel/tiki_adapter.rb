@@ -126,7 +126,7 @@ module ExternalChannel
             paid_at: nil,
             billing_amount: record['invoice']['total_seller_income'],
             ship_fee: record['invoice']['shipping_amount_after_discount'],
-            variant_ids: record['items'].map{ |variant| [variant['product']['id'], variant['invoice']['quantity'].to_i] },
+            variant_ids: record['items'].map{ |variant| [variant['product']['id'], variant['invoice']['quantity'].to_i, variant['invoice']['price'].to_i ] },
             cancelled_status: record['cancel_info'],
             shipping_status: record['shipping']['status']
         }
