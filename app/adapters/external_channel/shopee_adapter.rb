@@ -61,15 +61,17 @@ module ExternalChannel
       refine_orders(call_orders(parse_query_hash(order_query_mapper, query_hash)))
     end
 
-    def login; end
+    def parse_query_hash(query_mapper, query_hash)
+      @request_type = query_hash['key'] || 'updated'
+      super
+    end
 
     def date_formatter(utc_time)
-      utc_time.to_datetime.to_i
+      utc_time.to_datetime.new_offset(0).to_i
     end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash = {})
-      Rails.logger.info query_hash
       endpoint = "#{base_url}/items/get"
       default_body['timestamp'] = Time.now.to_i
 
@@ -91,8 +93,6 @@ module ExternalChannel
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
     def refine_products(products)
-      Rails.logger.info products
-
       products.map do |product|
         {
           id: product['item_id'],
@@ -132,7 +132,7 @@ module ExternalChannel
       more = true
       body[:pagination_offset] ||= 0
       body[:pagination_entries_per_page] ||= 100
-      to, from = time_symbol(data_type)
+      from, to = time_symbol(data_type)
 
       update_from = body[from]
 
@@ -162,9 +162,9 @@ module ExternalChannel
     def time_symbol(data_type)
       case data_type
       when 'product'
-        [:update_time_to, :update_time_from]
+        product_query_mapper[@request_type]
       when 'order'
-        [:create_time_to, :create_time_from]
+        order_query_mapper[@request_type]
       end
     end
 

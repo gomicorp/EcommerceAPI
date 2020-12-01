@@ -59,12 +59,12 @@ module ExternalChannel
     def parse_query_hash(query_mapper, query_hash)
       if query_hash.empty?
         query_hash = {
-          'key'=> 'updated',
           'from'=> date_formatter((DateTime.now - 1.days).beginning_of_day.utc),
           'to'=> date_formatter((DateTime.now - 1.days).end_of_day.utc),
         }
       end
 
+      query_hash['key'] ||= 'updated'
       query_hash.replace({
                            query_mapper[query_hash['key']][0]=> date_formatter(query_hash['from'].to_time),
                            query_mapper[query_hash['key']][1]=> date_formatter(query_hash['to'].to_time)
