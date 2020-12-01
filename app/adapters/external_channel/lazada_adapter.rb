@@ -3,7 +3,7 @@ module ExternalChannel
     require 'lazop_api_client'
     require 'selenium-webdriver'
 
-    attr_reader :code, :token, :app_key, :app_secret
+    attr_reader :code, :token, :app_key, :app_secret, :query_mapper
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # https://open.lazada.com/doc/api.htm?spm=a2o9m.11193494.0.0.c55f266b3DH77F#/api?cid=5&path=/products/get
@@ -42,6 +42,10 @@ module ExternalChannel
 
       @app_key = Rails.application.credentials.dig(:lazada, :api, :app_key)
       @app_secret = Rails.application.credentials.dig(:lazada, :api, :app_secret)
+      @query_mapper = {
+        'created'=> %w[create_after create_before],
+        'updated'=> %w[update_after update_before],
+      }
     end
 
     def set_code(params)
@@ -131,29 +135,20 @@ module ExternalChannel
     def products(query_hash = {})
       check_token_validation
 
-      parse_query_hash(query_hash)
-
-      refine_products(call_products(query_hash))
+      refine_products(call_products(parse_query_hash(query_mapper, query_hash)))
     end
 
     def orders(query_hash = {})
       check_token_validation
 
-      parse_query_hash(query_hash)
-
-      refine_orders(call_orders(query_hash))
+      refine_orders(call_orders(parse_query_hash(query_mapper, query_hash)))
     end
 
     protected
     def login; end
 
-    def parse_query_hash(query_hash)
-      query_hash['updated_from'] ||= DateTime.now - 1.days
-      query_hash['updated_to'] ||= DateTime.now
-      query_hash['update_after'] = query_hash['updated_from'].to_time.iso8601.to_s
-      query_hash['update_before'] = query_hash['updated_to'].to_time.iso8601.to_s
-      query_hash.delete('updated_from')
-      query_hash.delete('updated_to')
+    def date_formatter(utc_time)
+      utc_time.to_datetime.iso8601
     end
 
     def call_products(query_hash)
