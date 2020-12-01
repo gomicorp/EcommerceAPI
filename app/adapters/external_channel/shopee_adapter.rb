@@ -4,7 +4,7 @@ module ExternalChannel
 
     private
 
-    attr_accessor :key, :default_body, :default_headers
+    attr_accessor :key, :default_body, :default_headers, :product_query_mapper, :order_query_mapper
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # === from 과 to 사이 최대 기간은 15일임. 받으려면 15일 간격으로 잘라서 받아야 함.
@@ -42,42 +42,34 @@ module ExternalChannel
         partner_id: partner_id,
         shopid: shop_id
       }
+      @product_query_mapper = {
+        'updated'=> %w[update_time_from update_time_to],
+      }
+      @order_query_mapper = {
+        'created'=> %w[create_time_from create_time_to],
+      }
     end
 
     protected
 
-    # query로 들어오는 값을 지원하는 방식에 맞게 수정합니다.
-    # === input
-    # = update_from: UTC Time
-    # = update_to: UTC Time
-
-    # === response
-    # = update_time_from: 1472774528 (time stamp) => Time.new(yyyy, m, d).to_i
-    # = update_time_to: 1472774528 (time stamp) => Time.new(yyyy, m, d).to_i
-    # = pagination_offset : default 0
-    # = pagination_entries_per_page : default 10, max 100
-    def parse_query_hash(data_type)
-      case data_type
-      when 'product'
-        ->(query) { parse_query_on_product(default_query(query)) }
-      when 'order'
-        ->(query) { parse_query_on_order(default_query(query)) }
-      end
-    end
-
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
-      refine_products(call_products(parse_query_hash('product').call(query_hash)))
+      refine_products(call_products(parse_query_hash(product_query_mapper, query_hash)))
     end
 
     def orders(query_hash = {})
-      refine_orders(call_orders(parse_query_hash('order').call(query_hash)))
+      refine_orders(call_orders(parse_query_hash(order_query_mapper, query_hash)))
     end
 
     def login; end
 
+    def date_formatter(utc_time)
+      utc_time.to_datetime.to_i
+    end
+
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
     def call_products(query_hash = {})
+      Rails.logger.info query_hash
       endpoint = "#{base_url}/items/get"
       default_body['timestamp'] = Time.now.to_i
 
@@ -99,6 +91,8 @@ module ExternalChannel
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
     def refine_products(products)
+      Rails.logger.info products
+
       products.map do |product|
         {
           id: product['item_id'],
@@ -130,27 +124,6 @@ module ExternalChannel
     end
 
     private
-
-    # === query 요청 보내기
-    def parse_query_on_product(query_hash)
-      {
-        update_time_from: query_hash[:updated_from].to_datetime.to_i,
-        update_time_to: query_hash[:updated_to].to_datetime.to_i
-      }
-    end
-
-    def parse_query_on_order(query_hash)
-      {
-        create_time_from: query_hash[:updated_from].to_datetime.to_i,
-        create_time_to: query_hash[:updated_to].to_datetime.to_i
-      }
-    end
-
-    def default_query(query_hash)
-      query_hash[:updated_from] ||= (Time.now - 1.days)
-      query_hash[:updated_to] ||= Time.now
-      query_hash
-    end
 
     # === 쇼피의 데이터 중 more 이라는 데이터가 있는 것들은 pagination을 따로 하지 않고, more로만 붙여 준다.
     # === order와 product의 list요청에는 모두 more이라는 데이터가 확인되어, 앞으로 user등의 데이터가 추가되어도 사용될 것이라 기대하고 설정함.
