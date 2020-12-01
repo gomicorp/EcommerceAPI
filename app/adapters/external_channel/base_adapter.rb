@@ -54,6 +54,7 @@ module ExternalChannel
     end
 
     # == 전달받은 쿼리 파라미터를 각 채널의 포맷에 맞게 변환합니다.
+    # == query_mapper 와 date_formatter 가 반드시 필요합니다.
     # == query_mapper 와 date_formatter 는 하위 클래스에서 세부 구현합니다.
     def parse_query_hash(query_mapper, query_hash)
       if query_hash.empty?
