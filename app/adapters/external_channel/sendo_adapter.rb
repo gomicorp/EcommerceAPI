@@ -16,7 +16,7 @@ module ExternalChannel
     #   order_status: 주문 상태
     # }
 
-    attr_reader :base_url, :default_headers, :token
+    attr_reader :base_url, :default_headers, :token, :product_query_mapper, :order_query_mapper, :request_type
 
     def initialize
       super
@@ -27,6 +27,14 @@ module ExternalChannel
       @default_headers = {
         'Content-Type': 'application/json'
       }
+      @product_query_mapper = {
+        'created'=> %w[date_from date_to],
+        'updated'=> %w[date_from date_to]
+      }
+      @order_query_mapper = {
+        'created'=> %w[order_date_from order_date_to],
+        'updated'=> %w[order_status_date_from order_status_date_to]
+      }
     end
 
     protected
@@ -35,30 +43,26 @@ module ExternalChannel
       login if !token.auth_token || @token.auth_token_expired?
     end
 
-    # query로 들어오는 값을 지원하는 방식에 맞게 수정합니다.
-
-    # === sendo는 데이터 형식에 따라 query를 리턴하는 방식이 다릅니다.
-    # === 따라서 curring하는 형식으로 처리했습니다.
-    def parse_query_hash(data_type)
-      case data_type
-      when 'product'
-        ->(query) { parse_query_on_product(default_query(query)) }
-      when 'order'
-        ->(query) { parse_query_on_order(default_query(query)) }
-      end
-    end
-
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
       check_token_validation
 
-      refine_products(call_products(parse_query_hash('product').call(query_hash)))
+      refine_products(call_products(parse_query_hash(product_query_mapper, query_hash)))
     end
 
     def orders(query_hash = {})
       check_token_validation
 
-      refine_orders(call_orders(parse_query_hash('order').call(query_hash)))
+      refine_orders(call_orders(parse_query_hash(order_query_mapper, query_hash)))
+    end
+    
+    def parse_query_hash(query_mapper, query_hash)
+      @request_type = query_hash['key'] || 'updated'
+      super
+    end
+
+    def date_formatter(utc_time) 
+      utc_time.to_datetime.new_offset(0)
     end
 
     def login
@@ -101,8 +105,14 @@ module ExternalChannel
         'Content-Type': 'application/json',
         'cache-control': 'no-cache'
       }
-      request_lists(orders_url, orders_body, orders_header) do |orders|
-        orders['result']['data']
+      from, to = order_query_mapper[request_type]
+      interval = 2.days
+      request_interval(orders_body[from], orders_body[to], interval) do |requestFrom, requestTo|
+        orders_body[from] = date_time_format(requestFrom)
+        orders_body[to] = date_time_format(requestTo)
+        request_lists(orders_url, orders_body, orders_header) do |orders|
+          orders['result']['data']
+        end
       end
     end
 
@@ -142,30 +152,8 @@ module ExternalChannel
 
     private
 
-    ### === 요청 query데이터를 parsing하는 로직입니다.
-
-    def parse_query_on_product(query_hash)
-      update_from = query_hash[:updated_from].to_datetime
-      update_to = query_hash[:updated_to].to_datetime
-      {
-        date_from: "#{update_from.year}/#{update_from.month}/#{update_from.day}",
-        date_to: "#{update_to.year}/#{update_to.month}/#{update_to.day}"
-      }
-    end
-
-    def parse_query_on_order(query_hash)
-      update_from = query_hash[:updated_from].to_datetime
-      update_to = query_hash[:updated_to].to_datetime
-      {
-        order_date_from: "#{update_from.year}/#{update_from.month}/#{update_from.day}",
-        order_date_to: "#{update_to.year}/#{update_to.month}/#{update_to.day}"
-      }
-    end
-    
-    def default_query(query_hash)
-      query_hash[:updated_from] ||= Time.now - 1.days
-      query_hash[:updated_to] ||= Time.now
-      query_hash
+    def date_time_format(utc_time)
+      "#{utc_time.year}/#{utc_time.month}/#{utc_time.day}"
     end
 
     ### === 데이터를 불러오는 로직입니다.
@@ -188,6 +176,19 @@ module ExternalChannel
           record['result']
         end
       end
+    end
+
+    def request_interval(from, to, interval)
+      return unless block_given?
+
+      data = []
+      while from < to
+        tempFrom = to - interval
+        request_from = tempFrom < from ? from : tempFrom
+        data << yield(request_from, to)
+        to = request_from
+      end
+      data.flatten
     end
 
     # == list 에서 모든 데이터를 요청합니다.
