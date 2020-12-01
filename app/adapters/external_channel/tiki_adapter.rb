@@ -1,6 +1,6 @@
 module ExternalChannel
   class TikiAdapter < BaseAdapter
-    attr_accessor :default_headers
+    attr_accessor :default_headers, :query_mapper
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # https://open.tiki.vn/#manage-product
@@ -41,32 +41,31 @@ module ExternalChannel
         'tiki-api': Rails.application.credentials.dig(:tiki, :connection_parameters),
         'User-Agent': 'Faraday v1.0.1'
       }
+      @query_mapper = {
+        'created'=> %w[created_from_date created_to_date],
+        'updated'=> %w[updated_from_date updated_to_date],
+      }
     end
 
     protected
 
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
-      parse_query_hash(query_hash)
-
-      refine_products(call_products(query_hash))
+      refine_products(call_products(parse_query_hash(query_mapper, query_hash)))
     end
 
     def orders(query_hash = {})
-      parse_query_hash(query_hash)
-
-      refine_orders(call_orders(query_hash))
+      refine_orders(call_orders(parse_query_hash(query_mapper, query_hash)))
     end
 
     def login; end
 
-    def parse_query_hash(query_hash)
-      query_hash['updated_from'] ||= DateTime.now - 1.days
-      query_hash['updated_to'] ||= DateTime.now
-      query_hash['updated_from_date'] = query_hash['updated_from'].to_datetime.strftime("%F %T")
-      query_hash['updated_to_date'] = query_hash['updated_to'].to_datetime.strftime("%F %T")
-      query_hash.delete('updated_from')
-      query_hash.delete('updated_to')
+    def parse_query_hash(query_mapper, query_hash)
+      super
+    end
+
+    def date_formatter(utc_time)
+      utc_time.strftime('%Y-%m-%d %H:%M:%S')
     end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.

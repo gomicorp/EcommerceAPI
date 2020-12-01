@@ -1,6 +1,6 @@
 module ExternalChannel
   class HaravanAdapter < BaseAdapter
-    attr_reader :default_headers, :faraday_options
+    attr_reader :default_headers, :faraday_options, :query_mapper
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # https://docs.haravan.com/blogs/api-reference/1000018172-product
@@ -46,32 +46,32 @@ module ExternalChannel
       api_password = Rails.application.credentials.dig(:haravan, :api, :password)
 
       @default_headers = { 'authorization': 'Basic ' + ["#{api_key}:#{api_password}"].pack('m0') }
+      @query_mapper = {
+        'created'=> %w[created_at_min created_at_max],
+        'updated'=> %w[updated_at_min updated_at_max],
+      }
     end
 
     protected
 
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
-      parse_query_hash(query_hash)
-
-      refine_products(call_products(query_hash))
+      refine_products(call_products(parse_query_hash(query_mapper, query_hash)))
     end
 
     def orders(query_hash = {})
-      parse_query_hash(query_hash)
-
-      refine_orders(call_orders(query_hash))
+      refine_orders(call_orders(parse_query_hash(query_mapper,query_hash)))
     end
 
     def login; end
 
-    def parse_query_hash(query_hash)
-      query_hash['updated_from'] ||= DateTime.now - 1.days
-      query_hash['updated_to'] ||= DateTime.now
-      query_hash['updated_at_min'] = query_hash['updated_from'].to_s
-      query_hash['updated_at_max'] = query_hash['updated_to'].to_s
-      query_hash.delete('updated_from')
-      query_hash.delete('updated_to')
+    # = query_mapper 와 date_formatter 가 반드시 필요합니다.
+    def parse_query_hash(query_mapper, query_hash)
+      super
+    end
+
+    def date_formatter(utc_time)
+      utc_time.strftime('%Y-%m-%d %H:%M')
     end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
