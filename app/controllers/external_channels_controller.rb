@@ -37,7 +37,7 @@ class ExternalChannelsController < ApiController
     manager = ExternalChannel::ManagerFactory.get_manager(batch_params[:type], adapter)
 
     begin
-      manager.save_all(batch_params[:query_hash])
+      manager.save_all(batch_params[:query_hash].to_h)
     rescue StandardError => e
       error << e
     end
