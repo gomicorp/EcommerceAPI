@@ -22,6 +22,7 @@ gem 'schema_to_scaffold'
 gem 'http_accept_language'
 gem 'locale_router', git: 'https://github.com/yhk1038/locale_router.git'
 gem 'omise'
+gem 'iamport'
 gem 'rack-cors'
 gem 'rails-file_storage', git: 'https://github.com/yhk1038/file_storage.git'
 
