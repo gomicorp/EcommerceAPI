@@ -78,7 +78,7 @@ module ExternalChannel
       endpoint = "#{base_url}/items/get"
       default_body['timestamp'] = Time.now.to_i
 
-      interval = 15.days
+      interval = 14.days.to_i
       hash_interval(QUERY_MAPPER['products'][request_type], interval, query_hash)
         .map { |query| call_list(endpoint, default_body.merge(query))}
         .flatten
@@ -92,7 +92,7 @@ module ExternalChannel
       endpoint = "#{base_url}/orders/get"
       default_body['timestamp'] = Time.now.to_i
 
-      interval = 15.days
+      interval = 14.days.to_i
       hash_interval(QUERY_MAPPER['orders'][request_type], interval, query_hash)
         .map { |query| call_list(endpoint, default_body.merge(query)) }
         .flatten
@@ -142,13 +142,14 @@ module ExternalChannel
 
       data = []
       while from < to
+        new_hash = hash.clone
         tempFrom = to - interval
         request_from = tempFrom < from ? from : tempFrom
         
-        hash[fromKey] = request_from
-        hash[toKey] = to
+        new_hash[fromKey] = request_from
+        new_hash[toKey] = to
 
-        data << hash
+        data << new_hash
         to = request_from
       end
       data
