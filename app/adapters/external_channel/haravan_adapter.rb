@@ -40,6 +40,11 @@ module ExternalChannel
       # = fields : response 데이터 중 특정 스키마만 골라서 볼 수 있습니다
     }
 
+    QUERY_MAPPER = {
+      'created'=> %w[created_at_min created_at_max],
+      'updated'=> %w[updated_at_min updated_at_max],
+    }
+
     def initialize
       super
       api_key = Rails.application.credentials.dig(:haravan, :api, :key)
@@ -52,26 +57,17 @@ module ExternalChannel
 
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
-      parse_query_hash(query_hash)
-
-      refine_products(call_products(query_hash))
+      refine_products(call_products(parse_query_hash(QUERY_MAPPER, query_hash)))
     end
 
     def orders(query_hash = {})
-      parse_query_hash(query_hash)
-
-      refine_orders(call_orders(query_hash))
+    refine_orders(call_orders(parse_query_hash(QUERY_MAPPER, query_hash)))
     end
 
     def login; end
 
-    def parse_query_hash(query_hash)
-      query_hash['updated_from'] ||= DateTime.now - 1.days
-      query_hash['updated_to'] ||= DateTime.now
-      query_hash['updated_at_min'] = query_hash['updated_from'].to_s
-      query_hash['updated_at_max'] = query_hash['updated_to'].to_s
-      query_hash.delete('updated_from')
-      query_hash.delete('updated_to')
+    def date_formatter(utc_time)
+      utc_time.strftime('%Y-%m-%d %H:%M')
     end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
@@ -151,7 +147,7 @@ module ExternalChannel
           paid_at: paid_at,
           billing_amount: record['total_price'],
           ship_fee: record['shipping_lines'].inject(0) { |sum, line| sum + (line['price']) },
-          variant_ids: record['line_items'].map { |variant| [variant['variant_id'], variant['quantity'].to_i] },
+          variant_ids: record['line_items'].map { |variant| [variant['variant_id'], variant['quantity'].to_i, variant['price'].to_i ] },
           cancelled_status: record['cancelled_status'],
           shipping_status: record['fulfillments_status']
         }

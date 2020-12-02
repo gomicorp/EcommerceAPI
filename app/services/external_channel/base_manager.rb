@@ -30,12 +30,10 @@ module ExternalChannel
     # do not set validator directly!
     # Use this function when you want to set validator class
     def validator=(validator)
-      if valid_validator? validator
-        @validator = validator
-        true
-      else
-        false
-      end
+      return false unless valid_validator? validator
+
+      @validator = validator
+      true
     end
 
     private

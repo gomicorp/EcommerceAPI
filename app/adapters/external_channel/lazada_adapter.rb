@@ -29,10 +29,21 @@ module ExternalChannel
         # = sort_direction : 오름차순과 내림차순을 결정
         # = offset : 지정한 갯수의 데이터를 skip
         # = limit : 응답 받을 데이터의 갯수
-        # = create_before : 주문 생성 시간 <= date (ISO 8601)
-        # = create_after : 주문 생성 시간 >= date (ISO 8601)
+        # = created_before : 주문 생성 시간 <= date (ISO 8601)
+        # = created_after : 주문 생성 시간 >= date (ISO 8601)
         # = update_before : 주문 업데이트 시간 <= date (ISO 8601)
         # = update_after : 주문 업데이트 시간 >= date (ISO 8601)
+    }
+
+    QUERY_MAPPER = {
+      'products'=> {
+        'created'=> %w[create_after create_before],
+        'updated'=> %w[update_after update_before],
+      },
+      'orders'=> {
+        'created'=> %w[created_after created_before],
+        'updated'=> %w[update_after update_before],
+      }
     }
 
     def initialize
@@ -62,7 +73,7 @@ module ExternalChannel
       options.add_argument('--no-sandbox')
 
       browser = Selenium::WebDriver.for :chrome, options: options
-      browser.navigate.to "https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://api.gomistore.com/external_channels/code&client_id=#{app_key}"
+      browser.navigate.to "https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://408d19fef5ad.ngrok.io/external_channels/code&client_id=#{app_key}"
 
       # = 로그인이 안 되어있는 경우 : form.empty? => true
       form = browser.find_elements(css: 'form[name=form1]')
@@ -131,29 +142,20 @@ module ExternalChannel
     def products(query_hash = {})
       check_token_validation
 
-      parse_query_hash(query_hash)
-
-      refine_products(call_products(query_hash))
+      refine_products(call_products(parse_query_hash(QUERY_MAPPER['products'], query_hash)))
     end
 
     def orders(query_hash = {})
       check_token_validation
 
-      parse_query_hash(query_hash)
-
-      refine_orders(call_orders(query_hash))
+      refine_orders(call_orders(parse_query_hash(QUERY_MAPPER['orders'], query_hash)))
     end
 
     protected
     def login; end
 
-    def parse_query_hash(query_hash)
-      query_hash['updated_from'] ||= DateTime.now - 1.days
-      query_hash['updated_to'] ||= DateTime.now
-      query_hash['update_after'] = query_hash['updated_from'].to_time.iso8601.to_s
-      query_hash['update_before'] = query_hash['updated_to'].to_time.iso8601.to_s
-      query_hash.delete('updated_from')
-      query_hash.delete('updated_to')
+    def date_formatter(utc_time)
+      utc_time.to_datetime.iso8601
     end
 
     def call_products(query_hash)
@@ -162,8 +164,6 @@ module ExternalChannel
     end
 
     def call_orders(query_hash)
-      query_hash.merge!({ created_after: '2018-02-10T16:00:00+08:00' }) if query_hash.empty?
-
       response = request_get('/orders/get', query_hash)
       response.body['data']['orders']
     end
@@ -193,7 +193,7 @@ module ExternalChannel
             brand_name: record['attributes']['brand'],
             variants: refine_product_options(record['skus'])
         }
-      end
+      end if records.present?
 
       product_property
     end
@@ -223,7 +223,6 @@ module ExternalChannel
 
       records.each do |record|
         call_order_items(record['order_id']).each_with_index do |order_item, index|
-          #Rails.logger.info order_item['sku']
           order_property << {
             id: "#{record['order_id']}-#{index}",
             order_number: record['order_number'],
@@ -235,13 +234,12 @@ module ExternalChannel
             billing_amount: record['price'].to_i + record['shipping_fee'],
             ship_fee: record['shipping_fee'],
             cancelled_status: ['cancelled'].include?(order_item['status']) ? order_item['status'] : nil,
-            variant_ids: [[order_item['sku'].to_s, 1]],
+            variant_ids: [[order_item['sku'].to_s, 1, order_item['item_price'].to_i]],
             shipping_status: %w[ready_to_ship, delivered, shipped returned].include?(record['statuses']) ? order_item['status'] : nil
           }
         end
-      end
+      end if records.present?
 
-      #Rails.logger.info order_property
       order_property
     end
   end
