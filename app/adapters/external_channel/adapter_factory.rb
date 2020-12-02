@@ -1,18 +1,21 @@
 module ExternalChannel
   class AdapterFactory
-    def self.get_adapter(channel_name)
-      case channel_name.downcase
-      when 'haravan'
-        HaravanAdapter.new
-      when 'tiki'
-        TikiAdapter.new
-      when 'sendo'
-        SendoAdapter.new
-      when 'lazada'
-        LazadaAdapter.new
-      when 'shopee'
-        ShopeeAdapter.new
-      else
+    class << self
+      def known_adapter_map
+        {
+          haravan: HaravanAdapter,
+          tiki: TikiAdapter,
+          sendo: SendoAdapter,
+          lazada: LazadaAdapter,
+          shopee: ShopeeAdapter
+        }
+      end
+
+      def adapter(channel_name)
+        known_adapter_map[channel_name.to_s.downcase.to_sym].new || adapter_not_found!
+      end
+
+      def adapter_not_found!
         raise NotImplementedError, 'Requested Data Is Not Supported!'
       end
     end
