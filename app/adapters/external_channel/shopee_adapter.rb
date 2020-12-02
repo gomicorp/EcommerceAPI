@@ -4,7 +4,7 @@ module ExternalChannel
 
     private
 
-    attr_accessor :key, :default_body, :default_headers, :product_query_mapper, :order_query_mapper
+    attr_accessor :key, :default_body, :default_headers, :product_query_mapper, :order_query_mapper, :request_type
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # === from 과 to 사이 최대 기간은 15일임. 받으려면 15일 간격으로 잘라서 받아야 함.
@@ -75,7 +75,10 @@ module ExternalChannel
       endpoint = "#{base_url}/items/get"
       default_body['timestamp'] = Time.now.to_i
 
-      call_list(endpoint, default_body.merge(query_hash), 'product')
+      interval = 15.days
+      hash_interval(product_query_mapper[request_type], interval, query_hash)
+        .map { |query| call_list(endpoint, default_body.merge(query))}
+        .flatten
         .map { |data| call_product_by_ids(data['items'].pluck('item_id')) }
         .flatten
     end
@@ -86,7 +89,10 @@ module ExternalChannel
       endpoint = "#{base_url}/orders/get"
       default_body['timestamp'] = Time.now.to_i
 
-      call_list(endpoint, default_body.merge(query_hash), 'order')
+      interval = 15.days
+      hash_interval(order_query_mapper[request_type], interval, query_hash)
+        .map { |query| call_list(endpoint, default_body.merge(query)) }
+        .flatten
         .map { |data| call_order_by_sn(data['orders'].pluck('ordersn')) }
         .flatten
     end
@@ -125,47 +131,46 @@ module ExternalChannel
 
     private
 
+    def hash_interval(mapper, interval, hash)
+      fromKey, toKey = mapper
+
+      from = hash[fromKey]
+      to = hash[toKey]
+
+      data = []
+      while from < to
+        tempFrom = to - interval
+        request_from = tempFrom < from ? from : tempFrom
+        
+        hash[fromKey] = request_from
+        hash[toKey] = to
+
+        data << hash
+        to = request_from
+      end
+      data
+    end
+    
     # === 쇼피의 데이터 중 more 이라는 데이터가 있는 것들은 pagination을 따로 하지 않고, more로만 붙여 준다.
     # === order와 product의 list요청에는 모두 more이라는 데이터가 확인되어, 앞으로 user등의 데이터가 추가되어도 사용될 것이라 기대하고 설정함.
     # === 암것도 모드고 while 문 내에서 more이 false가 될 때까지 부름.
-    def call_list(endpoint, body, data_type)
+    def call_list(endpoint, body)
       more = true
       body[:pagination_offset] ||= 0
       body[:pagination_entries_per_page] ||= 100
-      from, to = time_symbol(data_type)
-
-      update_from = body[from]
-
       response_data = []
-      while body[to] > update_from
-        update_limit = body[to] - 15.days.to_i
-        body[from] = update_limit > update_from ? update_limit : update_from
 
-        while more
-          default_headers['Authorization'] = make_shopee_signature(endpoint, body)
-          response = request_post(endpoint, body, default_headers)
-          data = JSON.parse(response.body)
-          raise RuntimeError.new(data['error'].to_s) if data.key?('error')
+      while more
+        default_headers['Authorization'] = make_shopee_signature(endpoint, body)
+        response = request_post(endpoint, body, default_headers)
+        data = JSON.parse(response.body)
+        raise RuntimeError.new(data['error'].to_s) if data.key?('error')
 
-          more = data['more']
-          body[:pagination_offset] += body[:pagination_entries_per_page]
-          response_data << data 
-        end
-
-        body[to] = body[from]
-        more = true
+        more = data['more']
+        body[:pagination_offset] += body[:pagination_entries_per_page]
+        response_data << data 
       end
-
-      response_data
-    end
-
-    def time_symbol(data_type)
-      case data_type
-      when 'product'
-        product_query_mapper[@request_type]
-      when 'order'
-        order_query_mapper[@request_type]
-      end
+      response_data.flatten
     end
 
     # === shopee 에서 데이터를 가져오는 부분
@@ -188,7 +193,6 @@ module ExternalChannel
     # = body 를 의미하는 block 을 받아, 모든 id에 대해 post 요청을 보내고 타겟에 대한 묶음을 전달하는 함수.
     def call_each_by_ids(ids, endpoint, target)
       return [] unless block_given?
-
       ids.map do |id|
         default_body['timestamp'] = Time.now.to_i
 

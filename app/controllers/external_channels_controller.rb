@@ -39,6 +39,7 @@ class ExternalChannelsController < ApiController
     begin
       manager.save_all(batch_params[:query_hash].to_h)
     rescue StandardError => e
+      Rails.logger.error "#{Time.now} | Error : #{e.inspect} occured\nFIND here:\n#{e.backtrace.last(20)}"
       error << e
     end
 
