@@ -29,8 +29,8 @@ module ExternalChannel
         # = sort_direction : 오름차순과 내림차순을 결정
         # = offset : 지정한 갯수의 데이터를 skip
         # = limit : 응답 받을 데이터의 갯수
-        # = create_before : 주문 생성 시간 <= date (ISO 8601)
-        # = create_after : 주문 생성 시간 >= date (ISO 8601)
+        # = created_before : 주문 생성 시간 <= date (ISO 8601)
+        # = created_after : 주문 생성 시간 >= date (ISO 8601)
         # = update_before : 주문 업데이트 시간 <= date (ISO 8601)
         # = update_after : 주문 업데이트 시간 >= date (ISO 8601)
     }
@@ -43,8 +43,14 @@ module ExternalChannel
       @app_key = Rails.application.credentials.dig(:lazada, :api, :app_key)
       @app_secret = Rails.application.credentials.dig(:lazada, :api, :app_secret)
       @query_mapper = {
-        'created'=> %w[create_after create_before],
-        'updated'=> %w[update_after update_before],
+        'products'=> {
+          'created'=> %w[create_after create_before],
+          'updated'=> %w[update_after update_before],
+        },
+        'orders'=> {
+          'created'=> %w[created_after created_before],
+          'updated'=> %w[update_after update_before],
+        }
       }
     end
 
@@ -66,7 +72,7 @@ module ExternalChannel
       options.add_argument('--no-sandbox')
 
       browser = Selenium::WebDriver.for :chrome, options: options
-      browser.navigate.to "https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://api.gomistore.com/external_channels/code&client_id=#{app_key}"
+      browser.navigate.to "https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://408d19fef5ad.ngrok.io/external_channels/code&client_id=#{app_key}"
 
       # = 로그인이 안 되어있는 경우 : form.empty? => true
       form = browser.find_elements(css: 'form[name=form1]')
@@ -135,13 +141,13 @@ module ExternalChannel
     def products(query_hash = {})
       check_token_validation
 
-      refine_products(call_products(parse_query_hash(query_mapper, query_hash)))
+      refine_products(call_products(parse_query_hash(query_mapper['products'], query_hash)))
     end
 
     def orders(query_hash = {})
       check_token_validation
 
-      refine_orders(call_orders(parse_query_hash(query_mapper, query_hash)))
+      refine_orders(call_orders(parse_query_hash(query_mapper['orders'], query_hash)))
     end
 
     protected
@@ -157,9 +163,9 @@ module ExternalChannel
     end
 
     def call_orders(query_hash)
-      query_hash.merge!({ created_after: '2018-02-10T16:00:00+08:00' }) if query_hash.empty?
-
       response = request_get('/orders/get', query_hash)
+      Rails.logger.info query_hash
+      Rails.logger.info response.body
       response.body['data']['orders']
     end
 
@@ -188,7 +194,7 @@ module ExternalChannel
             brand_name: record['attributes']['brand'],
             variants: refine_product_options(record['skus'])
         }
-      end
+      end if records.present?
 
       product_property
     end
@@ -234,7 +240,7 @@ module ExternalChannel
             shipping_status: %w[ready_to_ship, delivered, shipped returned].include?(record['statuses']) ? order_item['status'] : nil
           }
         end
-      end
+      end if records.present?
 
       #Rails.logger.info order_property
       order_property
