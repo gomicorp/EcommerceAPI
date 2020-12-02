@@ -1,6 +1,6 @@
 module ExternalChannel
   class HaravanAdapter < BaseAdapter
-    attr_reader :default_headers, :faraday_options, :query_mapper
+    attr_reader :default_headers, :faraday_options
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # https://docs.haravan.com/blogs/api-reference/1000018172-product
@@ -40,27 +40,28 @@ module ExternalChannel
       # = fields : response 데이터 중 특정 스키마만 골라서 볼 수 있습니다
     }
 
+    QUERY_MAPPER = {
+      'created'=> %w[created_at_min created_at_max],
+      'updated'=> %w[updated_at_min updated_at_max],
+    }
+
     def initialize
       super
       api_key = Rails.application.credentials.dig(:haravan, :api, :key)
       api_password = Rails.application.credentials.dig(:haravan, :api, :password)
 
       @default_headers = { 'authorization': 'Basic ' + ["#{api_key}:#{api_password}"].pack('m0') }
-      @query_mapper = {
-        'created'=> %w[created_at_min created_at_max],
-        'updated'=> %w[updated_at_min updated_at_max],
-      }
     end
 
     protected
 
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
-      refine_products(call_products(parse_query_hash(query_mapper, query_hash)))
+      refine_products(call_products(parse_query_hash(QUERY_MAPPER, query_hash)))
     end
 
     def orders(query_hash = {})
-      refine_orders(call_orders(parse_query_hash(query_mapper,query_hash)))
+    refine_orders(call_orders(parse_query_hash(QUERY_MAPPER, query_hash)))
     end
 
     def login; end

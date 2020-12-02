@@ -4,7 +4,7 @@ module ExternalChannel
 
     private
 
-    attr_accessor :key, :default_body, :default_headers, :product_query_mapper, :order_query_mapper, :request_type
+    attr_accessor :key, :default_body, :default_headers, :request_type
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # === from 과 to 사이 최대 기간은 15일임. 받으려면 15일 간격으로 잘라서 받아야 함.
@@ -25,6 +25,15 @@ module ExternalChannel
       # = pagination_offset: default 100, max 100
     }
 
+    QUERY_MAPPER = {
+      'products'=> {
+        'updated'=> %w[update_time_from update_time_to],
+      },
+      'orders'=> {
+        'created'=> %w[create_time_from create_time_to],
+      }
+    }
+
     public
 
     def initialize
@@ -42,23 +51,17 @@ module ExternalChannel
         partner_id: partner_id,
         shopid: shop_id
       }
-      @product_query_mapper = {
-        'updated'=> %w[update_time_from update_time_to],
-      }
-      @order_query_mapper = {
-        'created'=> %w[create_time_from create_time_to],
-      }
     end
 
     protected
 
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
-      refine_products(call_products(parse_query_hash(product_query_mapper, query_hash)))
+      refine_products(call_products(parse_query_hash(QUERY_MAPPER['products'], query_hash)))
     end
 
     def orders(query_hash = {})
-      refine_orders(call_orders(parse_query_hash(order_query_mapper, query_hash)))
+      refine_orders(call_orders(parse_query_hash(QUERY_MAPPER['orders'], query_hash)))
     end
 
     def parse_query_hash(query_mapper, query_hash)
@@ -76,7 +79,7 @@ module ExternalChannel
       default_body['timestamp'] = Time.now.to_i
 
       interval = 15.days
-      hash_interval(product_query_mapper[request_type], interval, query_hash)
+      hash_interval(QUERY_MAPPER['products'][request_type], interval, query_hash)
         .map { |query| call_list(endpoint, default_body.merge(query))}
         .flatten
         .map { |data| call_product_by_ids(data['items'].pluck('item_id')) }
@@ -90,7 +93,7 @@ module ExternalChannel
       default_body['timestamp'] = Time.now.to_i
 
       interval = 15.days
-      hash_interval(order_query_mapper[request_type], interval, query_hash)
+      hash_interval(QUERY_MAPPER['orders'][request_type], interval, query_hash)
         .map { |query| call_list(endpoint, default_body.merge(query)) }
         .flatten
         .map { |data| call_order_by_sn(data['orders'].pluck('ordersn')) }

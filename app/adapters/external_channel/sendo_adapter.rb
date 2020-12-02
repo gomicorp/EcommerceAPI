@@ -16,7 +16,17 @@ module ExternalChannel
     #   order_status: 주문 상태
     # }
 
-    attr_reader :base_url, :default_headers, :token, :product_query_mapper, :order_query_mapper, :request_type
+    attr_reader :base_url, :default_headers, :token, :request_type
+
+    QUERY_MAPPER = {
+      'products'=> {
+        'updated'=> %w[date_from date_to]
+      },
+      'orders'=> {
+        'created'=> %w[order_date_from order_date_to],
+        'updated'=> %w[order_status_date_from order_status_date_to]
+      }
+    }
 
     def initialize
       super
@@ -26,14 +36,6 @@ module ExternalChannel
 
       @default_headers = {
         'Content-Type': 'application/json'
-      }
-      @product_query_mapper = {
-        'created'=> %w[date_from date_to],
-        'updated'=> %w[date_from date_to]
-      }
-      @order_query_mapper = {
-        'created'=> %w[order_date_from order_date_to],
-        'updated'=> %w[order_status_date_from order_status_date_to]
       }
     end
 
@@ -47,13 +49,13 @@ module ExternalChannel
     def products(query_hash = {})
       check_token_validation
 
-      refine_products(call_products(parse_query_hash(product_query_mapper, query_hash)))
+      refine_products(call_products(parse_query_hash(QUERY_MAPPER['products'], query_hash)))
     end
 
     def orders(query_hash = {})
       check_token_validation
 
-      refine_orders(call_orders(parse_query_hash(order_query_mapper, query_hash)))
+      refine_orders(call_orders(parse_query_hash(QUERY_MAPPER['orders'], query_hash)))
     end
     
     def parse_query_hash(query_mapper, query_hash)
@@ -105,7 +107,7 @@ module ExternalChannel
         'Content-Type': 'application/json',
         'cache-control': 'no-cache'
       }
-      from, to = order_query_mapper[request_type]
+      from, to = QUERY_MAPPER['orders'][request_type]
       interval = 2.days
       request_interval(orders_body[from], orders_body[to], interval) do |requestFrom, requestTo|
         orders_body[from] = date_time_format(requestFrom)

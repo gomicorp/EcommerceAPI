@@ -3,7 +3,7 @@ module ExternalChannel
     require 'lazop_api_client'
     require 'selenium-webdriver'
 
-    attr_reader :code, :token, :app_key, :app_secret, :query_mapper
+    attr_reader :code, :token, :app_key, :app_secret
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # https://open.lazada.com/doc/api.htm?spm=a2o9m.11193494.0.0.c55f266b3DH77F#/api?cid=5&path=/products/get
@@ -35,6 +35,17 @@ module ExternalChannel
         # = update_after : 주문 업데이트 시간 >= date (ISO 8601)
     }
 
+    QUERY_MAPPER = {
+      'products'=> {
+        'created'=> %w[create_after create_before],
+        'updated'=> %w[update_after update_before],
+      },
+      'orders'=> {
+        'created'=> %w[created_after created_before],
+        'updated'=> %w[update_after update_before],
+      }
+    }
+
     def initialize
       super
       @token = ExternalChannel::Token.find_or_create_by(country: Country.send(ApplicationRecord.country_code),
@@ -42,16 +53,6 @@ module ExternalChannel
 
       @app_key = Rails.application.credentials.dig(:lazada, :api, :app_key)
       @app_secret = Rails.application.credentials.dig(:lazada, :api, :app_secret)
-      @query_mapper = {
-        'products'=> {
-          'created'=> %w[create_after create_before],
-          'updated'=> %w[update_after update_before],
-        },
-        'orders'=> {
-          'created'=> %w[created_after created_before],
-          'updated'=> %w[update_after update_before],
-        }
-      }
     end
 
     def set_code(params)
@@ -141,13 +142,13 @@ module ExternalChannel
     def products(query_hash = {})
       check_token_validation
 
-      refine_products(call_products(parse_query_hash(query_mapper['products'], query_hash)))
+      refine_products(call_products(parse_query_hash(QUERY_MAPPER['products'], query_hash)))
     end
 
     def orders(query_hash = {})
       check_token_validation
 
-      refine_orders(call_orders(parse_query_hash(query_mapper['orders'], query_hash)))
+      refine_orders(call_orders(parse_query_hash(QUERY_MAPPER['orders'], query_hash)))
     end
 
     protected
@@ -164,8 +165,6 @@ module ExternalChannel
 
     def call_orders(query_hash)
       response = request_get('/orders/get', query_hash)
-      Rails.logger.info query_hash
-      Rails.logger.info response.body
       response.body['data']['orders']
     end
 
@@ -224,7 +223,6 @@ module ExternalChannel
 
       records.each do |record|
         call_order_items(record['order_id']).each_with_index do |order_item, index|
-          #Rails.logger.info order_item['sku']
           order_property << {
             id: "#{record['order_id']}-#{index}",
             order_number: record['order_number'],
@@ -242,7 +240,6 @@ module ExternalChannel
         end
       end if records.present?
 
-      #Rails.logger.info order_property
       order_property
     end
   end

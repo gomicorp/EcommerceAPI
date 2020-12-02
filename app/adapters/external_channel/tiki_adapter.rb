@@ -1,6 +1,6 @@
 module ExternalChannel
   class TikiAdapter < BaseAdapter
-    attr_accessor :default_headers, :query_mapper
+    attr_accessor :default_headers
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # https://open.tiki.vn/#manage-product
@@ -35,15 +35,16 @@ module ExternalChannel
       # = order_by : 데이터 정렬
     }
 
+    QUERY_MAPPER = {
+      'created'=> %w[created_from_date created_to_date],
+      'updated'=> %w[updated_from_date updated_to_date],
+    }
+
     def initialize
       super
       @default_headers = {
         'tiki-api': Rails.application.credentials.dig(:tiki, :connection_parameters),
         'User-Agent': 'Faraday v1.0.1'
-      }
-      @query_mapper = {
-        'created'=> %w[created_from_date created_to_date],
-        'updated'=> %w[updated_from_date updated_to_date],
       }
     end
 
@@ -51,11 +52,11 @@ module ExternalChannel
 
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query_hash = {})
-      refine_products(call_products(parse_query_hash(query_mapper, query_hash)))
+      refine_products(call_products(parse_query_hash(QUERY_MAPPER, query_hash)))
     end
 
     def orders(query_hash = {})
-      refine_orders(call_orders(parse_query_hash(query_mapper, query_hash)))
+      refine_orders(call_orders(parse_query_hash(QUERY_MAPPER, query_hash)))
     end
 
     def login; end
