@@ -1,6 +1,6 @@
 module ExternalChannel
   class BaseAdapter
-    DEAFULT_EXCEPTION = [
+    DEFAULT_EXCEPTION = [
       Errno::ETIMEDOUT, Timeout::Error,
       Faraday::TimeoutError, Faraday::RetriableResponse, Faraday::ConnectionFailed
     ].freeze
@@ -28,7 +28,7 @@ module ExternalChannel
 
     # == 리퀘스트를 던지는 caller 메소드입니다.
     def request_get(endpoint, params, headers, retry_exceptions = nil)
-      retry_exceptions ||= DEAFULT_EXCEPTION
+      retry_exceptions ||= DEFAULT_EXCEPTION
       Faraday.new(endpoint, params: params, request: { open_timeout: 5, timeout: 5 }) do |conn|
         conn.response :logger, Rails.logger
         conn.request(:retry, max: 5, interval: 1, exceptions: retry_exceptions)
@@ -38,7 +38,7 @@ module ExternalChannel
     end
 
     def request_post(endpoint, body, headers, retry_exceptions = nil)
-      retry_exceptions ||= DEAFULT_EXCEPTION
+      retry_exceptions ||= DEFAULT_EXCEPTION
       Faraday.new(endpoint, request: { open_timeout: 5, timeout: 5 }) do |conn|
         conn.response :logger, Rails.logger
         conn.request(:retry, max: 5,
@@ -54,7 +54,20 @@ module ExternalChannel
     end
 
     # == 전달받은 쿼리 파라미터를 각 채널의 포맷에 맞게 변환합니다.
-    def parse_query_hash(query); end
+    # == query_mapper 와 date_formatter 가 반드시 필요합니다.
+    # == query_mapper 와 date_formatter 는 하위 클래스에서 세부 구현합니다.
+    def parse_query_hash(query_mapper, query_hash)
+      query_hash['from'] ||= date_formatter((DateTime.now - 1.days).beginning_of_day.utc)
+      query_hash['to'] ||= date_formatter((DateTime.now - 1.days).end_of_day.utc)
+      query_hash['key'] ||= 'updated'
+      
+      query_hash.replace({
+                           query_mapper[query_hash['key']][0]=> date_formatter(query_hash['from'].to_time),
+                           query_mapper[query_hash['key']][1]=> date_formatter(query_hash['to'].to_time)
+                         })
+    end
+
+    def date_formatter(utc_time); end
 
     # == 적절하게 정제된 데이터를 리턴합니다.
     def products(query = {}); end

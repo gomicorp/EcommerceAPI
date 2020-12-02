@@ -16,8 +16,8 @@ class ExternalChannelsController < ApiController
       adapter = ExternalChannel::AdapterFactory.get_adapter(channel_name)
       Rails.logger.debug "Request to Channel #{channel_name}"
       
-      product_manager = ExternalChannel::ManagerFactory.get_manager('product', adapter)
-      order_manager = ExternalChannel::ManagerFactory.get_manager('order', adapter)
+      product_manager = ExternalChannel::ManagerFactory.manager('product', adapter)
+      order_manager = ExternalChannel::ManagerFactory.manager('order', adapter)
       
       product_manager.save_all
       order_manager.save_all
@@ -32,13 +32,19 @@ class ExternalChannelsController < ApiController
   end
 
   def batch
-    ApplicationRecord.country_code = batch_params[:country_code]
-    adapter = ExternalChannel::AdapterFactory.get_adapter(batch_params[:channel_name])
-    manager = ExternalChannel::ManagerFactory.get_manager(batch_params[:type], adapter)
+    country_code  = batch_params[:country_code].presence || parameter_missing!
+    channel_name  = batch_params[:channel_name].presence || parameter_missing!
+    batch_type    = batch_params[:type].presence || parameter_missing!
+    query_hash    = batch_params[:query_hash]
+
+    ApplicationRecord.country_code = country_code
+    adapter = ExternalChannel::AdapterFactory.adapter(channel_name)
+    manager = ExternalChannel::ManagerFactory.manager(batch_type, adapter)
 
     begin
-      manager.save_all(batch_params[:query_hash])
+      manager.save_all(query_hash.to_h)
     rescue StandardError => e
+      Rails.logger.error "#{Time.now} | Error : #{e.inspect} occured\nFIND here:\n#{e.backtrace.last(20)}"
       error << e
     end
 
@@ -65,5 +71,9 @@ class ExternalChannelsController < ApiController
         errors: error.map { |e| { message: e.inspect, backtract: e.backtrace } }
       }, status: :bad_request
     end
+  end
+
+  def parameter_missing!
+    raise(RuntimeError, 'parameter missing')
   end
 end

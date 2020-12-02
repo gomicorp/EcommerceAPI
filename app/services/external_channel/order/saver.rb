@@ -22,6 +22,7 @@ module ExternalChannel
 
           order_to_option = ExternalChannel::CartItem.find_or_initialize_by(order_info_id: target.id, product_option_id: option.id)
           order_to_option.option_count = variant[1]
+          order_to_option.unit_price = variant[2]
           order_to_option.save!
           
           option.brands.each do |brand|
