@@ -9,7 +9,7 @@ module ExternalChannel
       end
 
       def manager(data_type, adapter)
-        known_manager_map[data_type.to_s.downcase.to_sym].new(adapter) || adapter_not_found!
+        known_manager_map[data_type.to_s.downcase.to_sym].new(adapter) || manager_not_found!
       end
 
       def manager_not_found!
