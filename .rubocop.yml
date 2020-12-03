@@ -52,7 +52,7 @@ Metrics/BlockLength:
     - 'config/routes.rb'
     - 'config/environments/**/*.rb'
 
-Layout/IndentFirstArrayElement:
+Layout/FirstArrayElementIndentation:
   Enabled: false
 
 Layout/DotPosition:

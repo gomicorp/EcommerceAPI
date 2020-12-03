@@ -2,21 +2,24 @@
 #
 # Table name: product_options
 #
-#  id                      :bigint           not null, primary key
-#  additional_price        :integer          default(0), not null
-#  base_price              :integer          default(0), not null
-#  channel_code            :string(255)
-#  discount_amount         :float(24)        default(0.0), not null
-#  discount_price          :integer          default(0), not null
-#  discount_type           :integer          default("no"), not null
-#  is_active               :boolean          default(FALSE), not null
-#  name                    :string(255)
-#  price_change            :integer          default(0), not null
-#  retail_price            :integer          default(0), not null
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  channel_id              :bigint           not null
-#  product_option_group_id :bigint
+#  id                        :bigint           not null, primary key
+#  additional_price          :integer          default(0), not null
+#  base_price                :integer          default(0), not null
+#  channel_code              :string(255)
+#  discount_amount           :float(24)        default(0.0), not null
+#  discount_price            :integer          default(0), not null
+#  discount_type             :integer          default("no"), not null
+#  is_active                 :boolean          default(FALSE), not null
+#  name                      :string(255)
+#  price_change              :integer          default(0), not null
+#  retail_price              :integer          default(0), not null
+#  seller_shipping           :boolean          default(FALSE), not null
+#  seller_warehouse_key      :string(255)
+#  seller_warehouse_ship_fee :integer
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  channel_id                :bigint           not null
+#  product_option_group_id   :bigint
 #
 # Indexes
 #
@@ -29,7 +32,7 @@
 #
 class ProductOption < ApplicationRecord
   include ChannelRecordable
-  belongs_to :option_group, class_name: 'ProductOptionGroup', dependent: :destroy, foreign_key: :product_option_group_id
+  belongs_to :option_group, class_name: 'ProductOptionGroup', foreign_key: :product_option_group_id
   has_many :barcode_options
   has_many :barcodes, through: :barcode_options
 
@@ -40,7 +43,7 @@ class ProductOption < ApplicationRecord
   has_one :product_page, class_name: 'Product', through: :option_group, source: :product
 
   # ===============================================
-  has_many :product_option_brands, class_name: 'ProductOptionBrand', dependent: :delete_all
+  has_many :product_option_brands, class_name: 'ProductOptionBrand', dependent: :destroy
   has_many :brands, through: :product_option_brands
   # ===============================================
 
