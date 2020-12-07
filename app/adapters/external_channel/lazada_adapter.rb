@@ -3,6 +3,8 @@ module ExternalChannel
     require 'lazop_api_client'
     require 'selenium-webdriver'
 
+    include Rails.application.routes.url_helpers
+
     attr_reader :code, :token, :app_key, :app_secret
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
@@ -73,7 +75,7 @@ module ExternalChannel
       options.add_argument('--no-sandbox')
 
       browser = Selenium::WebDriver.for :chrome, options: options
-      browser.navigate.to "https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=https://408d19fef5ad.ngrok.io/external_channels/code&client_id=#{app_key}"
+      browser.navigate.to "https://auth.lazada.com/oauth/authorize?response_type=code&force_auth=true&redirect_uri=#{root_url}external_channels/code&client_id=#{app_key}"
 
       # = 로그인이 안 되어있는 경우 : form.empty? => true
       form = browser.find_elements(css: 'form[name=form1]')
