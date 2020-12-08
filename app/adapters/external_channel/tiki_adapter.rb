@@ -96,7 +96,7 @@ module ExternalChannel
 
       records.each do |record|
         product_property << {
-          id: record['super_id'],
+          id: record['super_id'] != 0 ? record['super_id'] : record['master_id'],
           title: record['name'],
           channel_name: 'Tiki',
           brand_name: call_product(record['product_id'])['attributes']['brand']['value'],
