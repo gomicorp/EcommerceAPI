@@ -207,7 +207,7 @@ module ExternalChannel
         option_property << {
             id: sku['SellerSku'],
             price: sku['special_price'],
-            name: sku['_compatible_variation_']
+            name: sku['_compatible_variation_'] || sku['ShopSku']
         }
       end
 
