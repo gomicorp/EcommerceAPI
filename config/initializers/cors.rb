@@ -1,11 +1,12 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins(
-      'sellers.gomistore.in.th',            # 디딤돌용 셀러즈 모바일앱
-      'sellers.gomistore.com',              # 디딤돌용 고미스토어 (+팝업스토어)
-      'partners.gomistore.com',             # 디딤돌용 파트너센터
-      'https://test-partner.gomistore.com', # 스테이징 파트너센터
-      'partner.gomistore.com'
+      'https://partner.gomistore.com',        # = 파트너센터
+      'https://test-partner.gomistore.com',   # = 스테이징 파트너센터
+      'https://vn.gomistore.com',             # = 베트남 고미스토어
+      'https://vn-staging.gomistore.com',     # = 베트남 스테이징 고미스토어
+      'https://gomistore.in.th',              # = 태국 고미스토어
+      'https://staging.gomistore.in.th'       # = 태국 스테이징 고미스토어
     )
     resource(
       '*',

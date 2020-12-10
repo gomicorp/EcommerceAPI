@@ -1,4 +1,6 @@
 Rails.application.configure do
+  Rails.application.routes.default_url_options[:host] = 'api.gomistore.com'
+  config.hosts << %w[gomistore.com gomistore.in.th]
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
@@ -72,8 +74,6 @@ Rails.application.configure do
     api_key: Rails.application.credentials.dig(:smtp, :mailgun_api_key),
     domain: Rails.application.credentials.dig(:smtp, :mailgun_domain)
   }
-
-  Rails.application.routes.default_url_options[:host] = 'api.gomistore.com'
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
