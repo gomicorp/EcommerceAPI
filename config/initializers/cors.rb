@@ -1,12 +1,7 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins(
-      "https://partner.gomistore.com",
-      "https://test-partner.gomistore.com",
-      "https://gomistore.in.th",
-      "https://staging.gomistore.in.th",
-      "https://vn.gomistore.com",
-      "https://vn-staging.gomistore.com"
+      Rails.application.credentials.dig(:cors_whitelist)
     )
     resource(
       '*',
