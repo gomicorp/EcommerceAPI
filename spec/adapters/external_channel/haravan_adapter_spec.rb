@@ -31,7 +31,7 @@ RSpec.describe ExternalChannel::HaravanAdapter do
       it 'refine_products' do
         puts '# refine_products'
         refine_products = @adapter.refine_products(@call_products)
-        # puts refine_products
+        puts refine_products
         puts
         expect { @adapter }.not_to raise_error
       end
@@ -50,7 +50,7 @@ RSpec.describe ExternalChannel::HaravanAdapter do
       before do
         puts '# call_orders'
         @call_orders = @adapter.call_orders(@parse_query_hash)
-        puts @call_orders.to_json
+        # puts @call_orders.to_json
         puts
       end
 
