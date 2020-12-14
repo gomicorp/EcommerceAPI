@@ -147,7 +147,8 @@ module ExternalChannel
           paid_at: paid_at(sales_data),
           channel: 'sendo',
           ordered_at: Time.at(sales_data['order_date_time_stamp']).getutc,
-          ship_fee: sales_data['total_amount_buyer'] - sales_data['total_amount']
+          ship_fee: sales_data['total_amount_buyer'] - sales_data['total_amount'],
+          row_data: order.to_json
         }
       end
     end
