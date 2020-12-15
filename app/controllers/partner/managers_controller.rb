@@ -1,5 +1,6 @@
 module Partner
   class ManagersController < BaseController
+    before_action :authenticate_request!, only: [:index, :show]
     before_action :set_manager, only: :show
 
     def index
