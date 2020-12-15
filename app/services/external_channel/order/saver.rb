@@ -7,7 +7,7 @@ module ExternalChannel
       def save_data(order)
         order_info = ExternalChannel::OrderInfo.find_or_initialize_by(external_channel_order_id: order[:id])
         order_info.update!(parse_order(order))
-        
+
         set_order_related_info(order_info, order) 
         true
       end
@@ -44,7 +44,8 @@ module ExternalChannel
           order_number: order[:order_number],
           cancelled_status: order[:cancelled_status] || default_order[:shipping_status],
           external_channel_order_id: order[:id],
-          shipping_status: order[:shipping_status] || default_order[:shipping_status]
+          shipping_status: order[:shipping_status] || default_order[:shipping_status],
+          row_data: order[:row_data]
         }
       end
     end
