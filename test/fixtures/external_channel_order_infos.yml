@@ -10,6 +10,7 @@
 #  ordered_at                :datetime
 #  paid_at                   :datetime
 #  pay_method                :string(255)
+#  row_data                  :text(65535)
 #  ship_fee                  :integer
 #  shipping_status           :string(255)
 #  total_price               :integer

@@ -129,7 +129,8 @@ module ExternalChannel
             ship_fee: record['invoice']['shipping_amount_after_discount'],
             variant_ids: record['items'].map{ |variant| [variant['product']['id'], variant['invoice']['quantity'].to_i, variant['invoice']['price'].to_i ] },
             cancelled_status: record['cancel_info'],
-            shipping_status: record['shipping']['status']
+            shipping_status: record['shipping']['status'],
+            row_data: record.to_json
         }
       end
 
