@@ -5,6 +5,7 @@ namespace :partner do
     post '/', to: 'registrations#create'
     get '/:id', to: 'registrations#show'
     post 'sign_in', to: 'sessions#create'
+    get 'me', to: 'sessions#show'
   end
 
   resources :companies, &-> { approve_requests_on(:companies) }
