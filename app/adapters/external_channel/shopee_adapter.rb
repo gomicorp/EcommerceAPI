@@ -130,7 +130,8 @@ module ExternalChannel
           ship_fee: order['actual_shipping_cost'],
           variant_ids: variants(order['items']),
           cancelled_status: cancel_status(order['order_status']),
-          shipping_status: shipping_status(order['order_status'])
+          shipping_status: shipping_status(order['order_status']),
+          row_data: order.to_json
         }
       end
     end
