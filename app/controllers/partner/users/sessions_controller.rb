@@ -23,7 +23,7 @@ module Partner
       end
 
       def show
-        render :'partner/managers/show', locals: { manager: @current_user }, status: :ok
+        render 'partner/sessions/show', status: :ok
       end
 
       # DELETE /users/sign_out
