@@ -237,7 +237,8 @@ module ExternalChannel
             ship_fee: record['shipping_fee'],
             cancelled_status: ['cancelled'].include?(order_item['status']) ? order_item['status'] : nil,
             variant_ids: [[order_item['sku'].to_s, 1, order_item['item_price'].to_i]],
-            shipping_status: %w[ready_to_ship, delivered, shipped returned].include?(record['statuses']) ? order_item['status'] : nil
+            shipping_status: %w[ready_to_ship, delivered, shipped returned].include?(record['statuses']) ? order_item['status'] : nil,
+            row_data: record.to_json
           }
         end
       end if records.present?

@@ -3,8 +3,8 @@ require Rails.root.join('config/routes/helpers/approve_requests_helpers.rb')
 namespace :partner do
   namespace :users do
     post '/', to: 'registrations#create'
-    get '/:id', to: 'registrations#show'
     post 'sign_in', to: 'sessions#create'
+    get 'me', to: 'sessions#show'
   end
 
   resources :companies, &-> { approve_requests_on(:companies) }
