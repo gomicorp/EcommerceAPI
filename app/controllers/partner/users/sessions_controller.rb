@@ -23,6 +23,7 @@ module Partner
       end
 
       def show
+        render 'partner/sessions/show', status: :ok
       end
 
       # DELETE /users/sign_out
