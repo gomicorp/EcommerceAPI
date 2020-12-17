@@ -57,8 +57,8 @@ module ExternalChannel
     # == query_mapper 와 date_formatter 가 반드시 필요합니다.
     # == query_mapper 와 date_formatter 는 하위 클래스에서 세부 구현합니다.
     def parse_query_hash(query_mapper, query_hash)
-      query_hash['from'] ||= DateTime.now.beginning_of_day.utc
-      query_hash['to'] ||= DateTime.now.end_of_day.utc
+      query_hash['from'] ||= Time.now.utc.beginning_of_day
+      query_hash['to'] ||= Time.now.utc.end_of_day
       query_hash['key'] ||= 'updated'
 
       query_hash.replace({
