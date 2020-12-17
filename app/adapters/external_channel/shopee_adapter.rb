@@ -70,7 +70,10 @@ module ExternalChannel
     end
 
     def date_formatter(utc_time)
-      utc_time.to_datetime.new_offset(0).to_i
+      country_zone = ActiveSupport::TimeZone.country_zones('vn')[0]
+      time_offset = ActiveSupport::TimeZone[country_zone.name].formatted_offset
+      time_diff = time_offset.to_time.hour
+      (utc_time.to_time - time_diff.hours).to_i
     end
 
     # == 외부 채널의 API 를 사용하여 각 레코드를 가져옵니다.
