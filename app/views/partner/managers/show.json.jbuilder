@@ -1,1 +1,1 @@
-json.partial! 'partner/managers/manager', manager: manager
+json.partial! 'partner/managers/manager', manager: @manager
