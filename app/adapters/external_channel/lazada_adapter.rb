@@ -157,7 +157,11 @@ module ExternalChannel
     def login; end
 
     def date_formatter(utc_time)
-      utc_time.to_datetime.iso8601
+      country_zone = ActiveSupport::TimeZone.country_zones('vn')[0]
+      time_offset = ActiveSupport::TimeZone[country_zone.name].formatted_offset
+      time_diff = time_offset.to_time.hour
+
+      (utc_time.to_datetime - time_diff.hours).iso8601
     end
 
     def call_products(query_hash)
@@ -207,7 +211,7 @@ module ExternalChannel
         option_property << {
             id: sku['SellerSku'],
             price: sku['special_price'],
-            name: sku['_compatible_variation_']
+            name: sku['_compatible_variation_'] || sku['ShopSku']
         }
       end
 
