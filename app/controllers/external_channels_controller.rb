@@ -59,6 +59,8 @@ class ExternalChannelsController < ApiController
     @order_logs = []
     ApplicationRecord.country_code = country_code
     order_info = ExternalChannel::OrderInfo.find_by(external_channel_order_id: order_id)
+    return unless order_info
+
     versions = PaperTrail::Version.where(item_type: item_type, item_id: order_info.id, object: [nil, '']).order('id DESC')
     versions.each do |version|
       # object_changes 는 바로 변경전 값과 변경후 값이 배열로 들어가 있음
