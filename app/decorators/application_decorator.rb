@@ -13,7 +13,7 @@ class ApplicationDecorator < Draper::Decorator
 
     hash = {}
     fields.each do |data_field|
-      k ,v = data_field.to_data(self)
+      k, v = data_field.to_data(self)
       hash[k] = v
     end
 
@@ -47,6 +47,7 @@ class ApplicationDecorator < Draper::Decorator
     add_data_fields DataField.new(name, option, &block)
   end
 
+
   class DataField
     attr_reader :name, :option, :method
 
@@ -69,9 +70,5 @@ class ApplicationDecorator < Draper::Decorator
 
       [key, value]
     end
-
-    # def parse_value
-    #
-    # end
   end
 end
