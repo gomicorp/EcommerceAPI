@@ -5,7 +5,7 @@ module DataFieldCollectable
 
   module ClassMethods
     def data_fields
-      @data_fields ||= []
+      @data_fields ||= {}
     end
 
     def data_keys_from_model(model_name = nil, option = {})
@@ -45,7 +45,7 @@ module DataFieldCollectable
     private
 
     def add_data_fields(data_field)
-      data_fields << data_field
+      data_fields[data_field.name] = data_field
     end
 
     def permitted_model_attributes(permit_filters, deny_filters)
@@ -60,18 +60,12 @@ module DataFieldCollectable
 
 
   def as_json(options = nil)
-    fields = self.class.data_fields
+    fields = self.class.data_fields.values
 
     # 별도로 data_key 를 통해 선언된 필드가 없는 경우, 기본 as_json 동작을 수행 합니다.
     return super if fields.empty?
 
-    hash = {}
-    fields.each do |data_field|
-      k, v = data_field.to_data(self)
-      hash[k] = v
-    end
-
-    hash
+    fields.map { |data_field| data_field.to_data(self) }.to_h
   end
 
 
@@ -85,14 +79,15 @@ module DataFieldCollectable
     end
 
     def to_data(record)
-      key = @name
-      value = if method&.is_a?(Proc)
-                method.call(record, self, @name)
-              else
-                record.send(@name)
-              end
+      [name, value_for(record)]
+    end
 
-      [key, value]
+    def value_for(record)
+      if method&.is_a?(Proc)
+        method.call(record, self, name)
+      else
+        record.send(name)
+      end
     end
   end
 end
