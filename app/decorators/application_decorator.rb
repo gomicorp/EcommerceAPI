@@ -41,6 +41,9 @@ class ApplicationDecorator < Draper::Decorator
   end
 
   def self.data_key(name, option = {}, &block)
+    association_option = option.slice(:with, :scope, :context)
+    decorates_association name, **association_option if association_option.any?
+
     add_data_fields DataField.new(name, option, &block)
   end
 
