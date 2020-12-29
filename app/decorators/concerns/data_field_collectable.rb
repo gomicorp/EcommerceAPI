@@ -8,14 +8,18 @@ module DataFieldCollectable
       @data_fields ||= []
     end
 
-    # TODO: 메소드 이름이 안예뻐요....
-    def data_keys_from_attribute
+    def data_keys_from_model(model_name = nil, option = {})
+      decorates model_name if !object_class? && model_name
+
       unless object_class
         raise 'object_class 를 인식하지 못했습니다. ' \
             '`decorates :company` 와 같이 object_class 를 선언해주세요.'
       end
 
-      object_class.attribute_names.each do |attr_name|
+      permitted_model_attributes(
+        option.dig(:only),
+        option.dig(:except)
+      ).each do |attr_name|
         add_data_fields DataField.new(attr_name.to_s.to_sym)
       end
     end
@@ -37,8 +41,20 @@ module DataFieldCollectable
       names.each { |name| data_key name, option }
     end
 
+
+    private
+
     def add_data_fields(data_field)
       data_fields << data_field
+    end
+
+    def permitted_model_attributes(permit_filters, deny_filters)
+      attributes = object_class.attribute_names.map(&:to_sym)
+
+      attributes &= permit_filters if permit_filters.is_a? Array
+      attributes -= deny_filters if deny_filters.is_a? Array
+
+      attributes
     end
   end
 
