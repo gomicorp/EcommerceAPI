@@ -83,6 +83,8 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'faker'
   gem 'annotate'
+  # rails 단위 테스트, rswag 에 종속
+  gem 'rspec-rails', '~> 3.5'
 end
 
 group :development do
@@ -106,3 +108,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # sprocket version downgrade
 gem 'sprockets', '3.7.2'
+
+# Generate beautiful API documentation
+gem 'rswag'
