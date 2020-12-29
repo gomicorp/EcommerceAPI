@@ -27,6 +27,16 @@ module DataFieldCollectable
       add_data_fields DataField.new(name, option, &block)
     end
 
+    # 여러개의 키를 한 번에 넣을 때 사용할 수 있습니다.
+    #
+    # ===
+    #   data_keys :id, :name, ...
+    #
+    #   data_keys *Company.attribute_names
+    def data_keys(*names, **option)
+      names.each { |name| data_key name, option }
+    end
+
     def add_data_fields(data_field)
       data_fields << data_field
     end
