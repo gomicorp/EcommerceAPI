@@ -1,7 +1,7 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins(
-      if Rails.env == 'development'
+      if Rails.env == 'development' || 'test'
         '*'
       elsif Rails.env == 'staging' || 'production'
         Rails.application.credentials.dig(:cors_whitelist)
