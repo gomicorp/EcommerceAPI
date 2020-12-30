@@ -6,8 +6,8 @@ module Partner
     # GET /partner/brands
     # GET /partner/brands.json
     def index
-      brand_records = @current_user.brands.includes(include_tables).where(query_param)
-      @brands = decorator.decorate_collection(brand_records)
+      my_brands = @current_user.brands.includes(include_tables).where(query_param)
+      @brands = decorator_class.decorate_collection(my_brands)
 
       render json: @brands
     end
@@ -49,15 +49,15 @@ module Partner
 
     protected
 
-    def default_decorator
-      { deco_type: 'Brands::DefaultDecorator' }
+    def default_decorator_name
+      'Brands::DefaultDecorator'
     end
 
     private
     # Use callbacks to share common setup or constraints between actions.
     def set_brand
-      brand_record = @current_user.brands.find(params[:id])
-      @brand = decorator.decorate(brand_record)
+      my_brand = @current_user.brands.find(params[:id])
+      @brand = decorator_class.decorate(my_brand)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

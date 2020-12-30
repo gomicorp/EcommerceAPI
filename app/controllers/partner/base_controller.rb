@@ -40,15 +40,15 @@ module Partner
       render json: { errors: ['Not Authenticated'] }, status: :unauthorized
     end
 
-    def decorator
-      Object.const_get(decorate_params[:deco_type])
+    def decorator_class
+      decorate_name.constantize
     end
 
-    def decorate_params
-      params.permit(:deco_type).presence || default_decorator
+    def decorate_name
+      params.permit(:deco_type)[:deco_type].presence || default_decorator_name
     end
 
-    def default_decorator
+    def default_decorator_name
       # Hash => { deco_type: 'Companies::DefaultDecorator' }
     end
 

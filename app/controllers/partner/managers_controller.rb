@@ -4,15 +4,14 @@ module Partner
     before_action :set_manager, only: :show
 
     def index
-      if params[:format] == 'json' && params[:email]
-        manager_records = Manager.where('email LIKE ?', "%#{params[:email]}%")
-        @managers = decorator.decorate_collection(manager_records)
-        render json: @managers
-      else
-        manager_records = Manager.includes(include_tables).where(query_param)
-        @managers = decorator.decorate_collection(manager_records)
-        render json: @managers
-      end
+      manager_records = if params[:format] == 'json' && params[:email]
+                          Manager.where('email LIKE ?', "%#{params[:email]}%")
+                        else
+                          Manager.includes(include_tables).where(query_param)
+                        end
+
+      @managers = decorator_class.decorate_collection(manager_records)
+      render json: @managers
     end
 
     def show
@@ -37,13 +36,13 @@ module Partner
 
     protected
 
-    def default_decorator
-      { deco_type: 'Users::Managers::DefaultDecorator' }
+    def default_decorator_name
+      'Users::Managers::DefaultDecorator'
     end
 
     def set_manager
       manager_record = Manager.includes(include_tables).find(params[:id])
-      @manager = decorator.decorate(manager_record)
+      @manager = decorator_class.decorate(manager_record)
     end
 
     def include_tables
