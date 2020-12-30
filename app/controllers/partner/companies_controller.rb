@@ -4,8 +4,8 @@ module Partner
     before_action :set_company, only: %i[show update destroy]
 
     def index
-      user_companies = @current_user.companies.includes(include_tables).where(query_param)
-      @companies = decorator.decorate_collection(user_companies)
+      user_companies = @current_user.companies.includes(include_tables)
+      @companies = decorator.decorate_collection(user_companies.where(query_param))
 
       render json: @companies, template: 'partner/companies/index'
     end
@@ -47,14 +47,6 @@ module Partner
 
     def query_param
       params.permit(*Company.attribute_names, id: [])
-    end
-
-    def decorator
-      Object.const_get(decorate_params[:deco_type])
-    end
-
-    def decorate_params
-      params.permit(:deco_type).presence || default_decorator
     end
 
     def default_decorator
