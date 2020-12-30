@@ -1,5 +1,5 @@
 module Brands
-  class DefaultDecorator < ApplicationDecorator
+  class DefaultDecorator < BrandDecorator
     delegate_all
 
     data_keys_from_model :brand
