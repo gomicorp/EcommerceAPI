@@ -2,12 +2,6 @@ module Companies
   class DefaultDecorator < CompanyDecorator
     delegate_all
 
-    # def brands(template = nil)
-    #   @brands ||= if template
-    #                 # ....
-    #               else
-    #                 Brands::DefaultDecorator.decorate(object.brands)
-    #               end
-    # end
+    data_keys_from_model :company, except: %i[created_at updated_at]
   end
 end
