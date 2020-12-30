@@ -1,0 +1,3 @@
+class ProductCollectionDecorator < ApplicationDecorator
+
+end
