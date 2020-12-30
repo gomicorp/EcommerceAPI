@@ -40,6 +40,18 @@ module Partner
       render json: { errors: ['Not Authenticated'] }, status: :unauthorized
     end
 
+    def decorator
+      Object.const_get(decorate_params[:deco_type])
+    end
+
+    def decorate_params
+      params.permit(:deco_type).presence || default_decorator
+    end
+
+    def default_decorator
+      # Hash => { deco_type: 'Companies::DefaultDecorator' }
+    end
+
     private
 
     def decode_jwt(token)
@@ -66,18 +78,6 @@ module Partner
       return nil unless user&.id
 
       user.as_json.merge(token: JsonWebToken.encode(user_id: user.id))
-    end
-
-    def decorator
-      Object.const_get(decorate_params[:deco_type])
-    end
-
-    def decorate_params
-      params.permit(:deco_type).presence || default_decorator
-    end
-
-    def default_decorator
-      # Hash => { deco_type: 'Companies::DefaultDecorator' }
     end
   end
 end

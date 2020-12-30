@@ -47,6 +47,12 @@ module Partner
       head :no_content
     end
 
+    protected
+
+    def default_decorator
+      { deco_type: 'Brands::DefaultDecorator' }
+    end
+
     private
     # Use callbacks to share common setup or constraints between actions.
     def set_brand
@@ -69,10 +75,6 @@ module Partner
 
     def query_param
       params.permit(*Brand.attribute_names, id: [])
-    end
-
-    def default_decorator
-      { deco_type: 'Brands::DefaultDecorator' }
     end
   end
 end

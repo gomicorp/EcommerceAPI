@@ -35,6 +35,12 @@ module Partner
       end
     end
 
+    protected
+
+    def default_decorator
+      { deco_type: 'Companies::DefaultDecorator' }
+    end
+
     private
 
     def set_company
@@ -47,10 +53,6 @@ module Partner
 
     def query_param
       params.permit(*Company.attribute_names, id: [])
-    end
-
-    def default_decorator
-      { deco_type: 'Companies::DefaultDecorator' }
     end
   end
 end
