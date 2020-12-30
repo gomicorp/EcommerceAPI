@@ -111,3 +111,5 @@ gem 'sprockets', '3.7.2'
 
 # Generate beautiful API documentation
 gem 'rswag'
+gem 'simplecov', require: false, group: :test
+# gem 'coveralls', require: false
