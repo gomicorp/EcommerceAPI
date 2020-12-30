@@ -1,5 +1,5 @@
 module Products
-  class DefaultDecorator < ApplicationDecorator
+  class DefaultDecorator < ProductDecorator
     delegate_all
 
     data_keys_from_model :product
