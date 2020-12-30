@@ -40,6 +40,18 @@ module Partner
       render json: { errors: ['Not Authenticated'] }, status: :unauthorized
     end
 
+    def decorator_class
+      decorate_name.constantize
+    end
+
+    def decorate_name
+      params.permit(:deco_type)[:deco_type].presence || default_decorator_name
+    end
+
+    def default_decorator_name
+      # Hash => { deco_type: 'Companies::DefaultDecorator' }
+    end
+
     private
 
     def decode_jwt(token)

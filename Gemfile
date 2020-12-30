@@ -25,6 +25,7 @@ gem 'omise'
 gem 'iamport'
 gem 'rack-cors'
 gem 'rails-file_storage', git: 'https://github.com/yhk1038/file_storage.git'
+gem 'draper'
 
 # 회원인증 및 권한설정을 위한 젬
 gem 'authority' # 권한설정
