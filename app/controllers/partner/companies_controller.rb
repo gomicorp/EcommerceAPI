@@ -4,10 +4,14 @@ module Partner
     before_action :set_company, only: %i[show update destroy]
 
     def index
-      @companies = @current_user.companies.includes(include_tables).where(query_param)
+      my_companies = @current_user.companies.includes(include_tables).where(query_param)
+      @companies = decorator_class.decorate_collection(my_companies)
+
+      render json: @companies, template: 'partner/companies/index'
     end
 
     def show
+      render json: @company
     end
 
     def create
@@ -31,10 +35,17 @@ module Partner
       end
     end
 
+    protected
+
+    def default_decorator_name
+      'Companies::DefaultDecorator'
+    end
+
     private
 
     def set_company
-      @company = @current_user.companies.find(params[:id])
+      my_company = @current_user.companies.find(params[:id])
+      @company = decorator_class.decorate(my_company)
     end
 
     def include_tables
