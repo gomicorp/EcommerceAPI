@@ -11,6 +11,7 @@ module Partner
     end
 
     def show
+      render json: @company
     end
 
     def create
@@ -37,7 +38,7 @@ module Partner
     private
 
     def set_company
-      @company = @current_user.companies.find(params[:id])
+      @company = decorator.decorate(@current_user.companies.find(params[:id]))
     end
 
     def include_tables
