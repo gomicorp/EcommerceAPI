@@ -9,7 +9,7 @@ module ParcelTrackingAdapter
     REQUEST_LIMIT = 40
 
     def initialize
-      @api_key = Rails.application.credentials.dig(Rails.env.to_sym, :aftership, :api_key)
+      @api_key = Rails.application.credentials.dig(:aftership, :api_key)
     end
 
     def default_header
