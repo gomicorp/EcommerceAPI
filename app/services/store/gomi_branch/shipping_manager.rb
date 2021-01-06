@@ -65,7 +65,7 @@ module Store
         ship_infos.each do |ship_info|
           carrier_code = ship_info.carrier_code
           tracking_number = ship_info.tracking_number
-          tracking_status_code = Shipping::Tracking.find(tracking_number, carrier_code).code
+          tracking_status_code = Shipping::Tracking.find(tracking_number, carrier_code).tag
           change_status('ship_complete') if DELIVERY_COMPLETE_CODE.include? tracking_status_code
         end
       end
