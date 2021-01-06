@@ -63,6 +63,7 @@ module Store
       def update_tracking_info(ship_infos = nil)
         ship_infos ||= [@ship_info]
         ship_infos.each do |ship_info|
+          @ship_info = ship_info
           carrier_code = ship_info.carrier_code
           tracking_number = ship_info.tracking_number
           tracking_status_code = Shipping::Tracking.find(tracking_number, carrier_code).tag
