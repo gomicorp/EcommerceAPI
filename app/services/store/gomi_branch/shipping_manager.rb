@@ -8,6 +8,8 @@ module Store
       attr_accessor :message, :current_service
       attr_reader :errors
 
+      DELIVERY_COMPLETE_CODE = %w[Delivered AvailableForPickup]
+
       def initialize(ship_info = nil)
         @ship_info = ship_info
         @current_service = nil
@@ -57,17 +59,16 @@ module Store
         OutputService.new(order_info_or_ship_info || ship_info).call
       end
 
-      # @deprecated
-      #
-      # def update_tracking_info(ship_infos = nil)
-      #   ship_infos ||= [@ship_info]
-      #   ship_infos.each do |ship_info|
-      #     carrier_code = ship_info.carrier_code
-      #     tracking_number = ship_info.tracking_number
-      #     tracking_status_code = Shipping::Tracking.find(tracking_number, carrier_code).code
-      #     change_status('ship_complete') if DELIVERY_COMPLETE_CODE.include? tracking_status_code
-      #   end
-      # end
+      # 배송 상태를 api에서 추적하여 최신화 합니다.
+      def update_tracking_info(ship_infos = nil)
+        ship_infos ||= [@ship_info]
+        ship_infos.each do |ship_info|
+          carrier_code = ship_info.carrier_code
+          tracking_number = ship_info.tracking_number
+          tracking_status_code = Shipping::Tracking.find(tracking_number, carrier_code).code
+          change_status('ship_complete') if DELIVERY_COMPLETE_CODE.include? tracking_status_code
+        end
+      end
 
       # void 배송 매니저는 주문이 배송 나간 뒤 취소된 경우에,
       # 주문 정보를 CS 로부터 전달 받아, 출고 취소(재입고) 처리를 합니다.
