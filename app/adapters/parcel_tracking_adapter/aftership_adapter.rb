@@ -9,7 +9,7 @@ module ParcelTrackingAdapter
     REQUEST_LIMIT = 40
 
     def initialize
-      @api_key = Rails.application.credentials.dig(:aftership, :api_key)
+      @api_key = Rails.application.credentials.dig(Rails.env.to_sym, :aftership, :api_key)
     end
 
     def default_header
@@ -28,6 +28,8 @@ module ParcelTrackingAdapter
       false
     end
 
+    public
+
     def couriers
       @couriers ||= Courier.all
     end
@@ -39,13 +41,12 @@ module ParcelTrackingAdapter
 
     # activate된 배송사 리스트를 가져온다.
     def get_couriers
-      url = BASE_URL + "/couriers"
+      url = BASE_URL + '/couriers'
+
       response = Faraday.get(url, nil, default_header)
 
-      begin
-        JSON.parse response.body
-      rescue JSON::ParserError => e
-        nil
+      safe_data_with response do |data|
+        data['couriers']
       end
     end
 
@@ -56,6 +57,8 @@ module ParcelTrackingAdapter
 
       query = { slug: carrier_code, tracking_number: tracking_number, language: 'th' }
       request_body = { tracking: query }
+
+      Rails.logger.debug "  CREATE INTO `aftership_adapter.tracking` #{request_body} #{url}".green
       response = Faraday.post(url, request_body.to_json, default_header)
 
       safe_data_with response do |data|
@@ -64,11 +67,11 @@ module ParcelTrackingAdapter
     end
 
     # 해당 tracking의 상태를 가져온다.
-    #
     def get_tracking(tracking_number, carrier_code = nil)
       parameter = build_parameter(tracking_number, carrier_code)
       url = BASE_URL + '/trackings/' + parameter
 
+      Rails.logger.debug "  SELECT 1 AS one FROM `aftership_adapter.tracking` LIMIT 1 #{url}".green
       response = Faraday.get(url, nil, default_header)
 
       safe_data_with response do |data|
@@ -84,6 +87,7 @@ module ParcelTrackingAdapter
     def get_trackings
       url = BASE_URL + '/trackings'
 
+      Rails.logger.debug "  SELECT FROM `aftership_adapter.tracking` #{url}".green
       response = Faraday.get(url, nil, default_header)
 
       safe_data_with response do |data|
@@ -96,6 +100,7 @@ module ParcelTrackingAdapter
       parameter = build_parameter(tracking_number, carrier_code)
       url = BASE_URL + '/trackings/' + parameter
 
+      Rails.logger.debug "  DESTROY FROM `aftership_adapter.tracking` tracking_number: `#{tracking_number}` #{url}".green
       response = Faraday.delete(url, nil, default_header)
 
       safe_data_with response do |data|
@@ -110,6 +115,8 @@ module ParcelTrackingAdapter
 
       query.reverse_merge!(slug: carrier_code, tracking_number: tracking_number, language: 'th')
       request_body = { tracking: query }
+
+      Rails.logger.debug "  UPDATE `aftership_adapter.tracking` SET #{request_body} #{url}".green
       response = Faraday.put(url, request_body.to_json, default_header)
 
       safe_data_with response do |data|
