@@ -8,11 +8,12 @@ Rails.application.routes.draw do
 
   constraints format: :json do
     devise_for :users, controllers: {
-        sessions: 'users/sessions',
-        registrations: 'users/registrations',
-        passwords: 'users/passwords'
+      sessions: 'users/sessions',
+      registrations: 'users/registrations',
+      passwords: 'users/passwords'
     }
 
+    draw :api_routes
     draw :partner_center_routes
     draw :store_routes
 

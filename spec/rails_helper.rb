@@ -66,4 +66,10 @@ RSpec.configure do |config|
     described_class.send(:public, *described_class.protected_instance_methods)
     described_class.send(:public, *described_class.private_instance_methods)
   end
+
+  [:controller, :view, :request].each do |type|
+    config.include ::Rails::Controller::Testing::TestProcess, :type => type
+    config.include ::Rails::Controller::Testing::TemplateAssertions, :type => type
+    config.include ::Rails::Controller::Testing::Integration, :type => type
+  end
 end

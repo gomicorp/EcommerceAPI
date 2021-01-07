@@ -112,5 +112,8 @@ gem 'sprockets', '3.7.2'
 
 # Generate beautiful API documentation
 gem 'rswag'
+
+gem 'faker'
 gem 'simplecov', require: false, group: :test
+gem 'rails-controller-testing', group: :test
 # gem 'coveralls', require: false
