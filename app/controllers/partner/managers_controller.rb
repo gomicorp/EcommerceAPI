@@ -4,15 +4,18 @@ module Partner
     before_action :set_manager, only: :show
 
     def index
-      if params[:format] == 'json' && params[:email]
-        @managers = Manager.where('email LIKE ?', "%#{params[:email]}%")
-        render json: @managers
-      else
-        @managers = Manager.includes(include_tables).where(query_param)
-      end
+      manager_records = if params[:format] == 'json' && params[:email]
+                          Manager.where('email LIKE ?', "%#{params[:email]}%")
+                        else
+                          Manager.includes(include_tables).where(query_param)
+                        end
+
+      @managers = decorator_class.decorate_collection(manager_records)
+      render json: @managers
     end
 
     def show
+      render json: @manager
     end
 
     # 이메일로 초대장을 보내고, 신규 매니저를 생성한다.
@@ -33,8 +36,13 @@ module Partner
 
     protected
 
+    def default_decorator_name
+      'Users::Managers::DefaultDecorator'
+    end
+
     def set_manager
-      @manager = Manager.includes(include_tables).find(params[:id])
+      manager_record = Manager.includes(include_tables).find(params[:id])
+      @manager = decorator_class.decorate(manager_record)
     end
 
     def include_tables

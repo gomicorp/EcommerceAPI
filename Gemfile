@@ -25,6 +25,7 @@ gem 'omise'
 gem 'iamport'
 gem 'rack-cors'
 gem 'rails-file_storage', git: 'https://github.com/yhk1038/file_storage.git'
+gem 'draper'
 
 # 회원인증 및 권한설정을 위한 젬
 gem 'authority' # 권한설정
@@ -83,6 +84,8 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'faker'
   gem 'annotate'
+  # rails 단위 테스트, rswag 에 종속
+  gem 'rspec-rails', '~> 3.5'
 end
 
 group :development do
@@ -106,3 +109,11 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # sprocket version downgrade
 gem 'sprockets', '3.7.2'
+
+# Generate beautiful API documentation
+gem 'rswag'
+
+gem 'faker'
+gem 'simplecov', require: false, group: :test
+gem 'rails-controller-testing', group: :test
+# gem 'coveralls', require: false
