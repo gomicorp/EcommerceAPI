@@ -232,6 +232,7 @@ module ExternalChannel
           order_property << {
             id: "#{record['order_id']}-#{index}",
             order_number: record['order_number'],
+            customer_name: record['address_billing']['first_name']+' '+record['address_billing']['last_name'],
             order_status: order_item['status'],
             pay_method: record['payment_method'],
             channel: 'Lazada',
