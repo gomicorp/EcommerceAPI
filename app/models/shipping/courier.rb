@@ -1,20 +1,27 @@
 module Shipping
-  class Courier < ShippingModel
-    attr_reader :slug, :name, :phone, :other_name, :web_url,  # base attributes
-      :required_fields, :optional_fields,           # fields set
-      :default_language, :support_languages,        # languages
-      :service_from_country_iso3                    # etc
+  class Courier < ShippingModelImitation
+    use_adapter 'ParcelTrackingAdapter::AftershipAdapter'
 
-    ENDPOINTS = {
-      all: { path: '/couriers', entries: 'couriers' }
-    }.freeze
+    # base attributes
+    attribute :slug
+    attribute :name
+    attribute :phone
+    attribute :other_name
+    attribute :web_url
 
-    private
+    # fields set
+    attribute :required_fields
+    attribute :optional_fields
 
-    def parse_data
-      @slug = data.dig(:slug)
-      @name = data.dig(:name)
-      # ...
+    # languages
+    attribute :default_language
+    attribute :support_languages
+
+    # etc
+    attribute :service_from_country_iso3
+
+    def self.all
+      adapter.get_couriers.map { |data| new data }
     end
   end
 end
