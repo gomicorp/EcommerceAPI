@@ -1,15 +1,5 @@
 module Shipping
-  class ShippingModel
-    # 직접 사용하지 않습니다.
-    # Collection 객체가 데이터를 받아온 후
-    # 데이터를 이 객체로 맵핑할 때에 사용합니다.
-    def initialize(data)
-      data = data.symbolize_keys
-      data.each do |k, v|
-        self.class.attr_accessor(k)
-        send(:"#{k}=", v)
-      end
-    end
+  class ShippingModelImitation < ActiveRecord::Imitation
 
     # def self.all
     #   after_ship = ParcelTrackingAdapter::AftershipAdapter.new
@@ -24,23 +14,6 @@ module Shipping
     # def self.create(attribute = {})
     #   new(attribute).save
     # end
-
-    def inspect
-      attribute_list = instance_variables.dup.map do |var|
-        name = var.to_s.gsub('@', '')
-        value = send(name.to_sym)
-        value = case value
-                when Array, Integer, Float, BigDecimal
-                  value
-                when NilClass
-                  'nil'
-                else
-                  "\"#{value}\""
-                end
-        "#{name}: #{value}"
-      end
-      "#<#{self.class.name} #{attribute_list.join(', ')}>"
-    end
 
 
     # 아직 안쓰입니다.
