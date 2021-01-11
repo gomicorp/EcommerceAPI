@@ -140,7 +140,7 @@ module ExternalChannel
         order_property << {
           id: record['id'],
           order_number: record['name'],
-          customer_name: record['customer'] ? record['customer']['first_name']+' '+record['customer']['last_name'] : nil,
+          customer_name: record['customer'].any? ? record['customer']['first_name']+' '+record['customer']['last_name'] : nil,
           order_status: record['financial_status'],
           pay_method: record['gateway'],
           channel: 'haravan',
