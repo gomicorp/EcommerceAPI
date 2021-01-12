@@ -112,6 +112,7 @@ gem 'sprockets', '3.7.2'
 
 # Generate beautiful API documentation
 gem 'rswag'
+gem 'rspec'
 
 gem 'faker'
 gem 'simplecov', require: false, group: :test
