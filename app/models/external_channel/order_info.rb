@@ -5,6 +5,7 @@
 #  id                        :bigint           not null, primary key
 #  cancelled_status          :string(255)
 #  channel                   :string(255)
+#  customer_name             :string(255)
 #  order_number              :string(255)
 #  order_status              :string(255)
 #  ordered_at                :datetime
