@@ -138,7 +138,7 @@ module ExternalChannel
         {
           id: sales_data['order_number'].to_s,
           order_number: sales_data['order_number'],
-          customer_name: sales_data['receiver_name'] || "",
+          receiver_name: sales_data['receiver_name'] || "",
           billing_amount: sales_data['total_amount_buyer'],
           variant_ids: sales_details.map { |option| [ option['sku'], option['quantity'].to_i, option['price'].to_i ] },
           order_status: map_order_status(sales_data['order_status']),

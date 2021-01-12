@@ -120,7 +120,7 @@ module ExternalChannel
         order_property << {
             id: record['code'],
             order_number: record['code'],
-            customer_name: record['customer'].any? ? record['customer']['full_name'] : "",
+            receiver_name: receiver_name(record),
             order_status: record['status'],
             pay_method: record['payment']['method'],
             channel: 'Tiki',
@@ -156,6 +156,14 @@ module ExternalChannel
         query_hash[:page] += 1
       end
       dataset.flatten
+    end
+
+    def receiver_name(record)
+      if record['shipping'].any? && record['shipping']['address'].any?
+        record['shipping']['address']['full_name']
+      else
+        ""
+      end
     end
   end
 end

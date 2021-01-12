@@ -129,7 +129,7 @@ module ExternalChannel
         order_property << {
           id: record['id'],
           order_number: record['name'],
-          customer_name: customer_name(record),
+          receiver_name: receiver_name(record),
           order_status: record['financial_status'],
           pay_method: record['gateway'],
           channel: 'haravan',
@@ -174,10 +174,10 @@ module ExternalChannel
       end
     end
 
-    def customer_name(record)
-      if record['customer'].any?
-        first_name = record['customer']['first_name']
-        last_name = record['customer']['last_name']
+    def receiver_name(record)
+      if record['shipping_address'].any?
+        first_name = record['shipping_address']['first_name']
+        last_name = record['shipping_address']['last_name']
 
         if first_name && last_name
           first_name + " " + last_name
