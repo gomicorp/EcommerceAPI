@@ -121,7 +121,7 @@ module ExternalChannel
         {
           id: (order['ordersn']).to_s,
           order_number: order['ordersn'],
-          customer_name: order['recipient_address']['name'],
+          customer_name: order['recipient_address'].any? ? order['recipient_address']['name'] : "",
           order_status: order['order_status'],
           pay_method: order['payment_method'],
           channel: 'shopee',

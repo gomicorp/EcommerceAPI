@@ -126,26 +126,15 @@ module ExternalChannel
       records.each do |record|
         next if %w[shopee sendo lazada tiki].include? record['source']
 
-        paid_at = nil
-        if record['gateway'] == 'Thanh toán khi giao hàng (COD)'
-          if record['fulfillments'].any? || record['fulfillments'].empty? 
-            paid_at = nil
-          else
-            paid_at = record['fulfillments'][0]['cod_paid_date'] ? record['fulfillments'][0]['cod_paid_date'].to_time.getutc : nil
-          end
-        else
-          paid_at = record['created_at'].to_time.getutc
-        end
-
         order_property << {
           id: record['id'],
           order_number: record['name'],
-          customer_name: record['customer'].any? ? record['customer']['first_name']+' '+record['customer']['last_name'] : nil,
+          customer_name: customer_name(record),
           order_status: record['financial_status'],
           pay_method: record['gateway'],
           channel: 'haravan',
           ordered_at: record['created_at'].to_time.getutc,
-          paid_at: paid_at,
+          paid_at: paid_at(record),
           billing_amount: record['total_price'],
           ship_fee: record['shipping_lines'].inject(0) { |sum, line| sum + (line['price']) },
           variant_ids: record['line_items'].map { |variant| [variant['variant_id'], variant['quantity'].to_i, variant['price'].to_i ] },
@@ -171,6 +160,35 @@ module ExternalChannel
         query_hash[:page] += 1
       end
       data.flatten
+    end
+
+    def paid_at(record)
+      if record['gateway'] == 'Thanh toán khi giao hàng (COD)'
+        if record['fulfillments'].any? || record['fulfillments'].empty?
+          nil
+        else
+          record['fulfillments'][0]['cod_paid_date'] ? record['fulfillments'][0]['cod_paid_date'].to_time.getutc : nil
+        end
+      else
+        record['created_at'].to_time.getutc
+      end
+    end
+
+    def customer_name(record)
+      if record['customer'].any?
+        first_name = record['customer']['first_name']
+        last_name = record['customer']['last_name']
+
+        if first_name && last_name
+          first_name + " " + last_name
+        elsif first_name
+          first_name
+        elsif last_name
+          last_name
+        end
+      else
+        ""
+      end
     end
   end
 end
