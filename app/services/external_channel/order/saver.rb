@@ -34,7 +34,7 @@ module ExternalChannel
       def parse_order(order, default_order = {})
         # TODO: 모델 구조 변경시 변경 필요
         {
-          customer_name: order[:customer_name],
+          receiver_name: order[:receiver_name],
           total_price: order[:billing_amount],
           ordered_at: default_order[:ordered_at] || order[:ordered_at],
           pay_method: order[:pay_method],
