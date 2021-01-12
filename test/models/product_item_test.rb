@@ -4,9 +4,9 @@
 #
 #  id                   :bigint           not null, primary key
 #  active               :boolean          default(FALSE), not null
-#  alive_barcodes_count :integer          default(0), not null
-#  barcodes_count       :integer          default(0), not null
+#  alive_entities_count :integer          default(0), not null
 #  cost_price           :integer          default(0), not null
+#  entities_count       :integer          default(0), not null
 #  name                 :string(255)
 #  selling_price        :integer          default(0), not null
 #  serial_number        :string(255)

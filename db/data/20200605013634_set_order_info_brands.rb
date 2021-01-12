@@ -12,8 +12,8 @@ class SetOrderInfoBrands < ActiveRecord::Migration[6.0]
 
         # 정상적인 로직으로 데이터를 채워줄 수 없는 레거시 데이터에 대한 대응
         order_info.items.each do |item|
-          item.barcodes.each do |barcode|
-            OrderInfoBrand.create(order_info: order_info, brand: barcode.product.brand)
+          item.entities.each do |entity|
+            OrderInfoBrand.create(order_info: order_info, brand: entity.product.brand)
           end
         end
       end

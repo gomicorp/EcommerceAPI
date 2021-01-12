@@ -4,9 +4,9 @@
 #
 #  id                   :bigint           not null, primary key
 #  active               :boolean          default(FALSE), not null
-#  alive_barcodes_count :integer          default(0), not null
-#  barcodes_count       :integer          default(0), not null
+#  alive_entities_count :integer          default(0), not null
 #  cost_price           :integer          default(0), not null
+#  entities_count       :integer          default(0), not null
 #  name                 :string(255)
 #  selling_price        :integer          default(0), not null
 #  serial_number        :string(255)
@@ -41,7 +41,7 @@ class ProductItem < NationRecord
 
   has_many :adjustment_product_items
   has_many :adjustments, through: :adjustment_product_items
-  has_many :barcodes, class_name: 'ProductItemBarcode', dependent: :destroy
+  has_many :entities, class_name: 'ProductItemEntity', dependent: :destroy
 
   has_many :bridges, class_name: 'ProductOptionBridge', as: :connectable, dependent: :destroy
   has_many :product_options, through: :bridges
@@ -75,8 +75,8 @@ class ProductItem < NationRecord
 
   # => Counter Cache Pseudo Code
   # stuff
-  def barcodes_remain_count
-    barcodes.remain.count
+  def entities_remain_count
+    entities.remain.count
   end
 
   def brand_name
@@ -88,7 +88,7 @@ class ProductItem < NationRecord
   end
 
   def available_quantity
-    alive_barcodes_count / unit_count
+    alive_entities_count / unit_count
   end
 
   def activable?
@@ -115,7 +115,7 @@ class ProductItem < NationRecord
   private
 
   def update_counter_cache
-    update_column(:alive_barcodes_count, barcodes.alive.count)
+    update_column(:alive_entities_count, entities.alive.count)
   end
 
 

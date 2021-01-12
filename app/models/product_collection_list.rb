@@ -13,7 +13,7 @@ class ProductCollectionList < ApplicationRecord
   belongs_to :item, class_name: 'ProductItem'
 
   def available_quantity
-    item.alive_barcodes_count / unit_count
+    item.alive_entities_count / unit_count
   end
 
   def cost_price
