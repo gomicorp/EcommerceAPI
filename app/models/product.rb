@@ -3,7 +3,7 @@
 # Table name: products
 #
 #  id                :bigint           not null, primary key
-#  barcode_count     :integer          default(0), not null
+#  entity_count      :integer          default(0), not null
 #  price             :integer          default(0), not null
 #  running_status    :integer          default("pending"), not null
 #  title             :text(65535)
