@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: product_item_barcodes
+# Table name: product_item_entities
 #
 #  id              :bigint           not null, primary key
 #  expired_at      :datetime
@@ -11,23 +11,26 @@
 #
 # Indexes
 #
-#  index_product_item_barcodes_on_product_item_id  (product_item_id)
+#  index_product_item_entities_on_product_item_id  (product_item_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (product_item_id => product_items.id)
 #
-class ProductItemBarcode < ApplicationRecord
+class ProductItemEntity < ApplicationRecord
   has_not_paper_trail
 
-  belongs_to :product_item, counter_cache: :barcodes_count
+  belongs_to :product_item, counter_cache: :entities_count
   # belongs_to :product_option_bridge
   # has_many :options, class_name: 'ProductOption', through: :product_option_bridge
 
-  has_many :cart_item_barcodes
-  has_many :cart_items, through: :cart_item_barcodes
+  has_many :cart_item_entities
+  has_many :cart_items, through: :cart_item_entities
 
   scope :alive, -> { where(expired_at: nil) }
+  scope :expired, -> { where.not(expired_at: nil) }
+  scope :leaved, -> { where.not(leaved_at: nil) }
+  scope :remain, -> { where(leaved_at: nil) }
 
   after_save :update_counter_cache
   after_destroy :update_counter_cache

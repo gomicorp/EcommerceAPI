@@ -53,23 +53,23 @@ class ProductCollection < NationRecord
   end
 
   def group_by_alive
-    items.group(:id, :alive_barcodes_count).count
+    items.group(:id, :alive_entities_count).count
   end
 
   def available_quantity
     group_by_alive.map { |keys, count| keys[1] / count }.min.to_i
   end
 
-  def barcodes_count
-    @barcodes_count ||= items.sum(:barcodes_count)
+  def entities_count
+    @entities_count ||= items.sum(:entities_count)
   end
 
   def active
     items.where(active: false).empty?
   end
 
-  def alive_barcodes_count
-    items.sum(:alive_barcodes_count)
+  def alive_entities_count
+    items.sum(:alive_entities_count)
   end
 
 
