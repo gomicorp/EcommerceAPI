@@ -120,6 +120,7 @@ module ExternalChannel
         order_property << {
             id: record['code'],
             order_number: record['code'],
+            customer_name: record['customer'].any? ? record['customer']['full_name'] : "",
             order_status: record['status'],
             pay_method: record['payment']['method'],
             channel: 'Tiki',

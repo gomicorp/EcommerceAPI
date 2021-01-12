@@ -2,7 +2,7 @@ module ExternalChannel
   module Order
     class Validator < BaseValidator
       def initialize
-        order_keys = %i[id order_number paid_at order_status pay_method channel ordered_at billing_amount ship_fee variant_ids cancelled_status shipping_status row_data]
+        order_keys = %i[id order_number customer_name paid_at order_status pay_method channel ordered_at billing_amount ship_fee variant_ids cancelled_status shipping_status row_data]
         super(order_keys)
       end
 
