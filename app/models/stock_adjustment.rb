@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: adjustments
+# Table name: stock_adjustments
 #
 #  id              :bigint           not null, primary key
 #  amount          :integer          default(0), not null
@@ -14,8 +14,8 @@
 #
 # Indexes
 #
-#  index_adjustments_on_country_id     (country_id)
-#  index_adjustments_on_order_info_id  (order_info_id)
+#  index_stock_adjustments_on_country_id     (country_id)
+#  index_stock_adjustments_on_order_info_id  (order_info_id)
 #
 # Foreign Keys
 #
@@ -24,11 +24,12 @@
 
 # 이렇게 하면 Adjustment가 반환된다.
 # Zohomap.all[0].zohoable
-class Adjustment < NationRecord
+class StockAdjustment < NationRecord
   REASONS = ['Input from Korea', 'Order', 'Return back'].freeze
 
   belongs_to :order_info
-  has_many :adjustment_product_items
+  belongs_to :stock_receipt, optional: true
+  has_many :stock_adjustment_product_items
   has_many :product_items, through: :adjustment_product_items
   has_one :zohomap, as: :zohoable
 
