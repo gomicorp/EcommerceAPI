@@ -69,3 +69,10 @@ didimdol:
   host: <%= Rails.application.credentials.dig(:database, :host) %>
   username: <%= Rails.application.credentials.dig(:database, :username) %>
   password: <%= Rails.application.credentials.dig(:database, :password) %>
+
+partner:
+  <<: *default
+  database: store_partner
+  host: <%= Rails.application.credentials.dig(:database, :host) %>
+  username: <%= Rails.application.credentials.dig(:database, :username) %>
+  password: <%= Rails.application.credentials.dig(:database, :password) %>

@@ -4,20 +4,23 @@
 #
 # Table name: cart_items
 #
-#  id                        :bigint           not null, primary key
-#  barcode_count             :integer          default(0), not null
-#  captured                  :boolean          default(FALSE), not null
-#  captured_additional_price :integer          default(0), not null
-#  captured_base_price       :integer          default(0), not null
-#  captured_discount_price   :integer          default(0), not null
-#  captured_price_change     :integer          default(0), not null
-#  captured_retail_price     :integer          default(0), not null
-#  option_count              :integer          default(0), not null
-#  created_at                :datetime         not null
-#  updated_at                :datetime         not null
-#  cart_id                   :bigint
-#  product_id                :bigint
-#  product_option_id         :bigint           default(0), not null
+#  id                                 :bigint           not null, primary key
+#  barcode_count                      :integer          default(0), not null
+#  captured                           :boolean          default(FALSE), not null
+#  captured_additional_price          :integer          default(0), not null
+#  captured_base_price                :integer          default(0), not null
+#  captured_discount_price            :integer          default(0), not null
+#  captured_price_change              :integer          default(0), not null
+#  captured_retail_price              :integer          default(0), not null
+#  captured_seller_shipping           :boolean
+#  captured_seller_warehouse_key      :string(255)
+#  captured_seller_warehouse_ship_fee :integer
+#  option_count                       :integer          default(0), not null
+#  created_at                         :datetime         not null
+#  updated_at                         :datetime         not null
+#  cart_id                            :bigint
+#  product_id                         :bigint
+#  product_option_id                  :bigint           default(0), not null
 #
 # Indexes
 #
@@ -139,6 +142,7 @@ class CartItem < ApplicationRecord
     product_item_barcodes.each { |barcode| barcode_items << barcode.product_item }
     bridge_items = product_option.bridges.map(&:items) * option_count
     return true if barcode_items.flatten.pluck(:id).sort != bridge_items.flatten.pluck(:id).sort
+    return true if ProductOption.where(id: product_option_id).empty?
     return true unless product_option.is_active?
     return true if updated_at < 3.days.ago
 

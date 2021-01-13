@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'helper'
+require_relative '../../vendor/tasks/helper'
 
 namespace :credit do
   %i[development staging production didimdol].each do |env_name|

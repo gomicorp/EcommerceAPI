@@ -37,7 +37,7 @@ class ApiController < ActionController::API
   private
 
   def set_raven_context
-    return unless %w[production staging didimdol].include?(Rails.env)
+    return unless %w[production staging partner didimdol].include?(Rails.env)
 
     # Raven.user_context(id: session[:current_user_id]) # or anything else in session
     Raven.extra_context(

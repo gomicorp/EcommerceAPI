@@ -3,6 +3,7 @@
 module Partner
   module Users
     class SessionsController < BaseController
+      before_action :authenticate_request!, only: [:show, :destroy]
 
       # POST /users/sign_in
       def create
@@ -21,9 +22,12 @@ module Partner
         render json: jwt_payload(@manager)
       end
 
+      def show
+        render 'partner/sessions/show', status: :ok
+      end
+
       # DELETE /users/sign_out
       def destroy
-        authenticate_request!
         @current_user.update!(token: nil)
         head :no_content
       end

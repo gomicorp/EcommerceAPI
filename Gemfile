@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.6.3'
 
 # gem 'haravan_api', git: 'https://github.com/Haravan/haravan_api.git'
-
+gem 'lazop_api_client', git: 'https://github.com/kfit-dev/lazop-api-client'
 
 gem 'yajl-ruby', require: 'yajl'
 gem 'data_migrate'
@@ -22,6 +22,7 @@ gem 'schema_to_scaffold'
 gem 'http_accept_language'
 gem 'locale_router', git: 'https://github.com/yhk1038/locale_router.git'
 gem 'omise'
+gem 'iamport'
 gem 'rack-cors'
 gem 'rails-file_storage', git: 'https://github.com/yhk1038/file_storage.git'
 gem 'ransack'
@@ -76,6 +77,10 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'bootsnap', '>= 1.4.2', require: false
 
 group :development, :didimdol, :test do
+# = 배치 프로세스 진행 시, 웹 인증 과정 자동화를 위한 젬
+  gem 'selenium-webdriver'
+  gem 'chromedriver-helper'
+
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'faker'
@@ -94,7 +99,6 @@ end
 group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
-  gem 'selenium-webdriver'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
 end
