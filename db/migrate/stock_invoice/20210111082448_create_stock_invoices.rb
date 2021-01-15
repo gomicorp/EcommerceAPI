@@ -1,10 +1,11 @@
-class CreateStockReceipts < ActiveRecord::Migration[6.0]
+class CreateStockInvoices < ActiveRecord::Migration[6.0]
   def change
-    create_table :stock_receipts do |t|
-      t.string :type
+    create_table :stock_invoices do |t|
+      t.string :invoice_type
       t.datetime :requested_at
       t.datetime :confirmed_at
       t.string :from
+      t.string :destination
       t.references :country, null: true, foreign_key: true
       t.string :serial_number
       t.text :comment
