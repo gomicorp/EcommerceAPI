@@ -29,10 +29,12 @@
 #
 class Product < NationRecord
   include Translatable
+  extend FriendlyId
   extend_has_one_attached :thumbnail
   extend_has_many_attached :images
   extend_has_many_attached :catalogs
   translate_column :title
+  friendly_id :slug_candidates, use: %i[slugged finders history]
 
   RUNNING_STATUSES = {
     pending: '판매대기',
@@ -135,6 +137,24 @@ class Product < NationRecord
 
   def update_barcode_cache
     update(barcode_count: barcodes.alive.count)
+  end
+
+  def slug_candidates
+    [
+      :translated_title,
+      [:translated_title, :slug_sequence]
+    ]
+  end
+
+  def translated_title
+    translate(locale: country.locale).title
+  end
+
+  def slug_sequence
+    column = friendly_id_config.slug_column
+    separator = friendly_id_config.sequence_separator
+    slug = normalize_friendly_id(send(slug_candidates.first))
+    self.class.where("#{column} LIKE ?", "#{slug}%").count + 1
   end
 
   class Discount

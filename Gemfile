@@ -3,6 +3,8 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.3'
 
+gem 'friendly_id'
+
 # gem 'haravan_api', git: 'https://github.com/Haravan/haravan_api.git'
 gem 'lazop_api_client', git: 'https://github.com/kfit-dev/lazop-api-client'
 
@@ -112,6 +114,7 @@ gem 'sprockets', '3.7.2'
 
 # Generate beautiful API documentation
 gem 'rswag'
+gem 'rspec'
 
 gem 'faker'
 gem 'simplecov', require: false, group: :test

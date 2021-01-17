@@ -232,6 +232,7 @@ module ExternalChannel
           order_property << {
             id: "#{record['order_id']}-#{index}",
             order_number: record['order_number'],
+            receiver_name: receiver_name(record),
             order_status: order_item['status'],
             pay_method: record['payment_method'],
             channel: 'Lazada',
@@ -248,6 +249,23 @@ module ExternalChannel
       end if records.present?
 
       order_property
+    end
+
+    def receiver_name(record)
+      if record['address_shipping'].any?
+        first_name = record['address_shipping']['first_name']
+        last_name = record['address_shipping']['last_name']
+
+        if first_name && last_name
+          first_name + " " + last_name
+        elsif first_name
+          first_name
+        elsif last_name
+          last_name
+        end
+      else
+        ""
+      end
     end
   end
 end
