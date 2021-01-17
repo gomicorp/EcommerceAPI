@@ -35,6 +35,15 @@ class ProductCollection < NationRecord
   scope :item_with, ->(product_item) { includes(:elements).where(elements: ProductCollectionElement.where(product_item: product_item)) }
   scope :product_option_with, ->(product_options) { where(bridges: ProductOptionBridge.where(product_option: product_options)) }
 
+  accepts_nested_attributes_for :lists, allow_destroy: true, reject_if: ->(attributes) {
+    return false if attributes['_custom_destroy'] == 'false'
+
+    if attributes['_custom_destroy'] == 'true'
+      list = ProductCollectionList.find(attributes['id'])
+      list.custom_destroy
+    end
+  }
+
   after_save :after_save_propagation
 
   def brand
