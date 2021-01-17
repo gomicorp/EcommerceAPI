@@ -6,6 +6,7 @@
 #  barcode_count     :integer          default(0), not null
 #  price             :integer          default(0), not null
 #  running_status    :integer          default("pending"), not null
+#  slug              :string(255)
 #  title             :text(65535)
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
@@ -18,6 +19,7 @@
 #  index_products_on_brand_id           (brand_id)
 #  index_products_on_country_id         (country_id)
 #  index_products_on_default_option_id  (default_option_id)
+#  index_products_on_slug               (slug) UNIQUE
 #
 # Foreign Keys
 #

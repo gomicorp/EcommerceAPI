@@ -3,6 +3,7 @@
 # Table name: product_collections
 #
 #  id                         :bigint           not null, primary key
+#  active                     :boolean          default(FALSE), not null
 #  cost_price                 :integer          default(0), not null
 #  gomi_standard_product_code :string(255)      not null
 #  name                       :string(255)
@@ -68,7 +69,7 @@ class ProductCollection < NationRecord
     @barcodes_count ||= items.sum(:barcodes_count)
   end
 
-  def active
+  def all_items_active?
     items.where(active: false).empty?
   end
 
