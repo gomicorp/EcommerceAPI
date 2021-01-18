@@ -65,3 +65,8 @@ docker/.envs
 
 # A U T O M I Z A T I O N
 .envrc
+
+# swagger & coverage documents
+swagger/*
+coverage/*
+**/coverage/*
