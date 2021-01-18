@@ -128,6 +128,11 @@ class ProductItem < NationRecord
   def after_save_propagation
     collections.each do |collection|
       collection.calculate_price_columns
+      unless collection.respond_to?(:active_changed?)
+        collection.class.send(:define_method, :active_changed?) do
+          false
+        end
+      end
       collection.save
     end
 
