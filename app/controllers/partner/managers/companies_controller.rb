@@ -2,10 +2,11 @@ module Partner
   module Managers
     class CompaniesController < BaseController
       before_action :authenticate_request!
+      before_action :set_manager
       before_action :set_company, only: %i[show]
 
       def index
-        companies = @current_user.companies.includes(include_tables).where(query_param)
+        companies = @manager.companies.includes(include_tables).where(query_param)
         @companies = decorator_class.decorate_collection(companies)
 
         render json: @companies
@@ -21,8 +22,12 @@ module Partner
         '::Companies::DefaultDecorator'
       end
 
+      def set_manager
+        @manager = Manager.find(params[:manager_id])
+      end
+
       def set_company
-        company = Company.find(params[:id])
+        company = @manager.companies.find(params[:id])
         @company = decorator_class.decorate(company)
       end
 
