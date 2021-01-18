@@ -3,19 +3,19 @@ module Api
     class ProductCollectionsController < BaseController
       before_action :set_product_collection, only: %i[show update destroy]
 
-      # GET /product_collections
-      # GET /product_collections.json
+      # GET /api/v1/product_collections
+      # GET /api/v1/product_collections.json
       def index
         @product_collections = ProductCollection.all
       end
 
-      # GET /product_collections/1
-      # GET /product_collections/1.json
+      # GET /api/v1/product_collections/1
+      # GET /api/v1/product_collections/1.json
       def show
       end
 
-      # POST /product_collections
-      # POST /product_collections.json
+      # POST /api/v1/product_collections
+      # POST /api/v1/product_collections.json
       def create
         @product_collection = ProductCollection.new(product_collection_params)
 
@@ -26,8 +26,8 @@ module Api
         end
       end
 
-      # PATCH/PUT /product_collections/1
-      # PATCH/PUT /product_collections/1.json
+      # PATCH/PUT /api/v1/product_collections/1
+      # PATCH/PUT /api/v1/product_collections/1.json
       def update
         if @product_collection.update(product_collection_params)
           render :show, status: :ok, location: @product_collection
@@ -36,8 +36,8 @@ module Api
         end
       end
 
-      # DELETE /product_collections/1
-      # DELETE /product_collections/1.json
+      # DELETE /api/v1/product_collections/1
+      # DELETE /api/v1/product_collections/1.json
       def destroy
         @product_collection.destroy
       end
