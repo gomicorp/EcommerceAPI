@@ -5,6 +5,7 @@ module Partner
       before_action :set_manager
       before_action :set_company, only: %i[show]
 
+      # GET /partner/managers/:manager_id/companies
       def index
         companies = @manager.companies.includes(include_tables).where(query_param)
         @companies = decorator_class.decorate_collection(companies)
@@ -12,6 +13,7 @@ module Partner
         render json: @companies
       end
 
+      # GET /partner/managers/:manager_id/companies/:id
       def show
         render json: @company
       end
