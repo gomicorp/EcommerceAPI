@@ -3,19 +3,19 @@ module Api
     class ProductItemsController < BaseController
       before_action :set_product_item, only: %i[show update destroy]
 
-      # GET /product_items
-      # GET /product_items.json
+      # GET /api/v1/product_items
+      # GET /api/v1/product_items.json
       def index
         @product_items = ProductItem.all
       end
 
-      # GET /product_items/1
-      # GET /product_items/1.json
+      # GET /api/v1/product_items/1
+      # GET /api/v1/product_items/1.json
       def show
       end
 
-      # POST /product_items
-      # POST /product_items.json
+      # POST /api/v1/product_items
+      # POST /api/v1/product_items.json
       def create
         @product_item = ProductItem.new(product_item_params)
 
@@ -26,8 +26,8 @@ module Api
         end
       end
 
-      # PATCH/PUT /product_items/1
-      # PATCH/PUT /product_items/1.json
+      # PATCH/PUT /api/v1/product_items/1
+      # PATCH/PUT /api/v1/product_items/1.json
       def update
         if @product_item.update(product_item_params)
           render :show, status: :ok, location: @product_item
@@ -36,8 +36,8 @@ module Api
         end
       end
 
-      # DELETE /product_items/1
-      # DELETE /product_items/1.json
+      # DELETE /api/v1/product_items/1
+      # DELETE /api/v1/product_items/1.json
       def destroy
         @product_item.destroy
       end
