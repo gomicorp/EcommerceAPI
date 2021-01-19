@@ -3,7 +3,7 @@ class NationRecord < ApplicationRecord
 
   belongs_to :country, optional: true
 
-  default_scope -> { send(country_code) }
+  # default_scope -> { send(country_code) }
   scope :th, -> { unscoped.includes(:country).where(country: Country.th) }
   scope :vn, -> { unscoped.includes(:country).where(country: Country.vn) }
   scope :undef, -> { unscoped.includes(:country).where(country: Country.undef) }
