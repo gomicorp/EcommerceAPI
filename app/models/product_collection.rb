@@ -3,6 +3,7 @@
 # Table name: product_collections
 #
 #  id                         :bigint           not null, primary key
+#  active                     :boolean          default(FALSE), not null
 #  cost_price                 :integer          default(0), not null
 #  gomi_standard_product_code :string(255)      not null
 #  name                       :string(255)
