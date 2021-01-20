@@ -1,6 +1,7 @@
 module Api
   module V1
     class CompaniesController < BaseController
+      before_action :authenticate_request!
       before_action :set_company, only: %i[show update destroy]
 
       # GET /companies

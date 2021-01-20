@@ -1,6 +1,7 @@
 module Api
   module V1
     class BrandsController < BaseController
+      before_action :authenticate_request!
       before_action :set_brand, only: %i[show update destroy]
 
       # GET /brands
