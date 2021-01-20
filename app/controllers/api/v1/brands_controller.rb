@@ -6,12 +6,15 @@ module Api
       # GET /brands
       # GET /brands.json
       def index
-        @brands = Brand.all
+        @brands = decorator_class.decorate_collection(Brand.all)
+
+        render json: @brands
       end
 
       # GET /brands/1
       # GET /brands/1.json
       def show
+        render json: @brand
       end
 
       # POST /brands
@@ -20,7 +23,7 @@ module Api
         @brand = Brand.new(brand_params)
 
         if @brand.save
-          render :show, status: :created, location: @brand
+          render json: @brand, status: :created
         else
           render json: @brand.errors, status: :unprocessable_entity
         end
@@ -30,7 +33,7 @@ module Api
       # PATCH/PUT /brands/1.json
       def update
         if @brand.update(brand_params)
-          render :show, status: :ok, location: @brand
+          render json: @brand, status: :ok
         else
           render json: @brand.errors, status: :unprocessable_entity
         end
@@ -42,10 +45,16 @@ module Api
         @brand.destroy
       end
 
+      protected
+
+      def default_decorator_name
+        'Brands::DefaultDecorator'
+      end
+
       private
       # Use callbacks to share common setup or constraints between actions.
       def set_brand
-        @brand = Brand.find(params[:id])
+        @brand = decorator_class.decorate(Brand.find(params[:id]))
       end
 
       # Only allow a list of trusted parameters through.
