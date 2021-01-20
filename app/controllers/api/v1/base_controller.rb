@@ -36,6 +36,14 @@ module Api
 
       protected
 
+      def authenticate_request!
+        return render json: { errors: ['Not Authenticated'] }, status: :unauthorized unless user_id_in_token?
+
+        @current_user = Manager.find(user_id_in_token)
+      rescue JWT::VerificationError, JWT::DecodeError
+        render json: { errors: ['Not Authenticated'] }, status: :unauthorized
+      end
+
       def decorator_class
         decorate_name.constantize
       end
@@ -78,6 +86,32 @@ module Api
         else
           yield
         end
+      end
+
+      def decode_jwt(token)
+        JsonWebToken.decode(token)
+      end
+
+      def auth_token
+        @auth_token ||= decode_jwt(auth_header_value)
+      end
+
+      def user_id_in_token?
+        auth_header_value && auth_token && user_id_in_token.to_i
+      end
+
+      def auth_header_value
+        @auth_header_value ||= request.headers['Authorization']&.split(' ')&.last
+      end
+
+      def user_id_in_token
+        auth_token&.dig(:user_id)
+      end
+
+      def jwt_payload(user)
+        return nil unless user&.id
+
+        user.as_json.merge(token: JsonWebToken.encode(user_id: user.id))
       end
     end
   end
