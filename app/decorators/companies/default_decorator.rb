@@ -3,11 +3,11 @@ module Companies
     data_keys_from_model :company, except: %i[created_at updated_at]
 
     def brands
-      Brand.unscoped.where(company_id: object.id)
+      object.brands
     end
 
     def countries
-      Brand.unscoped.where(company_id: object.id).map{|brand| brand.country}.uniq
+      brands.map{|brand| brand.country}.uniq
     end
   end
 end
