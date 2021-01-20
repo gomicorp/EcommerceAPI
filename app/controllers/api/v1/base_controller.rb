@@ -8,7 +8,7 @@ module Api
       before_action :set_default_format
       before_action :set_raven_context
       before_action :set_app_locale
-      before_action :set_country_code
+      around_action :set_country_context
 
       NotAuthorized = Class.new(StandardError)
 
@@ -55,9 +55,15 @@ module Api
         I18n.default_locale = :ko
       end
 
-      def set_country_code
-        @nation = params[:nation]
-        ApplicationRecord.country_code = @nation
+      def set_country_context
+        if country_scope = params[:country_scope].presence
+          scopes = [NationRecord.country_scope_for(country_scope)]
+          NationRecord.default_scopes += scopes
+          yield
+          NationRecord.default_scopes -= scopes
+        else
+          yield
+        end
       end
     end
   end
