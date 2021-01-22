@@ -7,12 +7,15 @@ module Api
       # GET /api/v1/product_items
       # GET /api/v1/product_items.json
       def index
-        @product_items = ProductItem.all
+        @product_items = decorator_class.decorate_collection(ProductItem.all)
+
+        render json: @product_items
       end
 
       # GET /api/v1/product_items/1
       # GET /api/v1/product_items/1.json
       def show
+        render json: @product_item
       end
 
       # POST /api/v1/product_items
@@ -21,7 +24,7 @@ module Api
         @product_item = ProductItem.new(product_item_params)
 
         if @product_item.save
-          render :show, status: :created, location: @product_item
+          render json: decorator_class.decorate(@product_item), status: :created
         else
           render json: @product_item.errors, status: :unprocessable_entity
         end
@@ -31,7 +34,7 @@ module Api
       # PATCH/PUT /api/v1/product_items/1.json
       def update
         if @product_item.update(product_item_params)
-          render :show, status: :ok, location: @product_item
+          render json: @product_item, status: :ok
         else
           render json: @product_item.errors, status: :unprocessable_entity
         end
@@ -43,10 +46,16 @@ module Api
         @product_item.destroy
       end
 
+      protected
+
+      def default_decorator_name
+        'ProductItems::DefaultDecorator'
+      end
+
       private
       # Use callbacks to share common setup or constraints between actions.
       def set_product_item
-        @product_item = ProductItem.find(params[:id])
+        @product_item = decorator_class.decorate(ProductItem.find(params[:id]))
       end
 
       # Only allow a list of trusted parameters through.
