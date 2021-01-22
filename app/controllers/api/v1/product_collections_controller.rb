@@ -1,6 +1,7 @@
 module Api
   module V1
     class ProductCollectionsController < BaseController
+      before_action :authenticate_request!
       before_action :set_product_collection, only: %i[show update destroy]
 
       # GET /api/v1/product_collections
