@@ -3,5 +3,6 @@ namespace :api, defaults: { format: :json } do
     resources :companies
     resources :product_items
     resources :product_collections
+    resources :brands
   end
 end
