@@ -24,8 +24,7 @@
 #
 class StockInvoice < NationRecord
   has_many :stock_adjustments
-  has_many :stock_adjustment_product_items, through: :stock_adjustments
-  has_many :product_items, through: :stock_adjustment_product_items
+  has_many :product_items, through: :stock_adjustments
 
   TYPES = %w[
     addition

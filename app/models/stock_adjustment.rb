@@ -11,10 +11,12 @@
 #  updated_at       :datetime         not null
 #  country_id       :bigint
 #  order_info_id    :bigint
+#  product_item_id  :bigint           default(0), not null
 #  stock_invoice_id :bigint
 #
 # Indexes
 #
+#  fk_rails_473ea57bf2                          (product_item_id)
 #  index_stock_adjustments_on_country_id        (country_id)
 #  index_stock_adjustments_on_order_info_id     (order_info_id)
 #  index_stock_adjustments_on_stock_invoice_id  (stock_invoice_id)
@@ -22,6 +24,7 @@
 # Foreign Keys
 #
 #  fk_rails_...  (country_id => countries.id)
+#  fk_rails_...  (product_item_id => product_items.id)
 #  fk_rails_...  (stock_invoice_id => stock_invoices.id)
 #
 
@@ -30,11 +33,9 @@
 class StockAdjustment < NationRecord
   REASONS = ['Input from Korea', 'Order', 'Return back'].freeze
 
-  belongs_to :order_info
+  belongs_to :order_info, optional: true
   belongs_to :stock_invoice, optional: true
-  has_many :stock_adjustment_product_items
-  has_many :product_items, through: :adjustment_product_items
-  has_one :zohomap, as: :zohoable
+  belongs_to :product_item
 
   validates_presence_of :reason
   validates :amount, numericality: { other_than: 0 }

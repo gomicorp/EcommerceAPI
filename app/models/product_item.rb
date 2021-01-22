@@ -39,8 +39,7 @@ class ProductItem < NationRecord
 
   has_many :options, class_name: 'ProductOption', through: :product_item_product_options
 
-  has_many :adjustment_product_items
-  has_many :adjustments, through: :adjustment_product_items
+  has_many :stock_adjustments
   has_many :entities, class_name: 'ProductItemEntity', dependent: :destroy
 
   has_many :bridges, class_name: 'ProductOptionBridge', as: :connectable, dependent: :destroy
