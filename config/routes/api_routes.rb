@@ -4,7 +4,8 @@ namespace :api, defaults: { format: :json } do
     resources :product_items
     resources :product_collections
     resources :brands
-    resources :product_items
-    resources :product_collections
+    resources :managers do
+      resources :memberships, controller: 'managers/memberships'
+    end
   end
 end
