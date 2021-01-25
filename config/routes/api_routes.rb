@@ -1,5 +1,5 @@
 namespace :api, defaults: { format: :json } do
-  namespace :v1 do
+  namespace :v1, except: %i[new edit] do
     resources :companies
     resources :product_items
     resources :product_collections
