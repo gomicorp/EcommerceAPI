@@ -4,7 +4,7 @@ module Companies
     data_key :countries
 
     def countries
-      Countries::DefaultDecorator.decorate(super)
+      Countries::DefaultDecorator.decorate_collection(super)
     end
   end
 end
