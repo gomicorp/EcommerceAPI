@@ -105,4 +105,8 @@ class User < ApplicationRecord
   def email_required?
     false
   end
+
+  def authentication_token
+    JsonWebToken.encode(user_id: id)
+  end
 end

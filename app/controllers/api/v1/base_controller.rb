@@ -5,6 +5,7 @@ module Api
   module V1
     class BaseController < ActionController::Base
       include ErrorHandler
+      skip_before_action :verify_authenticity_token
       before_action :set_default_format
       before_action :set_raven_context
       before_action :set_app_locale
@@ -37,11 +38,11 @@ module Api
       protected
 
       def authenticate_request!
-        return render json: { errors: ['Not Authenticated'] }, status: :unauthorized unless user_id_in_token?
+        return render json: { errors: ['Not Authenticated2'] }, status: :unauthorized unless user_id_in_token?
 
-        @current_user = Manager.find(user_id_in_token)
+        @current_user = User.find(user_id_in_token)
       rescue JWT::VerificationError, JWT::DecodeError
-        render json: { errors: ['Not Authenticated'] }, status: :unauthorized
+        render json: { errors: ['Not Authenticated3'], auth_header_value: auth_header_value }, status: :unauthorized
       end
 
       def decorator_class
@@ -88,30 +89,30 @@ module Api
         end
       end
 
-      def decode_jwt(token)
-        JsonWebToken.decode(token)
-      end
-
-      def auth_token
-        @auth_token ||= decode_jwt(auth_header_value)
+      def user_id_in_token
+        auth_token&.dig(:user_id)
       end
 
       def user_id_in_token?
         auth_header_value && auth_token && user_id_in_token.to_i
       end
 
+      def auth_token
+        @auth_token ||= decode_jwt(auth_header_value)
+      end
+
       def auth_header_value
         @auth_header_value ||= request.headers['Authorization']&.split(' ')&.last
       end
 
-      def user_id_in_token
-        auth_token&.dig(:user_id)
+      def decode_jwt(token)
+        JsonWebToken.decode(token)
       end
 
       def jwt_payload(user)
         return nil unless user&.id
 
-        user.as_json.merge(token: JsonWebToken.encode(user_id: user.id))
+        user.as_json.merge(token: user.authentication_token)
       end
     end
   end

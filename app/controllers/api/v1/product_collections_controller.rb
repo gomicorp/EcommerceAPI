@@ -9,7 +9,7 @@ module Api
       def index
         @product_collections = decorator_class.decorate_collection(ProductCollection.all)
 
-        render json: @product_collections
+        render json: @product_collections, status: :ok
       end
 
       # GET /api/v1/product_collections/1
