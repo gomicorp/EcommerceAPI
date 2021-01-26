@@ -4,11 +4,7 @@ module Companies
     data_key :countries
 
     def countries
-      if super.count > 1
-        Countries::DefaultDecorator.decorate_collection(super)
-      else
-        Countries::DefaultDecorator.decorate(super)
-      end
+      Countries::DefaultDecorator.decorate(super)
     end
   end
 end
