@@ -6,7 +6,7 @@ namespace :api, defaults: { format: :json } do
     resources :brands
     resources :managers do
       resources :companies, only: %i[index show], controller: 'managers/companies'
-      resources :memberships, only: %i[index show], controller: 'managers/memberships'
+      resources :memberships, controller: 'managers/memberships'
     end
   end
 end
