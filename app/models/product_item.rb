@@ -26,6 +26,8 @@
 #  fk_rails_...  (item_group_id => product_item_groups.id)
 #
 class ProductItem < NationRecord
+  include UseGomiStandardProductCode
+
   extend_has_many_attached :images
 
   extend_has_one_attached :cfs
@@ -55,7 +57,7 @@ class ProductItem < NationRecord
   validates :selling_price, presence: true
   validates :cost_price, presence: true
 
-  scope :activated, -> { where(active: true) }
+  scope :activated, ->(active = true) { where(active: active) }
 
   scope :product_option_with, lambda { |product_options|
     where(
@@ -123,6 +125,11 @@ class ProductItem < NationRecord
   def after_save_propagation
     collections.each do |collection|
       collection.calculate_price_columns
+      unless collection.respond_to?(:active_changed?)
+        collection.class.send(:define_method, :active_changed?) do
+          false
+        end
+      end
       collection.save
     end
 
