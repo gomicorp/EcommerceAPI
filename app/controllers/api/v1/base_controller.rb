@@ -5,6 +5,7 @@ module Api
   module V1
     class BaseController < ActionController::Base
       include ErrorHandler
+      skip_before_action :verify_authenticity_token
       before_action :set_default_format
       before_action :set_raven_context
       before_action :set_app_locale
