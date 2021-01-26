@@ -14,7 +14,7 @@ if ENV['RAILS_ENV'] == 'test'
   SimpleCov.coverage_dir 'public/coverage'
 
   SimpleCov.at_exit do
-    puts "Coverage done"
+    puts 'Coverage done'
     SimpleCov.result.format!
   end
 end

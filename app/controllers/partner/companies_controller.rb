@@ -4,8 +4,8 @@ module Partner
     before_action :set_company, only: %i[show update destroy]
 
     def index
-      my_companies = @current_user.companies.includes(include_tables).where(query_param)
-      @companies = decorator_class.decorate_collection(my_companies)
+      companies = Company.all.includes(include_tables).where(query_param)
+      @companies = decorator_class.decorate_collection(companies)
 
       render json: @companies, template: 'partner/companies/index'
     end
@@ -44,8 +44,8 @@ module Partner
     private
 
     def set_company
-      my_company = @current_user.companies.find(params[:id])
-      @company = decorator_class.decorate(my_company)
+      company = Company.find(params[:id])
+      @company = decorator_class.decorate(company)
     end
 
     def include_tables

@@ -8,7 +8,7 @@ module Api
       before_action :set_default_format
       before_action :set_raven_context
       before_action :set_app_locale
-      before_action :set_country_code
+      around_action :set_country_context
 
       NotAuthorized = Class.new(StandardError)
 
@@ -34,6 +34,28 @@ module Api
         }, status: :bad_request
       end
 
+      protected
+
+      def authenticate_request!
+        return render json: { errors: ['Not Authenticated'] }, status: :unauthorized unless user_id_in_token?
+
+        @current_user = Manager.find(user_id_in_token)
+      rescue JWT::VerificationError, JWT::DecodeError
+        render json: { errors: ['Not Authenticated'] }, status: :unauthorized
+      end
+
+      def decorator_class
+        decorate_name.constantize
+      end
+
+      def decorate_name
+        params.permit(:deco_type)[:deco_type].presence || default_decorator_name
+      end
+
+      def default_decorator_name
+        # 'Companies::DefaultDecorator'
+      end
+
       private
 
       def set_default_format
@@ -55,9 +77,41 @@ module Api
         I18n.default_locale = :ko
       end
 
-      def set_country_code
-        @nation = params[:nation]
-        ApplicationRecord.country_code = @nation
+      def set_country_context
+        if country_scope = params[:country_scope].presence
+          scopes = [NationRecord.country_scope_for(country_scope)]
+          NationRecord.default_scopes += scopes
+          yield
+          NationRecord.default_scopes -= scopes
+        else
+          yield
+        end
+      end
+
+      def decode_jwt(token)
+        JsonWebToken.decode(token)
+      end
+
+      def auth_token
+        @auth_token ||= decode_jwt(auth_header_value)
+      end
+
+      def user_id_in_token?
+        auth_header_value && auth_token && user_id_in_token.to_i
+      end
+
+      def auth_header_value
+        @auth_header_value ||= request.headers['Authorization']&.split(' ')&.last
+      end
+
+      def user_id_in_token
+        auth_token&.dig(:user_id)
+      end
+
+      def jwt_payload(user)
+        return nil unless user&.id
+
+        user.as_json.merge(token: JsonWebToken.encode(user_id: user.id))
       end
     end
   end
