@@ -4,25 +4,6 @@ RSpec.describe 'Companies API', type: :request do
   before(:each) { create_test_user }
   before(:each) { Company.find_or_create_by(company_params) }
 
-  shared_examples 'API' do |api_name|
-    tags "#{api_name} API"
-    consumes 'application/json'
-  end
-
-  shared_examples 'member action' do
-    parameter name: :id, in: :path, type: :integer
-  end
-
-  shared_examples 'Login Required' do |required_preset_block|
-    parameter name: 'Authorization', in: :header, type: :string, default: auth_token
-
-    response '401', '로그인을 해야 합니다.' do
-      let(:Authorization) { '' }
-      instance_exec(&required_preset_block) if required_preset_block
-      run_test!
-    end
-  end
-
   shared_examples 'Permitted resource params definition' do
     parameter name: :company, in: :body, schema: {
       type: :object,
@@ -33,25 +14,17 @@ RSpec.describe 'Companies API', type: :request do
     }
   end
 
-  shared_examples 'Allow public and url only request' do
-    response '200', :ok do
-      context '다른 입력 없이 URL 만으로 기본 요청한 경우' do
-        run_test!
-      end
-    end
-  end
-
   let(:company_params) { { name: 'gomi' } }
 
   path '/api/v1/companies' do
     get '업체 리스트 조회. Public' do
       it_behaves_like 'API', 'Company'
-      it_behaves_like 'Allow public and url only request'
+      it_behaves_like 'Public endpoint'
     end
 
     post '업체 신규 등록. By Manager' do
       it_behaves_like 'API', 'Company'
-      it_behaves_like 'Login Required' do
+      it_behaves_like 'Login required' do
         let(:company) { company_params }
       end
 
@@ -76,7 +49,7 @@ RSpec.describe 'Companies API', type: :request do
   path '/api/v1/companies/{id}' do
     get '업체 상세. Public' do
       it_behaves_like 'API', 'Company'
-      it_behaves_like 'member action'
+      it_behaves_like 'Member action'
 
       response '200', :success do
         schema type: :object,
@@ -98,8 +71,8 @@ RSpec.describe 'Companies API', type: :request do
 
     put '업체 수정. By Owner' do
       it_behaves_like 'API', 'Company'
-      it_behaves_like 'member action'
-      it_behaves_like 'Login Required' do
+      it_behaves_like 'Member action'
+      it_behaves_like 'Login required' do
         let!(:id) { Company.find_or_create_by(company_params).id }
         let(:company) { company_params }
       end
@@ -137,8 +110,8 @@ RSpec.describe 'Companies API', type: :request do
 
     delete '업체 삭제. By Owner' do
       it_behaves_like 'API', 'Company'
-      it_behaves_like 'member action'
-      it_behaves_like 'Login Required' do
+      it_behaves_like 'Member action'
+      it_behaves_like 'Login required' do
         let!(:id) { Company.find_or_create_by(company_params).id }
         let(:company) { company_params }
       end
