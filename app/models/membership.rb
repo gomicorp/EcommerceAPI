@@ -21,6 +21,7 @@
 #  fk_rails_...  (manager_id => users.id)
 #
 class Membership < ApplicationRecord
+  resourcify
   enum role: %i[member admin owner]
 
   belongs_to :company

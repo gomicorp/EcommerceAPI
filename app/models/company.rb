@@ -9,6 +9,7 @@
 #  description :text(65535)
 #
 class Company < ApplicationRecord
+  resourcify
   include Approvable
   has_many :brands, dependent: :destroy
 

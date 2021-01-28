@@ -22,6 +22,7 @@
 #  fk_rails_...  (country_id => countries.id)
 #
 class ProductCollection < NationRecord
+  resourcify
   include UseGomiStandardProductCode
 
   has_many :elements, class_name: 'ProductCollectionElement'

@@ -30,6 +30,7 @@
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
 class Manager < User
+  resourcify
   default_scope -> { managers }
 
   has_many :memberships, dependent: :destroy

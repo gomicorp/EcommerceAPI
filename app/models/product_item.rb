@@ -28,6 +28,7 @@
 #  fk_rails_...  (item_group_id => product_item_groups.id)
 #
 class ProductItem < NationRecord
+  resourcify
   include UseGomiStandardProductCode
 
   extend_has_many_attached :images
