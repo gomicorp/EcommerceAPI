@@ -7,12 +7,21 @@ module Rolify
     define_method :allow_role do |role_name, user|
       user.add_role(role_name, self)
     end
+
+    define_method :reject_role do |role_name, user|
+      user.remove_role(role_name, self)
+    end
+
     send(:_resourcify, association_name, options)
   end
 
   # Company.allow_role(:admin, Admin.first)
   def allow_role(role_name, user)
     user.add_role(role_name, self)
+  end
+
+  def reject_role(role_name, user)
+    user.remove_role(role_name, self)
   end
 end
 
