@@ -31,4 +31,10 @@
 #
 class Admin < User
   default_scope -> { admins }
+
+  after_create :assign_default_role
+
+  def assign_default_role
+    self.add_role :admin
+  end
 end

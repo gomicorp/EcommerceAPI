@@ -30,7 +30,11 @@
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
 class User < ApplicationRecord
+  # 메소드 호출 순서가 중요하다고 합니다 by lucas
+  # https://github.com/RolifyCommunity/rolify/wiki/FAQ#is-it-possible-to-have-two-different-sets-of-roles-in-one-application
+  resourcify
   rolify
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -61,7 +65,8 @@ class User < ApplicationRecord
   has_many :receivers, dependent: :destroy
   belongs_to :default_receiver, class_name: 'Receiver', optional: true
 
-  after_save :assign_manager_default_role, if: :is_manager_changed?
+  after_save :assign_default_role
+  before_destroy :clear_role
 
   def cart_attached?
     carts.active.any?
@@ -123,7 +128,17 @@ class User < ApplicationRecord
 
   # Active Record Callbacks
 
-  def assign_manager_default_role
-    to_manager.assign_default_role
+  def assign_default_role
+    if is_admin?
+      to_admin.assign_default_role
+    elsif is_manager?
+      to_manager.assign_default_role
+    end
+  end
+
+  def clear_role
+    roles.each do |role|
+      remove_role role.name.to_sym
+    end
   end
 end

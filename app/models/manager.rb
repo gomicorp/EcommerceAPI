@@ -39,4 +39,10 @@ class Manager < User
 
   validates_presence_of :email, :name
   validates_uniqueness_of :email
+
+  after_create :assign_default_role
+
+  def assign_default_role
+    User.find(self.id).add_role :manager, User.find(self.id)
+  end
 end
