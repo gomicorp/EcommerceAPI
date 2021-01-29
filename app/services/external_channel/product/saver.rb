@@ -60,6 +60,7 @@ module ExternalChannel
 
       def parse_product(product, default_product = {})
         {
+          country: Country.send(ApplicationRecord.country_code),
           brand_id: brand.id,
           running_status: default_product['running_status'] || 'pending',
           title: make_valid_title(product[:title])
