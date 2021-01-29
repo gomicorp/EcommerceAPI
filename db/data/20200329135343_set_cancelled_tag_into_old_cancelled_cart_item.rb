@@ -2,14 +2,16 @@ class SetCancelledTagIntoOldCancelledCartItem < ActiveRecord::Migration[6.0]
   def up
     ApplicationRecord.transaction do
       PaperTrail.request(enabled: false) do
-        OrderInfo.unscoped.order_status('cancel-complete').each do |order|
-          order.cart.items.each do |cart_item|
-            next if cart_item.cancelled_tag
+        if OrderInfo.unscoped.respond_to?(:order_status)
+          OrderInfo.unscoped.order_status('cancel-complete').each do |order|
+            order.cart.items.each do |cart_item|
+              next if cart_item.cancelled_tag
 
-            CartItemCancelledTag.create(
-              cart_item: cart_item,
-              cancelled_at: cart_item.cart.updated_at
-            )
+              CartItemCancelledTag.create(
+                cart_item: cart_item,
+                cancelled_at: cart_item.cart.updated_at
+              )
+            end
           end
         end
       end

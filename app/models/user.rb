@@ -30,6 +30,7 @@
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
 class User < ApplicationRecord
+  rolify
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -59,6 +60,8 @@ class User < ApplicationRecord
   # 수령인에 대하여..
   has_many :receivers, dependent: :destroy
   belongs_to :default_receiver, class_name: 'Receiver', optional: true
+
+  after_save :assign_manager_default_role, if: :is_manager_changed?
 
   def cart_attached?
     carts.active.any?
@@ -104,5 +107,23 @@ class User < ApplicationRecord
   # Enable to regist with doesn't have email field.
   def email_required?
     false
+  end
+
+  def authentication_token
+    JsonWebToken.encode(user_id: id)
+  end
+
+  def to_manager
+    Manager.new(self.as_json) if is_manager?
+  end
+
+  def to_admin
+    Admin.new(self.as_json) if is_admin?
+  end
+
+  # Active Record Callbacks
+
+  def assign_manager_default_role
+    to_manager.assign_default_role
   end
 end
