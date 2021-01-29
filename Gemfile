@@ -31,7 +31,7 @@ gem 'draper'
 
 # 회원인증 및 권한설정을 위한 젬
 gem 'authority' # 권한설정
-gem 'devise' # 회원가입 및 인증
+gem 'devise', github: 'heartcombo/devise', branch: 'ca-omniauth-2'
 gem 'devise-jwt' # jwt 사용
 gem 'jwt'
 gem 'letter_opener', group: :development # 개발 모드에서 이메일을 보내지 않고 브라우저에서 미리보기하는 젬
