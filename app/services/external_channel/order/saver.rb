@@ -5,7 +5,7 @@ module ExternalChannel
       protected
 
       def save_data(order)
-        order_info = ExternalChannel::OrderInfo.find_or_initialize_by(external_channel_order_id: order[:id])
+        order_info = ExternalChannel::OrderInfo.find_or_initialize_by(country: Country.send(ApplicationRecord.country_code), external_channel_order_id: order[:id])
         order_info.update!(parse_order(order))
 
         set_order_related_info(order_info, order) 
@@ -20,7 +20,9 @@ module ExternalChannel
           option = ::ProductOption.find_by(channel_code: variant[0])
           raise ActiveRecord::RecordNotFound, "On #{order[:channel]}, #{order[:order_number]}-#{variant[0]} option not found" if option.nil?
 
-          order_to_option = ExternalChannel::CartItem.find_or_initialize_by(order_info_id: target.id, product_option_id: option.id)
+          order_to_option = ExternalChannel::CartItem.find_or_initialize_by(country: Country.send(ApplicationRecord.country_code),
+                                                                            order_info_id: target.id,
+                                                                            product_option_id: option.id)
           order_to_option.option_count = variant[1]
           order_to_option.unit_price = variant[2]
           order_to_option.save!
@@ -34,7 +36,8 @@ module ExternalChannel
       def parse_order(order, default_order = {})
         # TODO: 모델 구조 변경시 변경 필요
         {
-          customer_name: order[:customer_name],
+          country: Country.send(ApplicationRecord.country_code),
+          receiver_name: order[:receiver_name],
           total_price: order[:billing_amount],
           ordered_at: default_order[:ordered_at] || order[:ordered_at],
           pay_method: order[:pay_method],

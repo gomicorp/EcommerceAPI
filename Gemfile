@@ -3,6 +3,8 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.3'
 
+gem 'friendly_id'
+
 # gem 'haravan_api', git: 'https://github.com/Haravan/haravan_api.git'
 gem 'lazop_api_client', git: 'https://github.com/kfit-dev/lazop-api-client'
 
@@ -29,7 +31,7 @@ gem 'draper'
 
 # 회원인증 및 권한설정을 위한 젬
 gem 'authority' # 권한설정
-gem 'devise' # 회원가입 및 인증
+gem 'devise', github: 'heartcombo/devise', branch: 'ca-omniauth-2'
 gem 'devise-jwt' # jwt 사용
 gem 'jwt'
 gem 'letter_opener', group: :development # 개발 모드에서 이메일을 보내지 않고 브라우저에서 미리보기하는 젬
@@ -112,6 +114,7 @@ gem 'sprockets', '3.7.2'
 
 # Generate beautiful API documentation
 gem 'rswag'
+gem 'rspec'
 
 gem 'faker'
 gem 'simplecov', require: false, group: :test

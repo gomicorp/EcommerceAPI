@@ -2,23 +2,25 @@
 #
 # Table name: product_items
 #
-#  id                   :bigint           not null, primary key
-#  active               :boolean          default(FALSE), not null
-#  alive_barcodes_count :integer          default(0), not null
-#  barcodes_count       :integer          default(0), not null
-#  cost_price           :integer          default(0), not null
-#  name                 :string(255)
-#  selling_price        :integer          default(0), not null
-#  serial_number        :string(255)
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  country_id           :bigint
-#  item_group_id        :bigint           not null
+#  id                         :bigint           not null, primary key
+#  active                     :boolean          default(FALSE), not null
+#  alive_barcodes_count       :integer          default(0), not null
+#  barcodes_count             :integer          default(0), not null
+#  cost_price                 :integer          default(0), not null
+#  gomi_standard_product_code :string(255)      not null
+#  name                       :string(255)
+#  selling_price              :integer          default(0), not null
+#  serial_number              :string(255)
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  country_id                 :bigint
+#  item_group_id              :bigint           not null
 #
 # Indexes
 #
-#  index_product_items_on_country_id     (country_id)
-#  index_product_items_on_item_group_id  (item_group_id)
+#  index_product_items_on_country_id                  (country_id)
+#  index_product_items_on_gomi_standard_product_code  (gomi_standard_product_code) UNIQUE
+#  index_product_items_on_item_group_id               (item_group_id)
 #
 # Foreign Keys
 #
@@ -26,6 +28,8 @@
 #  fk_rails_...  (item_group_id => product_item_groups.id)
 #
 class ProductItem < NationRecord
+  include UseGomiStandardProductCode
+
   extend_has_many_attached :images
 
   extend_has_one_attached :cfs
@@ -56,7 +60,7 @@ class ProductItem < NationRecord
   validates :selling_price, presence: true
   validates :cost_price, presence: true
 
-  scope :activated, -> { where(active: true) }
+  scope :activated, ->(active = true) { where(active: active) }
 
   scope :product_option_with, lambda { |product_options|
     where(
@@ -124,6 +128,11 @@ class ProductItem < NationRecord
   def after_save_propagation
     collections.each do |collection|
       collection.calculate_price_columns
+      unless collection.respond_to?(:active_changed?)
+        collection.class.send(:define_method, :active_changed?) do
+          false
+        end
+      end
       collection.save
     end
 
