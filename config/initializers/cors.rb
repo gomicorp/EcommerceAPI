@@ -3,6 +3,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     permitted_origin = {
       development: '*',
       test: '*',
+      didimdol: Rails.application.credentials.dig(:cors_whitelist),
       staging: Rails.application.credentials.dig(:cors_whitelist),
       production: Rails.application.credentials.dig(:cors_whitelist)
     }[Rails.env.to_sym]
