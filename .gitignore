@@ -66,4 +66,7 @@ docker/.envs
 # A U T O M I Z A T I O N
 .envrc
 
-/config/credentials/production.key
+# swagger & coverage documents
+swagger/*
+coverage/*
+**/coverage/*

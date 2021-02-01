@@ -16,24 +16,20 @@ class Country < ApplicationRecord
   has_many :products
   has_many :banks
 
-  #validates_uniqueness_of Country.attribute_names
+  validates_uniqueness_of :locale, :short_name
   validates_presence_of :name, :name_ko, :locale, :short_name
   alias_attribute :code, :short_name
 
-  TH = find_by(short_name: 'th')
-  VN = find_by(short_name: 'vn')
-  KO = find_by(short_name: 'ko')
-
   def self.th
-    TH
+    @th ||= find_by(short_name: 'th')
   end
 
   def self.vn
-    VN
+    @vn ||= find_by(short_name: 'vn')
   end
 
   def self.ko
-    KO
+    @ko ||= find_by(short_name: 'ko')
   end
 
   def self.undef
