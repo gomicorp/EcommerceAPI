@@ -1,0 +1,131 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API V1",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/v1/companies": {
+      "get": {
+        "summary": "Get Company list",
+        "tags": [
+          "Global - Company"
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Company",
+        "tags": [
+          "Global - Company"
+        ],
+        "parameters": [
+
+        ],
+        "responses": {
+          "201": {
+            "description": "create",
+            "content": {
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "company": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/partner/companies": {
+      "get": {
+        "summary": "Get Company list",
+        "tags": [
+          "Partner - Company"
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Company",
+        "tags": [
+          "Partner - Company"
+        ],
+        "parameters": [
+
+        ],
+        "responses": {
+          "201": {
+            "description": "create",
+            "content": {
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "company": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "http://{defaultHost}",
+      "variables": {
+        "defaultHost": {
+          "default": "localhost:3030"
+        }
+      }
+    }
+  ]
+}
