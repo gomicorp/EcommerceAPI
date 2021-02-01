@@ -6,7 +6,6 @@
 #  barcode_count     :integer          default(0), not null
 #  price             :integer          default(0), not null
 #  running_status    :integer          default("pending"), not null
-#  slug              :string(255)
 #  title             :text(65535)
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
@@ -19,7 +18,6 @@
 #  index_products_on_brand_id           (brand_id)
 #  index_products_on_country_id         (country_id)
 #  index_products_on_default_option_id  (default_option_id)
-#  index_products_on_slug               (slug) UNIQUE
 #
 # Foreign Keys
 #
@@ -29,12 +27,10 @@
 #
 class Product < NationRecord
   include Translatable
-  extend FriendlyId
   extend_has_one_attached :thumbnail
   extend_has_many_attached :images
   extend_has_many_attached :catalogs
   translate_column :title
-  friendly_id :slug_candidates, use: %i[slugged finders history]
 
   RUNNING_STATUSES = {
     pending: '판매대기',
@@ -150,24 +146,6 @@ class Product < NationRecord
 
   def update_barcode_cache
     update(barcode_count: barcodes.alive.count)
-  end
-
-  def slug_candidates
-    [
-      :translated_title,
-      [:translated_title, :slug_sequence]
-    ]
-  end
-
-  def translated_title
-    translate(locale: country.locale).title
-  end
-
-  def slug_sequence
-    column = friendly_id_config.slug_column
-    separator = friendly_id_config.sequence_separator
-    slug = normalize_friendly_id(send(slug_candidates.first))
-    self.class.where("#{column} LIKE ?", "#{slug}%").count + 1
   end
 
   class Discount

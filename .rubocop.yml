@@ -74,7 +74,6 @@ Style/FrozenStringLiteralComment:
     - 'app/**/*.rb'
     - 'db/**/*.rb'
     - 'config/**/*.rb'
-    - 'spec/**/*.rb'
     - 'ignore/**/*.rb'
     - 'Gemfile'
     - 'Rakefile'

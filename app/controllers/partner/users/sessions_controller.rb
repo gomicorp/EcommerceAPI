@@ -23,7 +23,7 @@ module Partner
       end
 
       def show
-        render json: @current_user
+        render 'partner/sessions/show', status: :ok
       end
 
       # DELETE /users/sign_out
@@ -36,10 +36,6 @@ module Partner
 
       def session_param
         params.require(:users).permit(:email, :password, :token)
-      end
-
-      def default_decorator_name
-        'Users::Managers::DefaultDecorator'
       end
     end
   end

@@ -15,9 +15,7 @@ namespace :partner do
       resources :product_items
     end
   end
-  resources :managers, only: %i[index show create] do
-    resources :companies, only: %i[index show], controller: 'managers/companies'
-  end
+  resources :managers, only: %i[index show create]
   resources :memberships, only: %i[index show create update destroy]
 
 

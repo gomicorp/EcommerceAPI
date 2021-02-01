@@ -12,7 +12,7 @@ module ExternalChannel
 
       def save_data(data)
         refresh_data
-        @channel = Channel.find_by(country: Country.send(ApplicationRecord.country_code), name: data[:channel_name])
+        @channel = Channel.find_by_name(data[:channel_name])
         raise ActiveRecord::RecordNotFound("NotFoundChannelError => The given channel #{data[:channel_name]} doesn\'t exist on gomi back office.") if channel.nil?
 
         save_product(data) && save_options(data[:variants])
@@ -27,11 +27,9 @@ module ExternalChannel
       end
 
       def save_product(product_data)
-        this_product_connection = ExternalChannel::ProductMapper.find_or_initialize_by(country: Country.send(ApplicationRecord.country_code),
-                                                                                       channel_id: channel.id,
-                                                                                       external_id: product_data[:id].to_s)
+        this_product_connection = ExternalChannel::ProductMapper.find_or_initialize_by(channel_id: channel.id, external_id: product_data[:id].to_s)
         product_id = this_product_connection.product ? this_product_connection.product_id : nil
-        @product = ::Product.find_or_initialize_by(country: Country.send(ApplicationRecord.country_code), id: product_id)
+        @product = ::Product.find_or_initialize_by(id: product_id)
         @brand = find_brand(product_data[:brand_name]) || product.brand || temp_brand
 
         product.assign_attributes(parse_product(product_data, product.attributes))
@@ -62,7 +60,6 @@ module ExternalChannel
 
       def parse_product(product, default_product = {})
         {
-          country: Country.send(ApplicationRecord.country_code),
           brand_id: brand.id,
           running_status: default_product['running_status'] || 'pending',
           title: make_valid_title(product[:title])
@@ -98,7 +95,7 @@ module ExternalChannel
         Brand.where(
           "REPLACE(LOWER(subtitle), ' ', '') LIKE ?",
           brand_name.gsub(' ', '').downcase
-        ).where(country: Country.send(ApplicationRecord.country_code)).first
+        ).first
       end
 
       # === 브랜드가 없을 경우 임시 브랜드 생성/할당

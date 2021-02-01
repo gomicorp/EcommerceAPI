@@ -10,9 +10,7 @@ rake.alias 'db:rollback', 'db:rollback:with_data' do
   rake :annotate_models if Rails.env.development?
 end
 
-unless Rails.env.test?
-  rake.alias 'db:migrate:status', 'db:migrate:status:with_data'
-  rake.alias 'db:version', 'db:version:with_data'
-  rake.alias 'db:schema:load', 'db:schema:load:with_data'
-  rake.alias 'db:structure:load', 'db:structure:load:with_data'
-end
+rake.alias 'db:migrate:status', 'db:migrate:status:with_data'
+rake.alias 'db:version', 'db:version:with_data'
+rake.alias 'db:schema:load', 'db:schema:load:with_data'
+rake.alias 'db:structure:load', 'db:structure:load:with_data'

@@ -51,25 +51,6 @@ class ExternalChannelsController < ApiController
     render_json
   end
 
-  def order_logs
-    item_type     = "ExternalChannel::OrderInfo"
-    country_code  = order_log_params[:country_code].presence || "vn"
-    order_id      = order_log_params[:order_id].presence || parameter_missing!
-
-    @order_logs = []
-    ApplicationRecord.country_code = country_code
-    order_info = ExternalChannel::OrderInfo.find_by(external_channel_order_id: order_id)
-    return render json: { order_logs: nil }
-
-    versions = PaperTrail::Version.where(item_type: item_type, item_id: order_info.id, object: [nil, '']).order('id DESC')
-    versions.each do |version|
-      # object_changes 는 바로 변경전 값과 변경후 값이 배열로 들어가 있음
-      @order_logs << PaperTrail.serializer.load(version.object_changes)
-    end
-
-    render json: { order_logs: @order_logs }
-  end
-
   private
 
   attr_accessor :error
@@ -80,10 +61,6 @@ class ExternalChannelsController < ApiController
 
   def batch_params
     params.permit(:country_code, :type, :channel_name, query_hash: {})
-  end
-
-  def order_log_params
-    params.permit(:order_id)
   end
 
   def render_json

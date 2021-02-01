@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  mount Rswag::Ui::Engine => '/api-docs'
-  mount Rswag::Api::Engine => '/api-docs'
   root 'hello#world'
 
   # global file crud (active_storage)
@@ -8,12 +6,11 @@ Rails.application.routes.draw do
 
   constraints format: :json do
     devise_for :users, controllers: {
-      sessions: 'users/sessions',
-      registrations: 'users/registrations',
-      passwords: 'users/passwords'
+        sessions: 'users/sessions',
+        registrations: 'users/registrations',
+        passwords: 'users/passwords'
     }
 
-    draw :api_routes
     draw :partner_center_routes
     draw :store_routes
 

@@ -1,6 +1,5 @@
 module Partner
   class MembershipsController < BaseController
-    before_action :authenticate_request!
     before_action :set_membership, only: [:show, :update, :destroy]
 
     def index
@@ -13,12 +12,10 @@ module Partner
 
     def create
       @membership = Membership.find_or_initialize_by(membership_params)
-      # new_record = !@membership.persisted?
+      new_record = !@membership.persisted?
 
       if @membership.save
-        # 초대 메일을 보내는 내용이나, 당분간 사용할 계획이 없어 주석처리했습니다.
-        # 삭제하지 말아주세요!
-        # send_invite_email if new_record
+        send_invite_email if new_record
         render json: @membership, status: :created
       else
         render json: @membership.errors, status: :unprocessable_entity

@@ -25,8 +25,6 @@ class Company < ApplicationRecord
   # end
   has_one :owner, through: :ownership, source: :manager
 
-  validates :name, presence: true
-
   # Company::ApproveRequest
   class ApproveRequest < ::ApproveRequest
     default_scope { where(approvable_type: :Company) }

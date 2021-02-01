@@ -13,7 +13,7 @@
 #  is_seller                 :boolean
 #  name                      :string(255)
 #  phone_number              :string(255)
-#  profile_image             :text(65535)
+#  profile_image             :string(255)
 #  remember_created_at       :datetime
 #  reset_password_sent_at    :datetime
 #  reset_password_token      :string(255)

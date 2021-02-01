@@ -3,8 +3,6 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.3'
 
-gem 'friendly_id'
-
 # gem 'haravan_api', git: 'https://github.com/Haravan/haravan_api.git'
 gem 'lazop_api_client', git: 'https://github.com/kfit-dev/lazop-api-client'
 
@@ -29,11 +27,10 @@ gem 'rack-cors'
 gem 'rails-file_storage', git: 'https://github.com/yhk1038/file_storage.git'
 gem 'ransack'
 gem 'will_paginate'
-gem 'draper'
 
 # 회원인증 및 권한설정을 위한 젬
 gem 'authority' # 권한설정
-gem 'devise', github: 'heartcombo/devise', branch: 'ca-omniauth-2'
+gem 'devise' # 회원가입 및 인증
 gem 'devise-jwt' # jwt 사용
 gem 'jwt'
 gem 'letter_opener', group: :development # 개발 모드에서 이메일을 보내지 않고 브라우저에서 미리보기하는 젬
@@ -88,8 +85,6 @@ group :development, :didimdol, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'faker'
   gem 'annotate'
-  # rails 단위 테스트, rswag 에 종속
-  gem 'rspec-rails', '~> 3.5'
 end
 
 group :development do
@@ -113,12 +108,3 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # sprocket version downgrade
 gem 'sprockets', '3.7.2'
-
-# Generate beautiful API documentation
-gem 'rswag'
-gem 'rspec'
-
-gem 'faker'
-gem 'simplecov', require: false, group: :test
-gem 'rails-controller-testing', group: :test
-# gem 'coveralls', require: false
