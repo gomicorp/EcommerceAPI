@@ -1,5 +1,5 @@
 class FilesController < ApiController
-  before_action :set_record
+  before_action :set_record, except: %i[destroy]
 
   def show
   end
@@ -13,6 +13,11 @@ class FilesController < ApiController
   end
 
   def destroy
+    if ActiveStorage::Attachment.find(params[:id]).destroy
+      render json: 'deleted', status: :ok
+    else
+      render json: 'failed', status: :unprocessable_entity
+    end
   end
 
   private
