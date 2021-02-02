@@ -19,6 +19,7 @@ end
 data_for_attachments = proc do |attachment|
   json.filename attachment.filename
   json.url rails_blob_url(attachment)
+  json.attachment_id attachment.id
 end
 
 
