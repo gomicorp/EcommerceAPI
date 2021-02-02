@@ -9,7 +9,8 @@ image_url_or_nil = proc do |resource, method|
   if attachment.attached?
     {
         filename: attachment.filename,
-        url: rails_blob_url(attachment)
+        url: rails_blob_url(attachment),
+        attachment_id: attachment.id,
     }
   end
 end
