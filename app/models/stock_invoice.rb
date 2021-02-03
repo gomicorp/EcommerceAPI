@@ -32,6 +32,13 @@ class StockInvoice < NationRecord
     correction
   ].freeze.to_echo
 
-  enum invoice_type: TYPES, as: :type
+  alias_attribute :type, :invoice_type
+  enum type: TYPES
+
+  scope :by_type, -> type { where(invoice_type: type) }
+
+  def confirmed?
+    !!confirmed_at
+  end
 
 end

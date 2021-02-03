@@ -4,6 +4,7 @@
 #
 #  id               :bigint           not null, primary key
 #  amount           :integer          default(0), not null
+#  fulfilled        :boolean          default(FALSE)
 #  memo             :text(65535)
 #  reason           :string(255)
 #  result_quantity  :integer          default(0), not null
@@ -39,4 +40,7 @@ class StockAdjustment < NationRecord
 
   validates_presence_of :reason
   validates :amount, numericality: { other_than: 0 }
+
+  scope :fulfilled, -> { where(fulfilled: true) }
+
 end

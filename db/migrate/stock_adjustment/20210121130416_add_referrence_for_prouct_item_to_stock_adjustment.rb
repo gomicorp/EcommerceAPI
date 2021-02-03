@@ -8,18 +8,17 @@ class AddReferrenceForProuctItemToStockAdjustment < ActiveRecord::Migration[6.0]
     add_column :stock_adjustments, :product_item_id, :bigint, default: 0
     ActiveRecord::Base.transaction do
       StockAdjustment.find_each do |adjustment|
-        puts "adjustment.id = #{adjustment.id}"
         item_id = connection.execute("
                   SELECT product_item_id
                   from stock_adjustment_product_items
                   where stock_adjustment_id = #{adjustment.id}
                                      ").to_a.flatten.first
         unless item_id
-          puts '**kill dead adjustment!'
+          puts "Adjustment #[ #{adjustment.id} ] is dead. Kill dead adjustment!"
           adjustment.destroy!
           next
         end
-        puts "item.id = #{item_id}"
+        puts "Re-associate between adjustment #[ #{adjustment.id} ] and item #[ #{item_id} ]"
         adjustment.update!(product_item_id: item_id)
       end
     end
