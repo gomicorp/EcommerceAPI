@@ -34,7 +34,7 @@ class ProductCollectionList < ApplicationRecord
   end
 
   def available_quantity
-    item.alive_barcodes_count / unit_count
+    item.alive_entities_count / unit_count
   end
 
   def cost_price

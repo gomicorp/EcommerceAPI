@@ -20,8 +20,7 @@ module Partner
 
     # 이메일로 초대장을 보내고, 신규 매니저를 생성한다.
     def create
-      @manager = Manager.find_by_email(manager_params[:email])
-      @manager ||= Manager.new(manager_params)
+      @manager = Manager.new(manager_params)
 
       # set token (same with his password which is Devise friendly_token)
       # send email
@@ -64,12 +63,12 @@ module Partner
     def manager_params
       params[:manager][:name] ||= "user#{Manager.auto_increment_value}"
 
-      unless params[:manager][:password]
-        token = Devise.friendly_token
-        params[:manager][:password] ||= token
-        params[:manager][:password_confirmation] ||= token
-        params[:manager][:invite_confirmation_token] ||= token
-      end
+      # unless params[:manager][:password]
+      #   token = Devise.friendly_token
+      #   params[:manager][:password] ||= token
+      #   params[:manager][:password_confirmation] ||= token
+      #   params[:manager][:invite_confirmation_token] ||= token
+      # end
 
       params.require(:manager).permit(:name, :email, :password, :password_confirmation, :invite_confirmation_token)
     end

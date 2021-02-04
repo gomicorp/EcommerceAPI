@@ -25,7 +25,7 @@ class ProductOptionBridge < ApplicationRecord
     "LEFT JOIN #{klass.table_name} ON #{klass.table_name}.id = #{table_name}.#{resource_id} AND #{table_name}.#{resource_type} = \"#{klass.name}\""
   end
 
-  delegate :alive_barcodes_count, to: :connectable
+  delegate :alive_entities_count, to: :connectable
 
   scope :item_with, ->(product_item) { where(connectable: product_item).or(where(connectable: ProductCollection.item_with(product_item))) }
   scope :option_with, ->(*option_ids) { where(product_option_id: option_ids) }

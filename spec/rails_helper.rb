@@ -63,8 +63,8 @@ RSpec.configure do |config|
 
   # Enable test : protected, private
   config.before(:each) do
-    described_class.send(:public, *described_class.protected_instance_methods)
-    described_class.send(:public, *described_class.private_instance_methods)
+    # described_class.send(:public, *described_class.protected_instance_methods)
+    # described_class.send(:public, *described_class.private_instance_methods)
   end
 
   %i[controller view request].each do |type|
@@ -72,4 +72,17 @@ RSpec.configure do |config|
     config.include ::Rails::Controller::Testing::TemplateAssertions, type: type
     config.include ::Rails::Controller::Testing::Integration, type: type
   end
+end
+
+def create_test_user
+  User.find_or_initialize_by(email: 'foo@gomicorp.com').tap do |user|
+    user.name = 'foo'
+    user.password = 'bar121234'
+    user.password_confirmation = user.password
+    user.save!
+  end
+end
+
+def auth_token
+  "Bearer #{create_test_user.authentication_token}"
 end
