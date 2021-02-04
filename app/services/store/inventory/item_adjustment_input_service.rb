@@ -13,10 +13,10 @@ module Store
           item.adjustments << adjustment
 
           adjustment.amount.times do
-            item.barcodes.create!
+            item.entities.create!
           end
 
-          adjustment.result_quantity = item.barcodes_count
+          adjustment.result_quantity = item.entities_count
           adjustment.save!
         end
       end

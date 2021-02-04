@@ -60,8 +60,8 @@ class ProductOption < ApplicationRecord
     bridges.map(&:unit_count).sum
   end
 
-  def alive_barcodes_count
-    bridges.map(&:alive_barcodes_count).sum
+  def alive_entities_count
+    bridges.map(&:alive_entities_count).sum
   end
 
   def title
