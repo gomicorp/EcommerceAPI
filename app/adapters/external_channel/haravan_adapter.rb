@@ -140,7 +140,10 @@ module ExternalChannel
           variant_ids: record['line_items'].map { |variant| [variant['variant_id'], variant['quantity'].to_i, variant['price'].to_i ] },
           cancelled_status: record['cancelled_status'],
           shipping_status: record['fulfillments'].any? ? record['fulfillments'][0]['carrier_status_code'] : 'unknown',
-          row_data: record.to_json
+          tracking_company_code: record['fulfillments'].any? ? record['fulfillments'][0]['tracking_company_code'] : nil,
+          confirmed_status: record['confirmed_status'],
+          source_name: record['source_name'],
+          delivered_at: record['fulfillments'].any? ? record['fulfillments'][0]['delivered_date'] : nil
         }
       end
 
