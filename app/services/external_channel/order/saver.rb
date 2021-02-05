@@ -49,7 +49,10 @@ module ExternalChannel
           cancelled_status: order[:cancelled_status] || default_order[:shipping_status],
           external_channel_order_id: order[:id],
           shipping_status: order[:shipping_status] || default_order[:shipping_status],
-          row_data: order[:row_data]
+          tracking_company_code: order[:tracking_company_code],
+          confirmed_status: order[:confirmed_status],
+          source_name: order[:source_name],
+          delivered_at: order[:delivered_at]
         }
       end
     end
