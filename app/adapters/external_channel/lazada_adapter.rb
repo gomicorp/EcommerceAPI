@@ -50,8 +50,9 @@ module ExternalChannel
 
     def initialize
       super
-      @token = ExternalChannel::Token.find_or_create_by(country: Country.send(ApplicationRecord.country_code),
-                                                      channel: Channel.find_by(name: 'Lazada'))
+      cur_country = Country.send(ApplicationRecord.country_code)
+      @token = ExternalChannel::Token.find_or_create_by(country: cur_country,
+                                                        channel: Channel.find_by(country: cur_country, name: 'Lazada'))
 
       @app_key = Rails.application.credentials.dig(:lazada, :api, :app_key)
       @app_secret = Rails.application.credentials.dig(:lazada, :api, :app_secret)
@@ -179,6 +180,11 @@ module ExternalChannel
       response.body['data']
     end
 
+    def call_ovo_order(order_id)
+      response = request_get('/orders/ovo/get', { tradeOrderIds: order_id })
+      response.body['result']
+    end
+
     def request_get(endpoint, params)
       client = LazopApiClient::Client.new('https://api.lazada.vn/rest', app_key, app_secret)
       request = LazopApiClient::Request.new(endpoint,'GET')
@@ -237,13 +243,12 @@ module ExternalChannel
             pay_method: record['payment_method'],
             channel: 'Lazada',
             ordered_at: record['created_at'].to_time.getutc,
-            paid_at: nil,
+            paid_at: paid_at(call_ovo_order(record['order_id'])),
             billing_amount: record['price'].to_i + record['shipping_fee'],
             ship_fee: record['shipping_fee'],
             cancelled_status: ['cancelled'].include?(order_item['status']) ? order_item['status'] : nil,
             variant_ids: [[order_item['sku'].to_s, 1, order_item['item_price'].to_i]],
             shipping_status: %w[ready_to_ship, delivered, shipped returned].include?(record['statuses']) ? order_item['status'] : nil,
-            row_data: record.to_json
           }
         end
       end if records.present?
@@ -265,6 +270,14 @@ module ExternalChannel
         end
       else
         ""
+      end
+    end
+
+    def paid_at(ovo_order)
+      if ovo_order['tradeOrders'].any? && ovo_order['tradeOrders'][0]['paidTime']
+        ovo_order['tradeOrders'][0]['paidTime'].to_time.getutc
+      else
+        nil
       end
     end
   end

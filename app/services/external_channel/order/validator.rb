@@ -7,13 +7,15 @@ module ExternalChannel
       end
 
       def valid_all?(orders)
-        orders.all? do |order|
-          valid? order
-        end
+        true
+        
+        # orders.all? do |order|
+        #   valid? order
+        # end
       end
 
       def valid?(order)
-        validate_presence_of(order, %i[paid_at cancelled_status shipping_status])
+        validate_presence_of(order, %i[paid_at cancelled_status shipping_status tracking_company_code confirmed_status source_name delivered_at])
         only_allowed?(order)
       end
     end
