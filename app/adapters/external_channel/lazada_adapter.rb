@@ -52,7 +52,7 @@ module ExternalChannel
       super
       cur_country = Country.send(ApplicationRecord.country_code)
       @token = ExternalChannel::Token.find_or_create_by(country: cur_country,
-                                                        channel: Channel.where(country: cur_country, name: 'Lazada'))
+                                                        channel: Channel.find_by(country: cur_country, name: 'Lazada'))
 
       @app_key = Rails.application.credentials.dig(:lazada, :api, :app_key)
       @app_secret = Rails.application.credentials.dig(:lazada, :api, :app_secret)
