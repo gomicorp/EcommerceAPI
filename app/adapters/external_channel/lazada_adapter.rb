@@ -275,7 +275,7 @@ module ExternalChannel
 
     def paid_at(ovo_order)
       if ovo_order['tradeOrders']
-        ovo_order['tradeOrders'][0]['paidTime']
+        ovo_order['tradeOrders'][0]['paidTime'].to_time.getutc
       else
         nil
       end
