@@ -231,9 +231,9 @@ module ExternalChannel
     # = canceled_status : [canceled]
     # = shipping_status : [ready_to_ship, delivered, returned, shipped]
     def refine_orders(records)
-      @order_status ||= %i[unpaid pending canceled failed]
-      @canceled_status ||= %i[canceled]
-      @shipping_status ||= %i[ready_to_ship delivered returned shipped]
+      @order_status ||= %w[unpaid pending canceled failed]
+      @canceled_status ||= %w[canceled]
+      @shipping_status ||= %w[ready_to_ship delivered returned shipped]
       order_property = []
 
       records.each do |record|
