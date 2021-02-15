@@ -132,7 +132,7 @@ module ExternalChannel
           variant_ids: variants(order['items']),
           cancelled_status: cancel_status(order['order_status']),
           shipping_status: shipping_status(order['order_status']),
-          row_data: order.to_json
+          payment_status: order['pay_time'] ? 'paid' : 'pending'
         }
       end
     end

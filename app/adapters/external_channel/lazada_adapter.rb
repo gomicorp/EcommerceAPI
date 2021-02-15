@@ -233,7 +233,7 @@ module ExternalChannel
     def refine_orders(records)
       @order_status ||= %w[unpaid pending canceled failed]
       @canceled_status ||= %w[canceled]
-      @shipping_status ||= %w[ready_to_ship delivered returned shipped]
+      @shipping_status ||= %w[ready_to_ship delivered returned shipped INFO_ST_DOMESTIC_RETURN_WITH_LAST_MILE_3PL]
       order_property = []
 
       records.each do |record|
@@ -252,6 +252,7 @@ module ExternalChannel
             cancelled_status: canceled_status.include?(order_item['status']) ? order_item['status'] : nil,
             variant_ids: [[order_item['sku'].to_s, 1, order_item['item_price'].to_i]],
             shipping_status: shipping_status.include?(order_item['status']) ? order_item['status'] : nil,
+            payment_status: paid_at(call_ovo_order(record['order_id'])) ? 'paid' : 'pending'
           }
         end
       end if records.present?
