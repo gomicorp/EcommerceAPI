@@ -118,6 +118,18 @@ module ExternalChannel
       end
     end
 
+    def call_order_detail(id)
+      url = URI("#{base_url}/api/partner/salesorder/#{id}")
+      header = {
+        'Authorization': "bearer #{token.auth_token}",
+        'Content-Type': 'application/json',
+        'cache-control': 'no-cache'
+      }
+
+      response = request_get(url, {}, header)
+      response['result']
+    end
+
     # == call_XXX 로 가져온 레코드를 정제합니다.
     def refine_products(products)
       products.map do |product|
@@ -143,7 +155,7 @@ module ExternalChannel
           variant_ids: sales_details.map { |option| [ option['sku'], option['quantity'].to_i, option['price'].to_i ] },
           order_status: map_order_status(sales_data['order_status']),
           cancelled_status: cancelled_status(sales_data['order_status']),
-          shipping_status: shipping_status(sales_data['order_status']),
+          shipping_status: call_order_detail(sales_data['order_number'])['sales_order']['delivery_status'],
           pay_method: map_pay_method(sales_data['payment_method']),
           paid_at: paid_at(sales_data),
           channel: 'sendo',
