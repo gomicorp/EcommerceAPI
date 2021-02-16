@@ -37,6 +37,8 @@ module ExternalChannel
       @default_headers = {
         'Content-Type': 'application/json'
       }
+
+      login
     end
 
     protected

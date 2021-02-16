@@ -56,6 +56,8 @@ module ExternalChannel
 
       @app_key = Rails.application.credentials.dig(:lazada, :api, :app_key)
       @app_secret = Rails.application.credentials.dig(:lazada, :api, :app_secret)
+
+      get_code
     end
 
     def set_code(params)
