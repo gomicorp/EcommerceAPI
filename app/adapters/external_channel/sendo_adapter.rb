@@ -128,7 +128,7 @@ module ExternalChannel
       }
 
       response = request_get(url, {}, header)
-      response['result']
+      JSON.parse response.body
     end
 
     # == call_XXX 로 가져온 레코드를 정제합니다.
@@ -156,7 +156,7 @@ module ExternalChannel
           variant_ids: sales_details.map { |option| [ option['sku'], option['quantity'].to_i, option['price'].to_i ] },
           order_status: map_order_status(sales_data['order_status']),
           cancelled_status: cancelled_status(sales_data['order_status']),
-          shipping_status: call_order_detail(sales_data['order_number'])['sales_order']['delivery_status'],
+          shipping_status: call_order_detail(sales_data['order_number']).dig('result', 'sales_order', 'delivery_status') || nil,
           pay_method: map_pay_method(sales_data['payment_method']),
           paid_at: paid_at(sales_data),
           channel: 'sendo',
