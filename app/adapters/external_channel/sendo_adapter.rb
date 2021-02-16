@@ -37,14 +37,13 @@ module ExternalChannel
       @default_headers = {
         'Content-Type': 'application/json'
       }
-
-      login
     end
 
     protected
 
     def check_token_validation
-      login if !token.auth_token || @token.auth_token_expired?
+      login
+      # login if !token.auth_token || @token.auth_token_expired?
     end
 
     # == 적절하게 정제된 데이터를 리턴합니다.

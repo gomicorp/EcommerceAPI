@@ -56,8 +56,6 @@ module ExternalChannel
 
       @app_key = Rails.application.credentials.dig(:lazada, :api, :app_key)
       @app_secret = Rails.application.credentials.dig(:lazada, :api, :app_secret)
-
-      get_code
     end
 
     def set_code(params)
@@ -133,13 +131,14 @@ module ExternalChannel
     end
 
     def check_token_validation
-      if !token.access_token || token.access_token_expired?
-        if !token.refresh_token || token.refresh_token_expired?
-          get_code
-        else
-          refreshing_token
-        end
-      end
+      get_code
+      # if !token.access_token || token.access_token_expired?
+      #   if !token.refresh_token || token.refresh_token_expired?
+      #     get_code
+      #   else
+      #     refreshing_token
+      #   end
+      # end
     end
 
     public
