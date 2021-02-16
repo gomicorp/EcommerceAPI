@@ -25,6 +25,7 @@
 #  fk_rails_...  (country_id => countries.id)
 #
 class Brand < NationRecord
+  resourcify
   include Translatable
   include Approvable
   extend_has_one_attached :logo

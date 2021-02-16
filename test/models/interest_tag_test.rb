@@ -4,7 +4,7 @@
 #
 #  id         :bigint           not null, primary key
 #  created_by :string(255)
-#  name       :string(255)
+#  name       :json
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  country_id :bigint

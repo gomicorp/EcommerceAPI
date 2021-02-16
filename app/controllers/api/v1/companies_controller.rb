@@ -1,14 +1,14 @@
 module Api
   module V1
     class CompaniesController < BaseController
-      before_action :authenticate_request!
+      before_action :authenticate_request!, only: %i[create update destroy]
       before_action :set_company, only: %i[show update destroy]
 
       # GET /companies
       def index
         @companies = decorator_class.decorate_collection(Company.all)
 
-        render json: @companies
+        render json: @companies, status: :ok
       end
 
       # GET /companies/1
@@ -21,7 +21,7 @@ module Api
         @company = Company.new(company_params)
 
         if @company.save
-          render json: @company
+          render json: @company, status: :created
         else
           render json: @company.errors, status: :unprocessable_entity
         end

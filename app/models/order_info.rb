@@ -97,7 +97,7 @@ class OrderInfo < NationRecord
   end
 
   def quantity
-    cart.items.sum(:barcode_count)
+    cart.items.sum(:entity_count)
   end
 
   def update_status(status=nil)
