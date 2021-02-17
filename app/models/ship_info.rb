@@ -63,7 +63,7 @@ class ShipInfo < ApplicationRecord
   validates_presence_of :loc_state, :loc_city, :loc_detail
 
   scope :order_status, ->(status_name) { includes(:order_info).where(order_info: OrderInfo.stage_in(status_name)) }
-  scope :auto_trackable, -> { where(carrier_code: self.class::CARRIERS.filter { |_k, v| v[:trackable] }.keys) }
+  scope :auto_trackable, -> { where(carrier_code: CARRIERS.filter { |_k, v| v[:trackable] }.keys) }
 
   def self.available_status
     STATUS
