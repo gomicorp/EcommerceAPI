@@ -52,7 +52,8 @@ module ExternalChannel
           tracking_company_code: order[:tracking_company_code],
           confirmed_status: order[:confirmed_status],
           source_name: order[:source_name],
-          delivered_at: order[:delivered_at]
+          delivered_at: order[:delivered_at],
+          payment_status: order[:payment_status]
         }
       end
     end

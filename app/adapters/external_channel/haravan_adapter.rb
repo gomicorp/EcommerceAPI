@@ -143,7 +143,8 @@ module ExternalChannel
           tracking_company_code: record['fulfillments'].any? ? record['fulfillments'][0]['tracking_company_code'] : nil,
           confirmed_status: record['confirmed_status'],
           source_name: record['source_name'],
-          delivered_at: record['fulfillments'].any? ? record['fulfillments'][0]['delivered_date'] : nil
+          delivered_at: record['fulfillments'].any? ? record['fulfillments'][0]['delivered_date'] : nil,
+          payment_status: record['financial_status']
         }
       end
 
