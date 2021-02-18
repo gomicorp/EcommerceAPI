@@ -90,6 +90,13 @@ module ExternalChannel
       call_all(endpoint, query_hash)
     end
 
+    def call_v1_orders_detail(id)
+      endpoint = "https://api.tiki.vn/integration/v1/orders/#{id}"
+
+      response = request_get(endpoint, {}, default_headers)
+      JSON.parse response.body
+    end
+
     # == call_XXX 로 가져온 레코드를 정제합니다.
     def refine_products(records)
       product_property = []
@@ -130,8 +137,8 @@ module ExternalChannel
             ship_fee: record['invoice']['shipping_amount_after_discount'],
             variant_ids: record['items'].map{ |variant| [variant['product']['id'], variant['invoice']['quantity'].to_i, variant['invoice']['price'].to_i ] },
             cancelled_status: record['cancel_info'],
-            shipping_status: record['shipping']['status'],
-            row_data: record.to_json
+            shipping_status: record['status'],
+            delivered_at: call_v1_orders_detail(record['code']).dig('delivery_confirmed_at')
         }
       end
 
