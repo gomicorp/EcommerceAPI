@@ -243,7 +243,7 @@ module ExternalChannel
             id: "#{record['order_id']}-#{index}",
             order_number: record['order_number'],
             receiver_name: receiver_name(record),
-            order_status: order_status.include?(order_item['status']) ? order_item['status'] : nil,
+            order_status: order_item['status'],
             pay_method: record['payment_method'],
             channel: 'Lazada',
             ordered_at: record['created_at'].to_time.getutc,
