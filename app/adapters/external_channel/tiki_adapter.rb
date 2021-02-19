@@ -136,7 +136,7 @@ module ExternalChannel
             billing_amount: record['invoice']['total_seller_income'],
             ship_fee: record['invoice']['shipping_amount_after_discount'],
             variant_ids: record['items'].map{ |variant| [variant['product']['id'], variant['invoice']['quantity'].to_i, variant['invoice']['price'].to_i ] },
-            cancelled_status: record['cancel_info'],
+            cancelled_status: record['cancel_info'] ? 'cancelled' : nil,
             shipping_status: record['status'],
             delivered_at: call_v1_orders_detail(record['code']).dig('delivery_confirmed_at')
         }
