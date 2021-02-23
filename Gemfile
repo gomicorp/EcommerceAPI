@@ -3,6 +3,8 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.3'
 
+gem 'friendly_id'
+
 # gem 'haravan_api', git: 'https://github.com/Haravan/haravan_api.git'
 gem 'lazop_api_client', git: 'https://github.com/kfit-dev/lazop-api-client'
 
@@ -25,14 +27,21 @@ gem 'omise'
 gem 'iamport'
 gem 'rack-cors'
 gem 'rails-file_storage', git: 'https://github.com/yhk1038/file_storage.git'
+gem 'draper'
 
 # 회원인증 및 권한설정을 위한 젬
+gem 'cancancan' # 권한설정
+# 회원가입 및 인증
+# 21년 1월 27일 현재, devise 젬 자체적으로 릴리즈에 문제가 있어 오류가 발생합니다.
+# 스택오버플로우를 참고하여 devise젬 메인테이너가 제공하는 임시 해결법을 적용했습니다.
+# https://stackoverflow.com/questions/65702896/latest-omniauth-facebook-gem-breaks-devise (feat: lucas)
 gem 'authority' # 권한설정
-gem 'devise' # 회원가입 및 인증
+gem 'devise', github: 'heartcombo/devise', branch: 'ca-omniauth-2'
 gem 'devise-jwt' # jwt 사용
 gem 'jwt'
 gem 'letter_opener', group: :development # 개발 모드에서 이메일을 보내지 않고 브라우저에서 미리보기하는 젬
 gem 'mailgun-ruby'
+gem 'omniauth'
 gem 'omniauth-facebook' # 페이스북 로그인
 gem 'rolify' # role 관리
 
@@ -83,6 +92,8 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'faker'
   gem 'annotate'
+  # rails 단위 테스트, rswag 에 종속
+  gem 'rspec-rails', '~> 3.5'
 end
 
 group :development do
@@ -106,3 +117,12 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # sprocket version downgrade
 gem 'sprockets', '3.7.2'
+
+# Generate beautiful API documentation
+gem 'rswag'
+gem 'rspec'
+
+gem 'faker'
+gem 'simplecov', require: false, group: :test
+gem 'rails-controller-testing', group: :test
+# gem 'coveralls', require: false

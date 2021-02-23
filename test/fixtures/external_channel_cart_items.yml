@@ -16,6 +16,7 @@
 #  ec_cart_items_on_ec_order_info_id                       (order_info_id)
 #  index_external_channel_cart_items_on_country_id         (country_id)
 #  index_external_channel_cart_items_on_product_option_id  (product_option_id)
+#  order_info_product_option                               (order_info_id,product_option_id)
 #
 # Foreign Keys
 #

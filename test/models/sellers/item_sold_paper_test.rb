@@ -4,7 +4,6 @@
 #
 #  id              :bigint           not null, primary key
 #  adjusted_profit :integer          default(0)
-#  ordered         :boolean          default(FALSE)
 #  paid            :boolean          default(FALSE)
 #  paid_at         :datetime
 #  created_at      :datetime         not null

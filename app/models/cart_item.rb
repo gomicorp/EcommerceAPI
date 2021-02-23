@@ -5,7 +5,6 @@
 # Table name: cart_items
 #
 #  id                                 :bigint           not null, primary key
-#  barcode_count                      :integer          default(0), not null
 #  captured                           :boolean          default(FALSE), not null
 #  captured_additional_price          :integer          default(0), not null
 #  captured_base_price                :integer          default(0), not null
@@ -15,6 +14,7 @@
 #  captured_seller_shipping           :boolean
 #  captured_seller_warehouse_key      :string(255)
 #  captured_seller_warehouse_ship_fee :integer
+#  entity_count                       :integer          default(0), not null
 #  option_count                       :integer          default(0), not null
 #  created_at                         :datetime         not null
 #  updated_at                         :datetime         not null
@@ -51,8 +51,8 @@ class CartItem < ApplicationRecord
   delegate :unit_count, to: :product_option
   has_many :bridges, through: :product_option
 
-  has_many :cart_item_barcodes, dependent: :destroy
-  has_many :product_item_barcodes, class_name: 'ProductItemBarcode', through: :cart_item_barcodes
+  has_many :cart_item_entities, dependent: :destroy
+  has_many :product_item_entities, class_name: 'ProductItemEntity', through: :cart_item_entities
   has_one :cancelled_tag, class_name: 'CartItemCancelledTag'
 
   has_one :order_info, through: :cart
@@ -138,10 +138,10 @@ class CartItem < ApplicationRecord
   end
 
   def should_expired?
-    barcode_items = []
-    product_item_barcodes.each { |barcode| barcode_items << barcode.product_item }
+    entity_items = []
+    product_item_entities.each { |entity| entity_items << entity.product_item }
     bridge_items = product_option.bridges.map(&:items) * option_count
-    return true if barcode_items.flatten.pluck(:id).sort != bridge_items.flatten.pluck(:id).sort
+    return true if entity_items.flatten.pluck(:id).sort != bridge_items.flatten.pluck(:id).sort
     return true if ProductOption.where(id: product_option_id).empty?
     return true unless product_option.is_active?
     return true if updated_at < 3.days.ago
@@ -151,7 +151,7 @@ class CartItem < ApplicationRecord
 
   def expire!
     ActiveRecord::Base.transaction do
-      product_item_barcodes.map(&:disexpire!)
+      product_item_entities.map(&:disexpire!)
       destroy
     end
   end

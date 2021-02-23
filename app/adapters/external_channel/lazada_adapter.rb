@@ -5,7 +5,7 @@ module ExternalChannel
 
     include Rails.application.routes.url_helpers
 
-    attr_reader :code, :token, :app_key, :app_secret
+    attr_reader :code, :token, :app_key, :app_secret, :order_status, :canceled_status, :shipping_status
 
     # === 사용 가능한 PRODUCT query property (공식 API 문서 기준이고, 변경될 가능성이 있습니다)
     # https://open.lazada.com/doc/api.htm?spm=a2o9m.11193494.0.0.c55f266b3DH77F#/api?cid=5&path=/products/get
@@ -50,8 +50,9 @@ module ExternalChannel
 
     def initialize
       super
-      @token = ExternalChannel::Token.find_or_create_by(country: Country.send(ApplicationRecord.country_code),
-                                                      channel: Channel.find_by(name: 'Lazada'))
+      cur_country = Country.send(ApplicationRecord.country_code)
+      @token = ExternalChannel::Token.find_or_create_by(country: cur_country,
+                                                        channel: Channel.find_by(country: cur_country, name: 'Lazada'))
 
       @app_key = Rails.application.credentials.dig(:lazada, :api, :app_key)
       @app_secret = Rails.application.credentials.dig(:lazada, :api, :app_secret)
@@ -130,13 +131,14 @@ module ExternalChannel
     end
 
     def check_token_validation
-      if !token.access_token || token.access_token_expired?
-        if !token.refresh_token || token.refresh_token_expired?
-          get_code
-        else
-          refreshing_token
-        end
-      end
+      get_code
+      # if !token.access_token || token.access_token_expired?
+      #   if !token.refresh_token || token.refresh_token_expired?
+      #     get_code
+      #   else
+      #     refreshing_token
+      #   end
+      # end
     end
 
     public
@@ -177,6 +179,11 @@ module ExternalChannel
     def call_order_items(order_id)
       response = request_get('/order/items/get', { order_id: order_id })
       response.body['data']
+    end
+
+    def call_ovo_order(order_id)
+      response = request_get('/orders/ovo/get', { tradeOrderIds: order_id })
+      response.body['result']
     end
 
     def request_get(endpoint, params)
@@ -225,6 +232,9 @@ module ExternalChannel
     # = canceled_status : [canceled]
     # = shipping_status : [ready_to_ship, delivered, returned, shipped]
     def refine_orders(records)
+      @order_status ||= %w[unpaid pending canceled failed]
+      @canceled_status ||= %w[canceled]
+      @shipping_status ||= %w[ready_to_ship delivered returned shipped INFO_ST_DOMESTIC_RETURN_WITH_LAST_MILE_3PL]
       order_property = []
 
       records.each do |record|
@@ -232,22 +242,48 @@ module ExternalChannel
           order_property << {
             id: "#{record['order_id']}-#{index}",
             order_number: record['order_number'],
+            receiver_name: receiver_name(record),
             order_status: order_item['status'],
             pay_method: record['payment_method'],
             channel: 'Lazada',
             ordered_at: record['created_at'].to_time.getutc,
-            paid_at: nil,
+            paid_at: paid_at(call_ovo_order(record['order_id'])),
             billing_amount: record['price'].to_i + record['shipping_fee'],
             ship_fee: record['shipping_fee'],
-            cancelled_status: ['cancelled'].include?(order_item['status']) ? order_item['status'] : nil,
+            cancelled_status: canceled_status.include?(order_item['status']) ? order_item['status'] : nil,
             variant_ids: [[order_item['sku'].to_s, 1, order_item['item_price'].to_i]],
-            shipping_status: %w[ready_to_ship, delivered, shipped returned].include?(record['statuses']) ? order_item['status'] : nil,
-            row_data: record.to_json
+            shipping_status: order_item['status'] ? order_item['status'] : nil,
+            payment_status: paid_at(call_ovo_order(record['order_id'])) ? 'paid' : 'pending'
           }
         end
       end if records.present?
 
       order_property
+    end
+
+    def receiver_name(record)
+      if record['address_shipping'].any?
+        first_name = record['address_shipping']['first_name']
+        last_name = record['address_shipping']['last_name']
+
+        if first_name && last_name
+          first_name + " " + last_name
+        elsif first_name
+          first_name
+        elsif last_name
+          last_name
+        end
+      else
+        ""
+      end
+    end
+
+    def paid_at(ovo_order)
+      if ovo_order['tradeOrders'].any? && ovo_order['tradeOrders'][0]['paidTime']
+        ovo_order['tradeOrders'][0]['paidTime'].to_time.getutc
+      else
+        nil
+      end
     end
   end
 end

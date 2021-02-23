@@ -42,7 +42,8 @@ module ExternalChannel
     protected
 
     def check_token_validation
-      login if !token.auth_token || @token.auth_token_expired?
+      login
+      # login if !token.auth_token || @token.auth_token_expired?
     end
 
     # == 적절하게 정제된 데이터를 리턴합니다.
@@ -118,6 +119,18 @@ module ExternalChannel
       end
     end
 
+    def call_order_detail(id)
+      url = URI("#{base_url}/api/partner/salesorder/#{id}")
+      header = {
+        'Authorization': "bearer #{token.auth_token}",
+        'Content-Type': 'application/json',
+        'cache-control': 'no-cache'
+      }
+
+      response = request_get(url, {}, header)
+      JSON.parse response.body
+    end
+
     # == call_XXX 로 가져온 레코드를 정제합니다.
     def refine_products(products)
       products.map do |product|
@@ -138,17 +151,18 @@ module ExternalChannel
         {
           id: sales_data['order_number'].to_s,
           order_number: sales_data['order_number'],
+          receiver_name: sales_data['receiver_name'] || "",
           billing_amount: sales_data['total_amount_buyer'],
           variant_ids: sales_details.map { |option| [ option['sku'], option['quantity'].to_i, option['price'].to_i ] },
           order_status: map_order_status(sales_data['order_status']),
           cancelled_status: cancelled_status(sales_data['order_status']),
-          shipping_status: shipping_status(sales_data['order_status']),
+          shipping_status: call_order_detail(sales_data['order_number']).dig('result', 'sales_order', 'delivery_status') || nil,
           pay_method: map_pay_method(sales_data['payment_method']),
           paid_at: paid_at(sales_data),
           channel: 'sendo',
           ordered_at: Time.at(sales_data['order_date_time_stamp']).getutc,
           ship_fee: sales_data['total_amount_buyer'] - sales_data['total_amount'],
-          row_data: order.to_json
+          payment_status: sales_data['payment_status']
         }
       end
     end

@@ -90,6 +90,13 @@ module ExternalChannel
       call_all(endpoint, query_hash)
     end
 
+    def call_v1_orders_detail(id)
+      endpoint = "https://api.tiki.vn/integration/v1/orders/#{id}"
+
+      response = request_get(endpoint, {}, default_headers)
+      JSON.parse response.body
+    end
+
     # == call_XXX 로 가져온 레코드를 정제합니다.
     def refine_products(records)
       product_property = []
@@ -120,6 +127,7 @@ module ExternalChannel
         order_property << {
             id: record['code'],
             order_number: record['code'],
+            receiver_name: receiver_name(record),
             order_status: record['status'],
             pay_method: record['payment']['method'],
             channel: 'Tiki',
@@ -128,9 +136,9 @@ module ExternalChannel
             billing_amount: record['invoice']['total_seller_income'],
             ship_fee: record['invoice']['shipping_amount_after_discount'],
             variant_ids: record['items'].map{ |variant| [variant['product']['id'], variant['invoice']['quantity'].to_i, variant['invoice']['price'].to_i ] },
-            cancelled_status: record['cancel_info'],
-            shipping_status: record['shipping']['status'],
-            row_data: record.to_json
+            cancelled_status: record['cancel_info'] ? 'cancelled' : nil,
+            shipping_status: record['status'],
+            delivered_at: call_v1_orders_detail(record['code']).dig('delivery_confirmed_at')
         }
       end
 
@@ -155,6 +163,14 @@ module ExternalChannel
         query_hash[:page] += 1
       end
       dataset.flatten
+    end
+
+    def receiver_name(record)
+      if record['shipping'].any? && record['shipping']['address'].any?
+        record['shipping']['address']['full_name']
+      else
+        ""
+      end
     end
   end
 end
