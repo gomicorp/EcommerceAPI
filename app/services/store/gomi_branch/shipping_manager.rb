@@ -32,13 +32,13 @@ module Store
 
             # 처음 업로드 하는 거라면
             if create_context_for_tracking_number?(ship_info_params)
-              ship_info.update(tracking_number: ship_info_params[:tracking_number])
+              ship_info.update(tracking_number: ship_info_params[:tracking_number], carrier_code: ship_info_params[:carrier_code])
 
               # 배송 중인 상태로 넘겨줍니다.
               change_status 'ship_ing'
             else
               # 트래킹 정보를 업데이트 해즙니다.
-              Shipping::Tracking.update(ship_info_params[:tracking_number], ship_info.carrier_code)
+              Shipping::Tracking.update(ship_info_params[:tracking_number], ship_info.carrier_code) if ship_info.trackable?
             end
           end
 
@@ -57,18 +57,6 @@ module Store
       # ship_info에 따른 배송 추적을 세팅합니다.
       def output!(order_info_or_ship_info = nil)
         OutputService.new(order_info_or_ship_info || ship_info).call
-      end
-
-      # 배송 상태를 api에서 추적하여 최신화 합니다.
-      def update_tracking_info(ship_infos = nil)
-        ship_infos ||= [@ship_info]
-        ship_infos.each do |ship_info|
-          @ship_info = ship_info
-          carrier_code = ship_info.carrier_code
-          tracking_number = ship_info.tracking_number
-          tracking_status_code = Shipping::Tracking.find(tracking_number, carrier_code).tag
-          change_status('ship_complete') if DELIVERY_COMPLETE_CODE.include? tracking_status_code
-        end
       end
 
       # void 배송 매니저는 주문이 배송 나간 뒤 취소된 경우에,
