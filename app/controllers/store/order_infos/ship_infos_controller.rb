@@ -53,20 +53,6 @@ module Store
         end
       end
 
-      # [Hooks] batch process end-point
-      # by. 젠킨스 아저씨
-      #
-      # path => track_store_order_info_ship_info_path
-      # PATCH /store/order_infos/0/ship_info/track
-      def track
-        ship_infos = ShipInfo.where(current_status: ShipInfo::StatusLog.where(code: 'ship_ing'))
-        agent = Store::GomiBranch::ShippingManager.new
-        if agent.update_tracking_info ship_infos.auto_trackable
-          render :show, status: :ok
-        else
-          render json: agent.errors, status: :not_modified
-        end
-      end
 
       private
 
