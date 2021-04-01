@@ -12,6 +12,7 @@
 #  ordered_at                :datetime
 #  paid_at                   :datetime
 #  pay_method                :string(255)
+#  payment_status            :string(255)
 #  receiver_name             :string(255)
 #  row_data                  :text(65535)
 #  ship_fee                  :integer
@@ -26,11 +27,13 @@
 #
 # Indexes
 #
-#  ex_order_info_channel                             (channel)
-#  ex_order_info_ex_o_id                             (external_channel_order_id)
-#  ex_order_info_o_id_c_id                           (external_channel_order_id,country_id)
-#  ex_order_info_o_id_channel                        (external_channel_order_id,channel)
-#  index_external_channel_order_infos_on_country_id  (country_id)
+#  ex_order_info_channel                                            (channel)
+#  ex_order_info_ex_o_id                                            (external_channel_order_id)
+#  ex_order_info_o_id_c_id                                          (external_channel_order_id,country_id)
+#  ex_order_info_o_id_channel                                       (external_channel_order_id,channel)
+#  index_external_channel_order_infos_on_channel                    (channel)
+#  index_external_channel_order_infos_on_country_id                 (country_id)
+#  index_external_channel_order_infos_on_external_channel_order_id  (external_channel_order_id)
 #
 # Foreign Keys
 #
