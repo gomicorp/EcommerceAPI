@@ -1,12 +1,13 @@
 # == Schema Information
 #
-# Table name: promotion_events
+# Table name: store_promotion_events
 #
 #  id               :bigint           not null, primary key
 #  background_color :string(255)      default("#333333"), not null
 #  expired_at       :datetime         not null
 #  href             :string(255)      default("")
 #  published_at     :datetime         not null
+#  slug             :string(255)
 #  title            :string(255)      not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
@@ -14,7 +15,8 @@
 #
 # Indexes
 #
-#  index_promotion_events_on_country_id  (country_id)
+#  index_store_promotion_events_on_country_id  (country_id)
+#  index_store_promotion_events_on_slug        (slug) UNIQUE
 #
 # Foreign Keys
 #
