@@ -2,17 +2,18 @@
 #
 # Table name: stock_invoices
 #
-#  id            :bigint           not null, primary key
-#  comment       :text(65535)
-#  confirmed_at  :datetime
-#  destination   :string(255)
-#  from          :string(255)
-#  invoice_type  :string(255)
-#  requested_at  :datetime
-#  serial_number :string(255)
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  country_id    :bigint
+#  id             :bigint           not null, primary key
+#  comment        :text(65535)
+#  confirmed_at   :datetime
+#  destination    :string(255)
+#  from           :string(255)
+#  invoice_type   :string(255)
+#  requested_at   :datetime
+#  serial_number  :string(255)
+#  will_arrive_at :datetime
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  country_id     :bigint
 #
 # Indexes
 #
