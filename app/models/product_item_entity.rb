@@ -3,6 +3,7 @@
 # Table name: product_item_entities
 #
 #  id              :bigint           not null, primary key
+#  deleted_at      :datetime
 #  expired_at      :datetime
 #  leaved_at       :datetime
 #  created_at      :datetime         not null
@@ -11,6 +12,7 @@
 #
 # Indexes
 #
+#  index_product_item_entities_on_deleted_at       (deleted_at)
 #  index_product_item_entities_on_product_item_id  (product_item_id)
 #
 # Foreign Keys
@@ -19,6 +21,7 @@
 #
 class ProductItemEntity < ApplicationRecord
   has_not_paper_trail
+  acts_as_paranoid
 
   belongs_to :product_item, counter_cache: :entities_count
   # belongs_to :product_option_bridge

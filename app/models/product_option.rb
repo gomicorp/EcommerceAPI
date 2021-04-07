@@ -6,6 +6,7 @@
 #  additional_price                 :integer          default(0), not null
 #  base_price                       :integer          default(0), not null
 #  channel_code                     :string(255)
+#  deleted_at                       :datetime
 #  discount_amount                  :float(24)        default(0.0), not null
 #  discount_price                   :integer          default(0), not null
 #  discount_type                    :integer          default("no"), not null
@@ -25,6 +26,7 @@
 # Indexes
 #
 #  index_product_options_on_channel_id               (channel_id)
+#  index_product_options_on_deleted_at               (deleted_at)
 #  index_product_options_on_product_option_group_id  (product_option_group_id)
 #
 # Foreign Keys
@@ -33,6 +35,8 @@
 #
 class ProductOption < ApplicationRecord
   include ChannelRecordable
+  acts_as_paranoid
+
   belongs_to :option_group, class_name: 'ProductOptionGroup', foreign_key: :product_option_group_id
   has_many :barcode_options
   has_many :barcodes, through: :barcode_options

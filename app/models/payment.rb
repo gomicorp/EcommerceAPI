@@ -4,7 +4,7 @@
 #
 #  id                    :bigint           not null, primary key
 #  amount                :integer
-#  cancel_message        :text(16777215)
+#  cancel_message        :text(65535)
 #  cancelled             :boolean          default(FALSE), not null
 #  delivery_amount       :integer
 #  expire_at             :datetime
