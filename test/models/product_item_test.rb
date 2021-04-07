@@ -6,6 +6,7 @@
 #  active                     :boolean          default(FALSE), not null
 #  alive_entities_count       :integer          default(0), not null
 #  cost_price                 :integer          default(0), not null
+#  deleted_at                 :datetime
 #  entities_count             :integer          default(0), not null
 #  gomi_standard_product_code :string(255)      not null
 #  name                       :string(255)
@@ -19,6 +20,7 @@
 # Indexes
 #
 #  index_product_items_on_country_id                  (country_id)
+#  index_product_items_on_deleted_at                  (deleted_at)
 #  index_product_items_on_gomi_standard_product_code  (gomi_standard_product_code) UNIQUE
 #  index_product_items_on_item_group_id               (item_group_id)
 #

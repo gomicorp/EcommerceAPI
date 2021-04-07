@@ -3,7 +3,11 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.3'
 
+## => for models
+# for slug
 gem 'friendly_id'
+# for soft deletion
+gem 'paranoia'
 
 # gem 'haravan_api', git: 'https://github.com/Haravan/haravan_api.git'
 gem 'lazop_api_client', git: 'https://github.com/kfit-dev/lazop-api-client'
