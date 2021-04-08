@@ -5,6 +5,7 @@
 #  id                         :bigint           not null, primary key
 #  active                     :boolean          default(FALSE), not null
 #  cost_price                 :integer          default(0), not null
+#  deleted_at                 :datetime
 #  gomi_standard_product_code :string(255)      not null
 #  name                       :string(255)
 #  selling_price              :integer          default(0), not null
@@ -15,6 +16,7 @@
 # Indexes
 #
 #  index_product_collections_on_country_id                  (country_id)
+#  index_product_collections_on_deleted_at                  (deleted_at)
 #  index_product_collections_on_gomi_standard_product_code  (gomi_standard_product_code) UNIQUE
 #
 # Foreign Keys
@@ -23,6 +25,7 @@
 #
 class ProductCollection < NationRecord
   include UseGomiStandardProductCode
+  acts_as_paranoid
 
   has_many :elements, class_name: 'ProductCollectionElement'
   has_many :items, class_name: 'ProductItem', through: :elements, source: :product_item
