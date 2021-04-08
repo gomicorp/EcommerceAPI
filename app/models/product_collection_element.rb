@@ -4,6 +4,7 @@
 #
 #  id                    :bigint           not null, primary key
 #  amount                :integer
+#  deleted_at            :datetime
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  product_collection_id :bigint           not null
@@ -11,6 +12,7 @@
 #
 # Indexes
 #
+#  index_product_collection_elements_on_deleted_at             (deleted_at)
 #  index_product_collection_elements_on_product_collection_id  (product_collection_id)
 #  index_product_collection_elements_on_product_item_id        (product_item_id)
 #
@@ -20,6 +22,8 @@
 #  fk_rails_...  (product_item_id => product_items.id)
 #
 class ProductCollectionElement < ApplicationRecord
+  acts_as_paranoid
+
   belongs_to :product_item
   belongs_to :collection, class_name: 'ProductCollection', foreign_key: :product_collection_id
 
