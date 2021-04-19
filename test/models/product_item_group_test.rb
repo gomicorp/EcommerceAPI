@@ -3,6 +3,7 @@
 # Table name: product_item_groups
 #
 #  id         :bigint           not null, primary key
+#  deleted_at :datetime
 #  name       :string(255)
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
@@ -13,6 +14,7 @@
 #
 #  index_product_item_groups_on_brand_id    (brand_id)
 #  index_product_item_groups_on_country_id  (country_id)
+#  index_product_item_groups_on_deleted_at  (deleted_at)
 #
 # Foreign Keys
 #
