@@ -16,6 +16,19 @@ module ViewTableBuilder
     execute @builder.build_drop_query
   end
 
+  # @param
+  # value1: {table: :table_name, column: :column_name}
+  # value2: {table: :table_name, column: :column_name}
+  def equal(value1, value2)
+    "#{value1[:table]}.#{value1[:column]} = #{value2[:table]}.#{value2[:column]}"
+  end
+
+  # @param
+  # value: {table: :table_name, column: :column_name}
+  def null(value)
+    "#{value[:table]}.#{value[:column]} IS NULL"
+  end
+
 
   class ViewBuilder
     attr_reader :table_name
@@ -71,14 +84,14 @@ module ViewTableBuilder
 
       conditions.map.with_index do |v, i|
         clause << "\nAND " if i > 0
-        clause << compile_condition_clause(v)
+        clause << v
       end
 
       inner_join_stack << clause
     end
 
     def where(condition)
-      where_stack << compile_condition_clause(condition)
+      where_stack << condition
     end
 
     def group_by(clause)
@@ -155,19 +168,5 @@ module ViewTableBuilder
       arr.map(&:presence).compact.map(&:to_s).join(sep)
     end
 
-
-    protected
-
-    def compile_condition_clause(clause)
-      s = ""
-      clause.map do |k, v|
-        s << "#{k}.#{v} "
-      end
-      if clause.size == 1
-        s << "IS NULL"
-      else
-        s.split(" ").join(" = ")
-      end
-    end
   end
 end
