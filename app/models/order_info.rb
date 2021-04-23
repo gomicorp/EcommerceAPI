@@ -31,6 +31,7 @@ class OrderInfo < NationRecord
   include ChannelRecordable
 
   STATUSES = %w[
+    awaiting_check_order
     pay_wait
     paid
     ship_prepare
