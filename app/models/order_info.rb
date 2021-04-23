@@ -53,6 +53,7 @@ class OrderInfo < NationRecord
   has_one :ship_info, dependent: :destroy
   has_one :payment, dependent: :destroy
   has_one :user, through: :cart
+  has_one :order_confirmation
   has_many :items, through: :cart
   has_many :product_options, through: :items, source: :product_option
   has_many :adjustments, class_name: 'Adjustment'
