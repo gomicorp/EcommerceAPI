@@ -60,8 +60,8 @@ db/data_schema.rb
 # D O C K E R
 .direnv/
 .docker-sync/
-docker/.docker_password.txt
-docker/.envs
+docker_old/.docker_password.txt
+docker_old/.envs
 
 # A U T O M I Z A T I O N
 .envrc

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# docker-sync install
+# docker_old-sync install
 gem install docker-sync
 docker-sync start
 

@@ -12,11 +12,11 @@ services:
       - ./log/nginx/staging:/opt/nginx/logs
       - ./log:/app/log
       - ./config/credentials/staging.key:/app/config/credentials/staging.key
-      - ./docker/env/staging/.env:/app/.env
-      - ./docker/bashrc/staging/.bashrc:/root/.bashrc
-      - ./docker/logrotate/staging/api:/etc/logrotate.d/api
-      - ./docker/logrotate/staging/serverlog:/etc/logrotate.d/serverlog
-      - ./docker/nginx/staging/nginx.conf:/opt/nginx/conf/nginx.conf
+      - ./docker_old/env/staging/.env:/app/.env
+      - ./docker_old/bashrc/staging/.bashrc:/root/.bashrc
+      - ./docker_old/logrotate/staging/api:/etc/logrotate.d/api
+      - ./docker_old/logrotate/staging/serverlog:/etc/logrotate.d/serverlog
+      - ./docker_old/nginx/staging/nginx.conf:/opt/nginx/conf/nginx.conf
     stdin_open: true
     tty: true
     command:

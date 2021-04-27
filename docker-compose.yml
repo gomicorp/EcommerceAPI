@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: . # docker build 명령을 실행할 폴더 경로
+      dockerfile: ./docker/app/Dockerfile
+    container_name: app_container
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    container_name: nginx_container
+    depends_on:
+      - app
+    ports:
+      - 80:80

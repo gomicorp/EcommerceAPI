@@ -14,7 +14,7 @@ rsync -avz ../.envs/${type}/.env ${endpoint}:~/${app_name}/${type}/
 #nginx config 업데이트
 rsync -avz ../nginx/${type}/nginx.conf ${endpoint}:~/${app_name}/${type}
 
-#docker-compose 업데이트
+#docker_old-compose 업데이트
 rsync -avz ../docker-compose/${type}/docker-compose.yml ${endpoint}:~/${app_name}/${type}
 
 #entrypoint 업데이트
