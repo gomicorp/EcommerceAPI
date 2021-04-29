@@ -4,7 +4,6 @@ class CreateOrderConfirmations < ActiveRecord::Migration[6.0]
       t.references :order_info, foreign_key: true, null: false
       t.integer :contact_count
       t.text :memo
-      t.string :status
 
       t.timestamps
     end

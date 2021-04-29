@@ -5,7 +5,6 @@
 #  id            :bigint           not null, primary key
 #  contact_count :integer
 #  memo          :text(65535)
-#  status        :string(255)
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  order_info_id :bigint           not null
