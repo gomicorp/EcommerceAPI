@@ -18,7 +18,7 @@
 #  index_policy_shipping_fees_on_country_id  (country_id)
 #
 class Policy::ShippingFee < NationRecord
-  after_save :set_current
+  after_create :set_current
 
   belongs_to :country
 
@@ -35,14 +35,18 @@ class Policy::ShippingFee < NationRecord
 
   def set_current
     transaction do
-      where(current: true).update_all(current: false)
+      klass = self.class
+      klass.where(current: true).update_all(current: false)
 
-      types = self.delivery_types
-      features = self.features
+      types = klass.delivery_types
+      features = klass.features
+      countries = Country.all
       types.each do |type|
         features.each do |feature|
-          policy = where(type: type, feature: feature).order(created_at: :asc).last
-          policy.update(current: true) if policy
+          countries.each do |country|
+            policy = klass.where(delivery_type: type, feature: feature, country: country).order(created_at: :asc).last
+            policy&.update(current: true)
+          end
         end
       end
     end
