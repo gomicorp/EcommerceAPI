@@ -3,7 +3,7 @@
 # Table name: order_confirmations
 #
 #  id            :bigint           not null, primary key
-#  contact_count :integer
+#  contact_count :integer          default(0)
 #  memo          :text(65535)
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
