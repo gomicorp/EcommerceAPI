@@ -43,7 +43,7 @@ class ShipInfo < ApplicationRecord
   STATUS = (FORWARD_STATUS + BACKWORD_STATUS).freeze
   act_as_status_loggable status_list: STATUS.to_echo
 
-  enum ship_type: %i[normal express bulk_express]
+  enum ship_type: %i[normal express bulk_express free]
 
   CARRIERS = {
     alphafast: { name: 'alphaFast', url: 'https://www.alphafast.com/track', trackable: true },
