@@ -32,7 +32,6 @@ class OrderInfo < NationRecord
   include ChannelRecordable
 
   STATUSES = %w[
-    awaiting_check_order
     pay_wait
     paid
     ship_prepare
@@ -54,7 +53,7 @@ class OrderInfo < NationRecord
   has_one :ship_info, dependent: :destroy
   has_one :payment, dependent: :destroy
   has_one :user, through: :cart
-  has_one :order_confirmation
+  has_one :order_confirmation, dependent: :destroy
   has_many :items, through: :cart
   has_many :product_options, through: :items, source: :product_option
   has_many :adjustments, class_name: 'Adjustment'
@@ -107,8 +106,13 @@ class OrderInfo < NationRecord
     transaction do
       payment_status = payment.current_status&.code
       shipping_status = ship_info.current_status&.code
+      order_confirmation_status = order_confirmation.current_status&.code
 
-      update(shipping_status: shipping_status, payment_status: payment_status)
+      update(
+        shipping_status: shipping_status,
+        payment_status: payment_status,
+        order_confirmation_status: order_confirmation_status
+      )
       update(status: status) unless status.nil?
     end
   end
