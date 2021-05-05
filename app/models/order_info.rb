@@ -4,6 +4,7 @@
 #
 #  id                        :bigint           not null, primary key
 #  admin_memo                :text(65535)
+#  expired_at                :datetime
 #  finished                  :boolean
 #  order_confirmation_status :string(255)
 #  ordered_at                :datetime
