@@ -13,7 +13,7 @@ class SetOrderConfirmationForExistingOrders < ActiveRecord::Migration[6.0]
     order_complete: "confirmed"
   }.freeze
 
-  INITIAL_CONFIRMATION_ATTR = {contact_count: 0, memo: 'SYSTEM :: data migration for current order.'}.freeze
+  INITIAL_CONFIRMATION_ATTR = {contact_count: 0, memo: ''}.freeze
   def up
     #==== 문제 있는 오래된 order가 발견되었습니다.
     # 2019년 7월 ~ 8월 사이 생성된 주문이고, cart에 담긴 item이 없습니다.
@@ -29,15 +29,13 @@ class SetOrderConfirmationForExistingOrders < ActiveRecord::Migration[6.0]
 
     orders = OrderInfo.all
     orders.each do |order|
-      ap "====== order #{order.id} will be confirmed by system."
       confirmation = order.build_order_confirmation(INITIAL_CONFIRMATION_ATTR)
       raise ActiveRecord::MigrationError unless confirmation.save!
 
       confirmation_status = MAP_FOR_ORDER_TO_CONFIRMATION[order.status.to_sym]
-      confirmation.update_status(confirmation_status)
+      confirmation.update_status(confirmation_status) if confirmation.current_status.nil? || confirmation.current_status.code != confirmation_status
       confirmation.reload; order.reload
       order.update_status
-      ap "Confirm process for order #{order.id} is done."
     end
   end
 
