@@ -5,11 +5,11 @@ class SetOrderConfirmationForExistingOrders < ActiveRecord::Migration[6.0]
     ship_prepare: "confirmed",
     ship_ing: "confirmed",
     ship_complete: "confirmed",
-    refund_request: "confirmed",
-    refund_reject: "confirmed",
-    refund_complete: "confirmed",
-    cancel_request: "confirmed",
-    cancel_complete: "confirmed",
+    refund_request: "canceled",
+    refund_reject: "canceled",
+    refund_complete: "canceled",
+    cancel_request: "canceled",
+    cancel_complete: "canceled",
     order_complete: "confirmed"
   }.freeze
 

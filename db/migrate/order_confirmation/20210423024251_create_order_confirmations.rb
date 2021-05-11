@@ -7,5 +7,6 @@ class CreateOrderConfirmations < ActiveRecord::Migration[6.0]
 
       t.timestamps
     end
+    execute "ALTER TABLE order_confirmations CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
   end
 end
