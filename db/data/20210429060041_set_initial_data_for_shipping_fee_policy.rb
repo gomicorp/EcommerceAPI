@@ -9,8 +9,8 @@ class SetInitialDataForShippingFeePolicy < ActiveRecord::Migration[6.0]
         {feature: 'bulk', fee: 60}
       ],
       cod: [
-        {feature: 'downtown', fee: 50},
-        {feature: 'suburb', fee: 60}
+        {feature: 'downtown', fee: 80},
+        {feature: 'suburb', fee: 90}
       ],
       free: [
         {feature: '-', fee: 0}
