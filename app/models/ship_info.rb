@@ -13,12 +13,20 @@
 #  receiver_name   :string(255)
 #  receiver_tel    :string(255)
 #  ship_amount     :integer          default(0), not null
-#  ship_type       :integer          default("normal"), not null
 #  tracking_number :string(255)
 #  user_memo       :text(65535)
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
+#  fee_policy_id   :bigint
 #  order_info_id   :integer
+#
+# Indexes
+#
+#  index_ship_infos_on_fee_policy_id  (fee_policy_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (fee_policy_id => policy_shipping_fees.id)
 #
 class ShipInfo < ApplicationRecord
 
@@ -35,7 +43,7 @@ class ShipInfo < ApplicationRecord
   STATUS = (FORWARD_STATUS + BACKWORD_STATUS).freeze
   act_as_status_loggable status_list: STATUS.to_echo
 
-  enum ship_type: %i[normal express]
+  enum ship_type: %i[normal express bulk_express free]
 
   CARRIERS = {
     alphafast: { name: 'alphaFast', url: 'https://www.alphafast.com/track', trackable: true },
@@ -55,8 +63,11 @@ class ShipInfo < ApplicationRecord
     express: 50
   }.freeze # standard on THB
 
+  DELIVERY_TYPES = %w[normal express cod free 2h]
+
   belongs_to :order_info
   has_one :user, through: :order_info
+  belongs_to :fee_policy, class_name: 'Policy::ShippingFee'
 
   validates_presence_of :order_info
   validates_presence_of :receiver_name, :receiver_tel, :receiver_email
