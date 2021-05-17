@@ -2,19 +2,21 @@
 #
 # Table name: order_infos
 #
-#  id              :bigint           not null, primary key
-#  admin_memo      :text(65535)
-#  finished        :boolean
-#  ordered_at      :datetime
-#  payment_status  :string(255)
-#  shipping_status :string(255)
-#  status          :string(255)
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  cart_id         :integer
-#  channel_id      :bigint           not null
-#  country_id      :bigint
-#  enc_id          :string(255)
+#  id                        :bigint           not null, primary key
+#  admin_memo                :text(65535)
+#  discarded_at              :datetime
+#  finished                  :boolean
+#  order_confirmation_status :string(255)
+#  ordered_at                :datetime
+#  payment_status            :string(255)
+#  shipping_status           :string(255)
+#  status                    :string(255)
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  cart_id                   :integer
+#  channel_id                :bigint           not null
+#  country_id                :bigint
+#  enc_id                    :string(255)
 #
 # Indexes
 #
@@ -52,6 +54,7 @@ class OrderInfo < NationRecord
   has_one :ship_info, dependent: :destroy
   has_one :payment, dependent: :destroy
   has_one :user, through: :cart
+  has_one :order_confirmation, dependent: :destroy
   has_many :items, through: :cart
   has_many :product_options, through: :items, source: :product_option
   has_many :adjustments, class_name: 'Adjustment'
@@ -104,8 +107,13 @@ class OrderInfo < NationRecord
     transaction do
       payment_status = payment.current_status&.code
       shipping_status = ship_info.current_status&.code
+      order_confirmation_status = order_confirmation.current_status&.code
 
-      update(shipping_status: shipping_status, payment_status: payment_status)
+      update(
+        shipping_status: shipping_status,
+        payment_status: payment_status,
+        order_confirmation_status: order_confirmation_status
+      )
       update(status: status) unless status.nil?
     end
   end
