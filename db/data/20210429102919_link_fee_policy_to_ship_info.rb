@@ -10,7 +10,7 @@ class LinkFeePolicyToShipInfo < ActiveRecord::Migration[6.0]
       far: ['normal', 'suburb'],
       free: ['free', '-']
     },
-    ko: {
+    kr: {
       normal: ['normal', '-'],
       free: ['free', '-']
     }

@@ -33,7 +33,7 @@ class SetInitialDataForShippingFeePolicy < ActiveRecord::Migration[6.0]
         {feature: '-', fee: 0}
       ]
     },
-    ko: {
+    kr: {
       normal: [
         {feature: '-', fee: 3000, default: true}
       ],
