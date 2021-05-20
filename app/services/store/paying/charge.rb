@@ -19,7 +19,7 @@ module Store
           # 결제완료 : paid
           # 결제취소 : cancelled
           # 결제실패 : failed
-          ko: {
+          kr: {
             ready: :progress,
             paid: :done,
             cancelled: :revert,
@@ -36,7 +36,7 @@ module Store
         charge_id = case @current_country
                     when :th
                       charge_info.id
-                    when :ko
+                    when :kr
                       charge_info.dig('merchant_uid')
                     else
                       nil

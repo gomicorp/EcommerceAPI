@@ -27,8 +27,12 @@ class Country < ApplicationRecord
     @vn ||= find_by(short_name: 'vn')
   end
 
-  def self.ko
-    @ko ||= find_by(short_name: 'ko')
+  def self.kr
+    @kr ||= find_by(short_name: 'kr')
+  end
+
+  def self.jp
+    @jp ||= find_by(short_name: 'jp')
   end
 
   def self.undef
@@ -57,7 +61,8 @@ class Country < ApplicationRecord
     [
       { name: 'vietnam', name_ko: '베트남', locale: 'vi', short_name: 'vn', iso_code: 'VND' },
       { name: 'thailand', name_ko: '태국', locale: 'th', short_name: 'th', iso_code: 'THB' },
-      { name: 'korea', name_ko: '한국', locale: 'ko', short_name: 'ko', iso_code: 'KRW' }
+      { name: 'korea', name_ko: '한국', locale: 'ko', short_name: 'kr', iso_code: 'KRW' },
+      { name: 'japan', name_ko: '일본', locale: 'ja', short_name: 'jp', iso_code: 'JPY' }
     ]
   end
 end

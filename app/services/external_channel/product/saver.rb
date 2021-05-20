@@ -107,7 +107,6 @@ module ExternalChannel
         no_brand = Brand.find_or_initialize_by(subtitle: NO_BRAND_NAME, company: temp_company)
         return no_brand unless no_brand.new_record?
 
-        # TODO: 지금 이름이 vn이랑 vi랑 섞여서 기록되어 있다. 확인이 필요하다.
         # 이름이 없으면 만들어 줌
         brand_title = { en: NO_BRAND_NAME, ko: NO_BRAND_NAME }
         brand_title[Country.send(ApplicationRecord.country_code).locale] = NO_BRAND_NAME

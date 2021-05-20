@@ -123,7 +123,7 @@ module Haravan
         @product = ::Product.find_or_initialize_by(haravan_id: @product_id)
         @product.assign_attributes(brand_id: @brand.id,
                                    running_status: 'pending',
-                                   title: {'vn': @title, 'en': @title, 'ko': @title},
+                                   title: {'vi': @title, 'en': @title, 'ko': @title},
                                    country: Country.vn)
         # @product.assign_attributes(title: product_data["title"].to_h)
         @product.save!
