@@ -32,7 +32,7 @@ module Store
           amount: checkout_amount,
           # 결제 유저가 결제를 마친 뒤 플랫폼으로 돌아올 uri입니다. for omise_th
           return_uri: return_uri,
-          # 결제 선등록에서 사용할 charge_id입니다. for iamport_ko
+          # 결제 선등록에서 사용할 charge_id입니다. for iamport_kr
           charge_id: gen_charge_id(order.payment)
         )
       end
@@ -74,7 +74,7 @@ module Store
         @pg ||= case ENV['APP_COUNTRY']
                 when 'th'
                   Paying::ThaiPg.new(params: params)
-                when 'ko'
+                when 'kr'
                   Paying::KoreaPg.new(params: params)
                 end
       end
