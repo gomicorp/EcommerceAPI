@@ -26,7 +26,7 @@
 #
 #  fk_rails_...  (order_info_id => order_infos.id)
 #
-class Payment < ApplicationRecord
+class Payment < NationRecord
 
   STATUS = %w[
     pay_wait
@@ -36,6 +36,22 @@ class Payment < ApplicationRecord
     refund_reject
   ].freeze
   act_as_status_loggable status_list: STATUS.to_echo
+
+  PAY_METHOD = %i[
+    bank
+    cod
+    omise
+    iamport
+    momo_pay
+    vn_pay
+  ].freeze
+
+  PAY_METHOD_VIA_PG = %i[
+    omise
+    iamport
+    momo_pay
+    vn_pay
+  ]
 
   extend_has_many_attached :pay_slips
   belongs_to :order_info
