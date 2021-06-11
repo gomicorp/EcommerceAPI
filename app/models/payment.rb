@@ -46,7 +46,7 @@ class Payment < NationRecord
     vn_pay
   ].freeze
 
-  PAY_METHOD_VIA_PG =%i[
+  PAY_METHOD_VIA_PG = %i[
     omise
     iamport
     momo_pay
