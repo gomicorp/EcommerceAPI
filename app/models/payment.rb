@@ -37,7 +37,7 @@ class Payment < NationRecord
   ].freeze
   act_as_status_loggable status_list: STATUS.to_echo
 
-  PAY_METHOD = %i[
+  PAY_METHODS = %w[
     bank
     cod
     omise
@@ -45,13 +45,14 @@ class Payment < NationRecord
     momo_pay
     vn_pay
   ].freeze
+  enum pay_method: PAY_METHODS.to_echo
 
-  PAY_METHOD_VIA_PG = %i[
+  PAY_METHODS_VIA_PG = %w[
     omise
     iamport
     momo_pay
     vn_pay
-  ]
+  ].freeze
 
   extend_has_many_attached :pay_slips
   belongs_to :order_info
