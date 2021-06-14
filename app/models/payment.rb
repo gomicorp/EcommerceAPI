@@ -16,14 +16,17 @@
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  charge_id             :string(255)
+#  country_id            :bigint
 #  order_info_id         :bigint
 #
 # Indexes
 #
+#  index_payments_on_country_id     (country_id)
 #  index_payments_on_order_info_id  (order_info_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (country_id => countries.id)
 #  fk_rails_...  (order_info_id => order_infos.id)
 #
 class Payment < NationRecord
@@ -57,6 +60,7 @@ class Payment < NationRecord
   extend_has_many_attached :pay_slips
   belongs_to :order_info
   has_one :user, through: :order_info
+  has_many :payment_charges, :class_name => 'Payment::Charge', as: :charge
 
   validates_presence_of :order_info
 
