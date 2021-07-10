@@ -38,6 +38,7 @@ class Payment < NationRecord
     refund_complete
     refund_reject
   ].freeze
+  enum status: STATUS.to_echo
   act_as_status_loggable status_list: STATUS.to_echo
 
   PAY_METHODS = %w[
