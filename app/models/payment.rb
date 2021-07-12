@@ -4,7 +4,7 @@
 #
 #  id                    :bigint           not null, primary key
 #  amount                :integer
-#  cancel_message        :text(16777215)
+#  cancel_message        :text(65535)
 #  cancelled             :boolean          default(FALSE), not null
 #  delivery_amount       :integer
 #  expire_at             :datetime
@@ -16,17 +16,20 @@
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  charge_id             :string(255)
+#  country_id            :bigint
 #  order_info_id         :bigint
 #
 # Indexes
 #
+#  index_payments_on_country_id     (country_id)
 #  index_payments_on_order_info_id  (order_info_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (country_id => countries.id)
 #  fk_rails_...  (order_info_id => order_infos.id)
 #
-class Payment < ApplicationRecord
+class Payment < NationRecord
 
   STATUS = %w[
     pay_wait
@@ -35,11 +38,30 @@ class Payment < ApplicationRecord
     refund_complete
     refund_reject
   ].freeze
+  enum status: STATUS.to_echo
   act_as_status_loggable status_list: STATUS.to_echo
+
+  PAY_METHODS = %w[
+    bank
+    cod
+    omise
+    iamport
+    momo_pay
+    vn_pay
+  ].freeze
+  enum pay_method: PAY_METHODS.to_echo
+
+  PAY_METHODS_VIA_PG = %w[
+    omise
+    iamport
+    momo_pay
+    vn_pay
+  ].freeze
 
   extend_has_many_attached :pay_slips
   belongs_to :order_info
   has_one :user, through: :order_info
+  has_many :payment_charges, :class_name => 'Payment::Charge', as: :charge
 
   validates_presence_of :order_info
 
