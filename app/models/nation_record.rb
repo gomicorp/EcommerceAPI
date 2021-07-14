@@ -7,6 +7,7 @@ class NationRecord < ApplicationRecord
   scope :vn, -> { unscoped.includes(:country).where(country: Country.vn) }
   scope :kr, -> { unscoped.includes(:country).where(country: Country.kr) }
   scope :jp, -> { unscoped.includes(:country).where(country: Country.jp) }
+  scope :cl, -> { unscoped.includes(:country).where(country: Country.cl) }
   scope :undef, -> { unscoped.includes(:country).where(country: Country.undef) }
   scope :at, ->(key) { unscoped.includes(:country).where(country: Country.at(key)) }
   scope :global, -> { unscoped.includes(:country).where(country: Country.all) }
