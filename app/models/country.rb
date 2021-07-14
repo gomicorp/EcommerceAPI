@@ -67,7 +67,7 @@ class Country < ApplicationRecord
       { name: 'thailand', name_ko: '태국', locale: 'th', short_name: 'th', iso_code: 'THB' },
       { name: 'korea', name_ko: '한국', locale: 'ko', short_name: 'kr', iso_code: 'KRW' },
       { name: 'japan', name_ko: '일본', locale: 'ja', short_name: 'jp', iso_code: 'JPY' },
-      { name: 'chile', name_ko: '칠레', locale: 'es', short_name: 'cl', iso_code: 'CHL' }
+      { name: 'chile', name_ko: '칠레', locale: 'es', short_name: 'cl', iso_code: 'CLP' }
     ]
   end
 end
