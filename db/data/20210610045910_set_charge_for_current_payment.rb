@@ -9,6 +9,7 @@ class SetChargeForCurrentPayment < ActiveRecord::Migration[6.0]
 
     # omise로 결제된 payment들을 가지고 옵니다.
     omise_payment = Payment.where(pay_method: 'omise').where.not(charge_id: [nil, '0'])
+    # omise_payment = Payment.where(pay_method: 'omise').where(id: 6561)
     total_count = omise_payment.count
     ap "#{total_count} payment will be processed."
     pending_msg = '  Create the pending charge.'.to_sym
@@ -27,45 +28,8 @@ class SetChargeForCurrentPayment < ActiveRecord::Migration[6.0]
           pg_name: pg_name,
           external_charge_id: pg_id
         }
-        # 결제 수단에 관한 정보
-        statement_resources = {}
         # omise에서 charge를 불러와서 소스를 만들고, 그게 안되면 다른 데이터로 소스를 만듭니다.
-        begin
-          # omise api에서 가져온 charge
-          omise_charge = get_omise_charge(pg_id)
-          card_info = omise_charge.card.as_json
-          statement_resources.merge!(
-            {
-              amount: omise_charge.amount,
-              pay_request_url: omise_charge.authorize_uri,
-              request_url_expire_time: 30.minutes,
-              card: {
-                card_name: card_info.dig('brand'),
-                year: card_info.dig('expiration_year'),
-                month: card_info.dig('expiration_month'),
-                id: card_info.dig('id'),
-                card_number: [card_info.dig('first_digits') || '****', ' **** **** ', card_info.dig('last_digits') || '****'].join,
-                name: card_info.dig('name')
-              }
-            }
-          )
-        rescue StandardError => e
-          statement_resources.merge!(
-            {
-              amount: payment.amount,
-              pay_request_url: 'staging.test.charge.url',
-              request_url_expire_time: 30.minutes,
-              card: {
-                card_name: 'visa',
-                year: '22',
-                month: '11',
-                id: 'test_card_id',
-                card_number: '**** **** **** ****',
-                name: 'test_name'
-              }
-            }
-          )
-        end
+        statement_resources = fetch_statement(payment, pg_id)
 
         # pending 상태의 charge가 가지는 statement를 구성합니다.
         pending_statement_keys = [:amount, :pay_request_url, :request_url_expire_time, :card]
@@ -125,6 +89,59 @@ class SetChargeForCurrentPayment < ActiveRecord::Migration[6.0]
 
   def down
     raise ActiveRecord::IrreversibleMigration
+  end
+
+  def fetch_statement(payment, pg_id, tried=1)
+    begin
+      omise_charge = get_omise_charge(pg_id)
+      build_statement_hash_from(omise_charge)
+    rescue Omise::Error => e
+      raise e if e.code != 'not_found'
+      {
+        amount: payment.amount,
+        pay_request_url: 'staging.test.charge.url',
+        request_url_expire_time: 30.minutes,
+        card: {
+          card_name: 'visa',
+          year: '22',
+          month: '11',
+          id: 'test_card_id',
+          card_number: '**** **** **** ****',
+          name: 'test_name'
+        }
+      }
+    rescue NoMethodError => e
+      wait_cool_down(tried)
+      fetch_statement(payment, pg_id, (tried + 1))
+    end
+  end
+
+  def build_statement_hash_from(omise_charge)
+    card_info = omise_charge.card.as_json
+    {
+      amount: omise_charge.amount,
+      pay_request_url: omise_charge.authorize_uri,
+      request_url_expire_time: 30.minutes,
+      card: {
+        card_name: card_info.dig('brand'),
+        year: card_info.dig('expiration_year'),
+        month: card_info.dig('expiration_month'),
+        id: card_info.dig('id'),
+        card_number: [card_info.dig('first_digits') || '****', ' **** **** ', card_info.dig('last_digits') || '****'].join,
+        name: card_info.dig('name')
+      }
+    }
+  end
+
+  def wait_cool_down(tried)
+    ap "Omise api seems like tired.."
+    spin_particles = [ '⎮', '/', '-', '\\'] * 3
+    (tried**2).times do
+      spin_particles.each do |particle|
+        print "#{particle} \r"
+        sleep 0.3
+      end
+    end
   end
 
   def get_omise_charge(charge_id)
