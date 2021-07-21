@@ -9,7 +9,6 @@ class SetChargeForCurrentPayment < ActiveRecord::Migration[6.0]
 
     # omise로 결제된 payment들을 가지고 옵니다.
     omise_payment = Payment.where(pay_method: 'omise').where.not(charge_id: [nil, '0'])
-    # omise_payment = Payment.where(pay_method: 'omise').where(id: 6561)
     total_count = omise_payment.count
     ap "#{total_count} payment will be processed."
     pending_msg = '  Create the pending charge.'.to_sym
