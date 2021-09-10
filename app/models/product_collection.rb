@@ -1,28 +1,3 @@
-# == Schema Information
-#
-# Table name: product_collections
-#
-#  id                         :bigint           not null, primary key
-#  active                     :boolean          default(FALSE), not null
-#  cost_price                 :integer          default(0), not null
-#  deleted_at                 :datetime
-#  gomi_standard_product_code :string(255)      not null
-#  name                       :string(255)
-#  selling_price              :integer          default(0), not null
-#  created_at                 :datetime         not null
-#  updated_at                 :datetime         not null
-#  country_id                 :bigint
-#
-# Indexes
-#
-#  index_product_collections_on_country_id                  (country_id)
-#  index_product_collections_on_deleted_at                  (deleted_at)
-#  index_product_collections_on_gomi_standard_product_code  (gomi_standard_product_code) UNIQUE
-#
-# Foreign Keys
-#
-#  fk_rails_...  (country_id => countries.id)
-#
 class ProductCollection < NationRecord
   include UseGomiStandardProductCode
   acts_as_paranoid

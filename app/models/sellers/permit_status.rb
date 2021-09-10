@@ -1,12 +1,3 @@
-# == Schema Information
-#
-# Table name: sellers_permit_statuses
-#
-#  id         :bigint           not null, primary key
-#  status     :string(255)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#
 module Sellers
   class PermitStatus < ApplicationRecord
     validates_uniqueness_of :status

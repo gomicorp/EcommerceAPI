@@ -1,19 +1,3 @@
-# == Schema Information
-#
-# Table name: approve_requests
-#
-#  id              :bigint           not null, primary key
-#  alive           :boolean          default(TRUE), not null
-#  approvable_type :string(255)
-#  status          :integer          default("pending"), not null
-#  created_at      :datetime         default(Tue, 10 Dec 2019 09:23:52 UTC +00:00), not null
-#  updated_at      :datetime         default(Tue, 10 Dec 2019 09:23:52 UTC +00:00), not null
-#  approvable_id   :bigint
-#
-# Indexes
-#
-#  index_approve_requests_on_approvable_type_and_approvable_id  (approvable_type,approvable_id)
-#
 class ApproveRequest < ApplicationRecord
   enum status: %i[pending rejected accepted]
   belongs_to :approvable, polymorphic: true

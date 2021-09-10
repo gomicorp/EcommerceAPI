@@ -1,34 +1,3 @@
-# == Schema Information
-#
-# Table name: order_infos
-#
-#  id                        :bigint           not null, primary key
-#  admin_memo                :text(65535)
-#  discarded_at              :datetime
-#  finished                  :boolean
-#  order_confirmation_status :string(255)
-#  ordered_at                :datetime
-#  payment_status            :string(255)
-#  shipping_status           :string(255)
-#  status                    :string(255)
-#  created_at                :datetime         not null
-#  updated_at                :datetime         not null
-#  cart_id                   :integer
-#  channel_id                :bigint           not null
-#  country_id                :bigint
-#  enc_id                    :string(255)
-#
-# Indexes
-#
-#  index_order_infos_on_cart_id     (cart_id) UNIQUE
-#  index_order_infos_on_channel_id  (channel_id)
-#  index_order_infos_on_country_id  (country_id)
-#  index_order_infos_on_enc_id      (enc_id) UNIQUE
-#
-# Foreign Keys
-#
-#  fk_rails_...  (country_id => countries.id)
-#
 class OrderInfo < NationRecord
   include ChannelRecordable
 

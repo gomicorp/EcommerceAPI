@@ -1,22 +1,3 @@
-# == Schema Information
-#
-# Table name: policy_shipping_fees
-#
-#  id            :bigint           not null, primary key
-#  active        :boolean          default(FALSE)
-#  current       :boolean          default(FALSE)
-#  default       :boolean          default(FALSE)
-#  delivery_type :string(255)
-#  feature       :string(255)
-#  fee           :integer
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  country_id    :bigint           not null
-#
-# Indexes
-#
-#  index_policy_shipping_fees_on_country_id  (country_id)
-#
 class Policy::ShippingFee < NationRecord
   after_create :set_current
 

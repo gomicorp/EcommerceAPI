@@ -1,34 +1,3 @@
-# == Schema Information
-#
-# Table name: payments
-#
-#  id                    :bigint           not null, primary key
-#  amount                :integer
-#  cancel_message        :text(65535)
-#  cancelled             :boolean          default(FALSE), not null
-#  delivery_amount       :integer
-#  expire_at             :datetime
-#  paid                  :boolean
-#  paid_at               :datetime
-#  pay_method            :string(255)
-#  total_discount_amount :integer
-#  total_price_sum       :integer
-#  created_at            :datetime         not null
-#  updated_at            :datetime         not null
-#  charge_id             :string(255)
-#  country_id            :bigint
-#  order_info_id         :bigint
-#
-# Indexes
-#
-#  index_payments_on_country_id     (country_id)
-#  index_payments_on_order_info_id  (order_info_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (country_id => countries.id)
-#  fk_rails_...  (order_info_id => order_infos.id)
-#
 class Payment < NationRecord
 
   STATUS = %w[

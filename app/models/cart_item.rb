@@ -1,38 +1,4 @@
 # frozen_string_literal: true
-
-# == Schema Information
-#
-# Table name: cart_items
-#
-#  id                                 :bigint           not null, primary key
-#  captured                           :boolean          default(FALSE), not null
-#  captured_additional_price          :integer          default(0), not null
-#  captured_base_price                :integer          default(0), not null
-#  captured_discount_price            :integer          default(0), not null
-#  captured_price_change              :integer          default(0), not null
-#  captured_retail_price              :integer          default(0), not null
-#  captured_seller_shipping           :boolean
-#  captured_seller_warehouse_key      :string(255)
-#  captured_seller_warehouse_ship_fee :integer
-#  entity_count                       :integer          default(0), not null
-#  option_count                       :integer          default(0), not null
-#  created_at                         :datetime         not null
-#  updated_at                         :datetime         not null
-#  cart_id                            :bigint
-#  product_id                         :bigint
-#  product_option_id                  :bigint           default(0), not null
-#
-# Indexes
-#
-#  index_cart_items_on_cart_id            (cart_id)
-#  index_cart_items_on_product_id         (product_id)
-#  index_cart_items_on_product_option_id  (product_option_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (cart_id => carts.id)
-#  fk_rails_...  (product_id => products.id)
-#
 class CartItem < ApplicationRecord
   include CounterCacheResettable
 

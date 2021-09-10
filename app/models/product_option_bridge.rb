@@ -1,21 +1,3 @@
-# == Schema Information
-#
-# Table name: product_option_bridges
-#
-#  id                :bigint           not null, primary key
-#  connectable_type  :string(255)
-#  deleted_at        :datetime
-#  selling_price     :integer          default(0), not null
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
-#  connectable_id    :bigint
-#  product_option_id :bigint
-#
-# Indexes
-#
-#  index_product_option_bridges_on_deleted_at         (deleted_at)
-#  index_product_option_bridges_on_product_option_id  (product_option_id)
-#
 class ProductOptionBridge < ApplicationRecord
   acts_as_paranoid
 

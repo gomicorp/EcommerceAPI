@@ -1,24 +1,3 @@
-# == Schema Information
-#
-# Table name: barcodes
-#
-#  id           :bigint           not null, primary key
-#  cancelled_at :datetime
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  cart_item_id :bigint
-#  product_id   :bigint
-#
-# Indexes
-#
-#  index_barcodes_on_cart_item_id  (cart_item_id)
-#  index_barcodes_on_product_id    (product_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (cart_item_id => cart_items.id)
-#  fk_rails_...  (product_id => products.id)
-#
 class Barcode < ApplicationRecord
   belongs_to :product, dependent: :destroy
 

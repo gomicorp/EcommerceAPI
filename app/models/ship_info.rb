@@ -1,33 +1,3 @@
-# == Schema Information
-#
-# Table name: ship_infos
-#
-#  id              :bigint           not null, primary key
-#  carrier_code    :string(255)
-#  loc_city        :string(255)
-#  loc_detail      :text(65535)
-#  loc_district    :string(255)
-#  loc_state       :string(255)
-#  postal_code     :string(255)
-#  receiver_email  :string(255)
-#  receiver_name   :string(255)
-#  receiver_tel    :string(255)
-#  ship_amount     :integer          default(0), not null
-#  tracking_number :string(255)
-#  user_memo       :text(65535)
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  fee_policy_id   :bigint
-#  order_info_id   :integer
-#
-# Indexes
-#
-#  index_ship_infos_on_fee_policy_id  (fee_policy_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (fee_policy_id => policy_shipping_fees.id)
-#
 class ShipInfo < ApplicationRecord
 
   FORWARD_STATUS = %w[

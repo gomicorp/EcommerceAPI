@@ -1,29 +1,3 @@
-# == Schema Information
-#
-# Table name: brands
-#
-#  id          :bigint           not null, primary key
-#  description :text(65535)
-#  name        :string(255)
-#  slogan      :string(255)
-#  subtitle    :string(255)
-#  theme_color :string(255)
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  company_id  :bigint
-#  country_id  :bigint
-#  pixel_id    :bigint
-#
-# Indexes
-#
-#  index_brands_on_company_id  (company_id)
-#  index_brands_on_country_id  (country_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (company_id => companies.id)
-#  fk_rails_...  (country_id => countries.id)
-#
 class Brand < NationRecord
   resourcify
   include Translatable
