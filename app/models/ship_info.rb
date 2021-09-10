@@ -63,6 +63,8 @@ class ShipInfo < ApplicationRecord
     express: 50
   }.freeze # standard on THB
 
+  SHIPPING_FROM = %w[ VN-HN VN-HCM TH-BK].to_echo
+
   DELIVERY_TYPES = %w[normal express cod free 2h]
 
   belongs_to :order_info
